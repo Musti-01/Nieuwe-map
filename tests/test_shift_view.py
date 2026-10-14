@@ -17,7 +17,7 @@ def test_shift_view_clips_selection_not_full_duration_and_labels_active():
     assert len(rows) == 2
     assert rows[0]['Ingeklokt'] == '14-10-2026 01:00'
     assert rows[0]['Duur volledige shift (uur)'] == 3
-    assert rows[0]['Status'] == 'Afgesloten'
+    assert rows[0]['Status'] == 'Wacht op controle'
     assert rows[1]['Status'] == 'Bezig'
     assert rows[1]['Uitgeklokt'] == 'Nog bezig'
     assert rows[1]['Duur volledige shift (uur)'] == 1

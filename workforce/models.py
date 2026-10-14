@@ -56,7 +56,13 @@ class WorkEntry(Base):
     user_id: Mapped[int] = mapped_column(Integer, index=True)
     started_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     ended_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    review_status: Mapped[str] = mapped_column(String(20), default="pending")
+    version: Mapped[int] = mapped_column(Integer, default=1)
+    reviewed_by: Mapped[int | None] = mapped_column(ForeignKey("users.id"))
+    reviewed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     __table_args__ = (
+        CheckConstraint("review_status IN ('pending', 'approved')", name="shift_review_status"),
+        CheckConstraint("review_status != 'approved' OR (ended_at IS NOT NULL AND reviewed_by IS NOT NULL AND reviewed_at IS NOT NULL)", name="approved_shift_complete"),
         ForeignKeyConstraint(["branch_id", "user_id"], ["memberships.branch_id", "memberships.user_id"]),
         CheckConstraint("ended_at IS NULL OR ended_at >= started_at", name="valid_interval"),
         Index("one_active_entry_per_user", "user_id", unique=True, postgresql_where=text("ended_at IS NULL")),
@@ -103,3 +109,17 @@ class Notification(Base):
     body: Mapped[str] = mapped_column(String(2000))
     sent_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     attempts: Mapped[int] = mapped_column(Integer, default=0)
+
+class ShiftReview(Base):
+    __tablename__ = "shift_reviews"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    entry_id: Mapped[int] = mapped_column(ForeignKey("work_entries.id"), index=True)
+    reviewer_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    action: Mapped[str] = mapped_column(String(20))
+    reason: Mapped[str] = mapped_column(String(500))
+    old_start: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    old_end: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    new_start: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    new_end: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    previous_status: Mapped[str] = mapped_column(String(20))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))

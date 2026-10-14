@@ -16,7 +16,7 @@ Een Streamlit-app met Python 3.12 en PostgreSQL 16 voor onafhankelijke franchise
 - Eigen uren en dashboard per dag/week/maand, actieve medewerkers, teambeheer en auditlog van rolwijzigingen en klokacties.
 - Organisatie-eigenaar kan schakelen tussen eigen vestigingen. Platformbeheerder kan alle organisaties en vestigingen bekijken en beheren via hetzelfde rechtenbeheer.
 
-Pauzes, correcties met auditlog, CSV/Excel-export, vergelijkingsrapporten, logo-/kleurenbeheer, abonnementenbeheer en betalingen zijn **nog niet geïmplementeerd**. Velden voor keten, organisatiekleuren en vestigingspakket bereiden uitbreiding voor; ze leveren nog geen pakketbeperkingen of brandinginstellingen. De MVP is een testbare basis, geen reeds gelanceerde commerciële dienst.
+Pauzes, CSV/Excel-export, vergelijkingsrapporten, logo-/kleurenbeheer, abonnementenbeheer en betalingen zijn **nog niet geïmplementeerd**. Velden voor keten, organisatiekleuren en vestigingspakket bereiden uitbreiding voor; ze leveren nog geen pakketbeperkingen of brandinginstellingen. De MVP is een testbare basis, geen reeds gelanceerde commerciële dienst.
 
 ## Snel lokaal / cloud testen
 
@@ -112,7 +112,7 @@ Voor commerciële lancering ontbreken onder andere e-mailverificatie, wachtwoord
 
 Toegang wordt op applicatieniveau in de servicelaag afgedwongen; PostgreSQL RLS is niet ingeschakeld. Directe SQL-toegang is alleen voor vertrouwde operators, niet voor klanten. De databasegebruiker mag nooit aan een vestiging worden verstrekt. Een rolintrekking behoudt een ingetrokken lidmaatschapsrecord voor historische foreign keys; dit record geeft geen toegang. Actieve diensten moeten eerst afgesloten worden voordat toegang kan worden ingetrokken. Admin demotie naar medewerker behoudt diens eigen tijdregistratietoegang.
 
-Rechtenwijzigingen en klokacties worden geaudit. Tijdcorrecties bestaan nog niet; ze moeten in een latere opdracht via een aparte geautoriseerde, geaudite servicemethode worden toegevoegd. Audit is een applicatie-audit, geen cryptografisch onveranderlijk log voor databaseoperators.
+Rechtenwijzigingen, klokacties, shiftcorrecties en goedkeuringen worden geaudit. De shiftcorrectiehistoriek bewaart oude en nieuwe tijden, de reden en de verantwoordelijke beheerder. Audit is een applicatie-audit, geen cryptografisch onveranderlijk log voor databaseoperators.
 
 ## Goedkeuringssysteem gebruiken
 
@@ -148,3 +148,15 @@ De mailworker is getest met een nagebootste SMTP-client, inclusief TLS en retry.
 Medewerkers openen **In- en uitklokken** om een dienst te starten of af te sluiten. Bij **Mijn shiften** zien zij alleen hun eigen geklokte diensten van de geselecteerde vestiging, met datum, begin/einde, status en volledige shiftduur. Een dag-, week- of maandfilter bepaalt welke diensten zichtbaar zijn. Het urentotaal telt alleen het deel van de diensten binnen die periode; een lopende dienst telt mee tot het laatste verversen. Er is een knop **Shiften verversen** en een uitleg wanneer er nog geen diensten zijn. Dit is registratiehistoriek; toekomstige diensten plannen is nog niet beschikbaar.
 
 Platformbeheer start met **Overzicht**, met uitleg van alle beschikbare bevoegdheden en knoppen naar **Aanvragen** en **Besluitgeschiedenis**. Uitsluitend de platformeigenaar krijgt daarnaast **Platformbeheerders**, voor het expliciet machtigen en intrekken van platformrechten. **Werkruimte → Vestigingen** opent de bestaande dashboards, teams, rollen, uren en auditlog. Accountverwijdering en globale accountdeactivering zijn niet beschikbaar en worden niet als actie aangeboden.
+
+## Shiften controleren voordat uren definitief zijn
+
+Een medewerker kan nog steeds op een later tijdstip op Uitklokken drukken: zonder rooster of fysieke controle kan de app het werkelijke vertrekmoment niet vaststellen. Daarom krijgt iedere afgesloten shift **Wacht op controle**. Alleen een bevoegde vestigingsadmin, organisatie-eigenaar of platformbeheerder kan de shift goedkeuren. Niemand mag zijn eigen shift goedkeuren of corrigeren; vraag hiervoor een andere bevoegde beheerder.
+
+Open de vestiging en kies **Shiften controleren**. Kies een status en shift. **Goedkeuren** accepteert de opgeslagen tijden. **Corrigeren** wijzigt begin/einde met een verplichte reden; ook een lopende, vergeten uitklokshift kan zo worden afgesloten. Toekomstige eindtijden, ongeldige intervallen en overlap met andere diensten van dezelfde medewerker worden geweigerd. Na iedere correctie wacht de shift opnieuw op goedkeuring. Gelijktijdige of verouderde wijzigingen worden geweigerd; ververs dan het overzicht.
+
+De datum/tijdvelden gelden uitsluitend bij Corrigeren; bij Goedkeuren worden de opgeslagen tijden gebruikt. De UI vermeldt dit expliciet. Shift- en aanvraaggoedkeuring zijn aparte processen: een goedgekeurde vestiging betekent niet dat alle gewerkte uren automatisch gecontroleerd zijn.
+
+Het dashboard toont **Goedgekeurde uren**, **Wacht op controle** en **Lopende uren (voorlopig)** apart. Medewerkers zien de status in **Mijn shiften**, met hun eigen correctiehistoriek. De klokpagina toont geregistreerde uren inclusief nog ongecontroleerde uren; alleen expliciet goedgekeurde uren zijn gecontroleerd. In de audit- en shifthistoriek staan de beoordelaar, het tijdstip, de reden en oude/nieuwe tijden.
+
+Migratie `0003` bewaart alle bestaande werkregistraties en zet ze op **Wacht op controle**; bestaande uren worden niet stilzwijgend goedgekeurd. De migration wordt automatisch uitgevoerd bij starten van `cloud_app.py`. Dit voegt geen automatische uitklok op roostertijden en geen payroll-export toe.

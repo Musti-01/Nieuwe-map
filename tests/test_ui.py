@@ -33,7 +33,7 @@ def test_employee_shift_history_after_clock_out(api, team, engine, monkeypatch):
     assert not app.exception
     assert [tab.label for tab in app.tabs] == ['In- en uitklokken', 'Mijn shiften']
     assert len(app.dataframe) == 1
-    assert app.dataframe[0].value.iloc[0]['Status'] == 'Afgesloten'
+    assert app.dataframe[0].value.iloc[0]['Status'] == 'Wacht op controle'
     assert all(r.label != 'Platformonderdeel' for r in app.radio)
     next(b for b in app.button if b.label == 'Shiften verversen').click().run()
     assert not app.exception
@@ -42,5 +42,15 @@ def test_employee_shift_history_after_clock_out(api, team, engine, monkeypatch):
 def test_branch_admin_still_has_dashboard_team_and_audit(api, team, engine, monkeypatch):
     app = app_for(team['ot'], engine, monkeypatch)
     assert not app.exception
-    assert [tab.label for tab in app.tabs] == ['In- en uitklokken', 'Mijn shiften', 'Dashboard', 'Team & rechten', 'Auditlog']
+    assert [tab.label for tab in app.tabs] == ['In- en uitklokken', 'Mijn shiften', 'Dashboard', 'Shiften controleren', 'Team & rechten', 'Auditlog']
     assert any(b.label == 'Gebruiker zoeken' for b in app.button)
+
+
+def test_admin_approves_shift_from_review_tab(api, team, engine, monkeypatch):
+    api.clock_in(team['wt'], team['branch'])
+    api.clock_out(team['wt'], team['branch'])
+    app = app_for(team['ot'], engine, monkeypatch)
+    assert not app.exception
+    next(b for b in app.button if b.label == 'Shiftactie bevestigen').click().run()
+    assert not app.exception
+    assert api.entries(team['wt'],team['branch'])[0]['review_status'] == 'approved'

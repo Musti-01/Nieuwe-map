@@ -8,7 +8,7 @@ from argon2.exceptions import VerificationError, InvalidHashError
 from sqlalchemy import select, or_, text, delete
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.dialects.postgresql import insert
-from workforce.models import User, Organization, Branch, Membership, WorkEntry, AuthSession, LoginLimit, Audit, ApprovalDecision, Notification
+from workforce.models import User, Organization, Branch, Membership, WorkEntry, AuthSession, LoginLimit, Audit, ApprovalDecision, Notification, ShiftReview
 
 hasher = PasswordHasher()
 DUMMY_HASH = hasher.hash(secrets.token_urlsafe(32))
@@ -213,6 +213,7 @@ class Service:
             with self.sessions.begin() as s:
                 u = self._actor(s, token)
                 self._access(s, u, branch_id, lock=True)
+                s.execute(text("SELECT pg_advisory_xact_lock(793125043, :uid)"), {"uid": u.id})
                 m = s.get(Membership, (branch_id, u.id))
                 if not m or m.role == "revoked":
                     raise Denied("Je bent geen medewerker van deze vestiging.")
@@ -228,10 +229,12 @@ class Service:
         with self.sessions.begin() as s:
             u = self._actor(s, token)
             self._access(s, u, branch_id, lock=True)
+            s.execute(text("SELECT pg_advisory_xact_lock(793125043, :uid)"), {"uid": u.id})
             e = s.scalar(select(WorkEntry).where(WorkEntry.user_id == u.id, WorkEntry.branch_id == branch_id, WorkEntry.ended_at.is_(None)).with_for_update())
             if not e:
                 raise ValueError("Geen actieve sessie in deze vestiging.")
             e.ended_at = now()
+            e.version += 1
             self._audit(s, u, branch_id, "clock.out", f"entry={e.id}")
             return e.id
 
@@ -242,7 +245,7 @@ class Service:
             q = select(WorkEntry, User.name).join(User, User.id == WorkEntry.user_id).where(WorkEntry.branch_id == branch_id)
             if not team:
                 q = q.where(WorkEntry.user_id == u.id)
-            return [{"id": e.id, "user_id": e.user_id, "name": name, "start": e.started_at, "end": e.ended_at} for e, name in s.execute(q.order_by(WorkEntry.started_at.desc()))]
+            return [{"id": e.id, "user_id": e.user_id, "name": name, "start": e.started_at, "end": e.ended_at, "review_status": e.review_status, "version": e.version, "reviewed_by": e.reviewed_by, "reviewed_at": e.reviewed_at} for e, name in s.execute(q.order_by(WorkEntry.started_at.desc()))]
 
     def audit(self, token, branch_id):
         with self.sessions.begin() as s:
@@ -319,6 +322,7 @@ class Service:
                 active = list(s.scalars(select(WorkEntry).where(WorkEntry.branch_id.in_(branches), WorkEntry.ended_at.is_(None)).with_for_update()))
                 for entry in active:
                     entry.ended_at = entity.reviewed_at
+                    entry.version += 1
                     self._audit(s, u, entry.branch_id, "clock.closed_by_block", f"entry={entry.id}; decision={d.id}")
             self._audit(s, u, d.branch_id, "approval." + action, f"{kind}={entity.id}; {old}->{new}; decision={d.id}")
             owner_user = s.get(User, org.owner_id)
@@ -349,3 +353,62 @@ class Service:
                 raise Denied("De platformeigenaar kan niet worden ingetrokken.")
             target.platform_admin = enabled
             self._audit(s, u, None, "platform.delegated", f"user={target.id}; enabled={enabled}")
+
+    def review_shift(self, token, branch_id, entry_id, version, action, reason="", start=None, end=None):
+        if action not in ("approve", "correct"):
+            raise ValueError("Ongeldige shiftactie.")
+        reason = reason.strip()
+        if len(reason) > 500 or (action == "correct" and not reason):
+            raise ValueError("Een correctie vereist een reden van maximaal 500 tekens.")
+        with self.sessions.begin() as s:
+            actor = self._actor(s, token)
+            self._access(s, actor, branch_id, admin=True, lock=True)
+            uid = s.scalar(select(WorkEntry.user_id).where(WorkEntry.id == entry_id, WorkEntry.branch_id == branch_id))
+            if uid is None:
+                raise Denied("Shift niet gevonden in deze vestiging.")
+            s.execute(text("SELECT pg_advisory_xact_lock(793125043, :uid)"), {"uid": uid})
+            entry = s.scalar(select(WorkEntry).where(WorkEntry.id == entry_id, WorkEntry.branch_id == branch_id).with_for_update())
+            if not entry:
+                raise Denied("Shift niet gevonden in deze vestiging.")
+            if entry.user_id == actor.id:
+                raise Denied("Laat een andere bevoegde beheerder je eigen shift controleren.")
+            if entry.version != version:
+                raise ValueError("Deze shift is ondertussen gewijzigd. Ververs het overzicht.")
+            old_start, old_end, old_status = entry.started_at, entry.ended_at, entry.review_status
+            if action == "approve":
+                if entry.ended_at is None:
+                    raise ValueError("Een lopende shift kan niet worden goedgekeurd. Sluit of corrigeer deze eerst.")
+                if entry.review_status == "approved":
+                    raise ValueError("Deze shift is al goedgekeurd.")
+                entry.review_status, entry.reviewed_by, entry.reviewed_at = "approved", actor.id, now()
+            else:
+                if not all(isinstance(v, datetime) and v.tzinfo is not None and v.utcoffset() is not None for v in (start, end)):
+                    raise ValueError("Geef begin- en eindtijd met tijdzone op.")
+                if end <= start or end > now():
+                    raise ValueError("Einde moet na begin liggen en mag niet in de toekomst liggen.")
+                # Serialize all corrections for the same employee, including other branches.
+                s.execute(text("SELECT pg_advisory_xact_lock(793125043, :uid)"), {"uid": entry.user_id})
+                overlap = s.scalar(select(WorkEntry.id).where(WorkEntry.user_id == entry.user_id, WorkEntry.id != entry.id, WorkEntry.started_at < end, or_(WorkEntry.ended_at.is_(None), WorkEntry.ended_at > start)))
+                if overlap:
+                    raise ValueError("Deze tijden overlappen met een andere shift van deze medewerker.")
+                if start == old_start and end == old_end:
+                    raise ValueError("De tijden zijn niet gewijzigd.")
+                entry.started_at, entry.ended_at = start, end
+                entry.review_status, entry.reviewed_by, entry.reviewed_at = "pending", None, None
+            entry.version += 1
+            log = ShiftReview(entry_id=entry.id, reviewer_id=actor.id, action=action, reason=reason, old_start=old_start, old_end=old_end, new_start=entry.started_at, new_end=entry.ended_at, previous_status=old_status, created_at=now())
+            s.add(log)
+            s.flush()
+            self._audit(s, actor, branch_id, "shift." + action, f"entry={entry.id}; review={log.id}")
+            return log.id
+
+    def shift_history(self, token, branch_id, entry_id):
+        with self.sessions.begin() as s:
+            actor = self._actor(s, token)
+            self._access(s, actor, branch_id)
+            entry = s.scalar(select(WorkEntry).where(WorkEntry.id == entry_id, WorkEntry.branch_id == branch_id))
+            if not entry:
+                raise Denied("Shift niet gevonden.")
+            if entry.user_id != actor.id:
+                self._access(s, actor, branch_id, admin=True)
+            return [{"actie": r.action, "reden": r.reason, "beoordelaar": reviewer.name, "tijd": r.created_at, "oud_begin": r.old_start, "oud_einde": r.old_end, "nieuw_begin": r.new_start, "nieuw_einde": r.new_end} for r, reviewer in s.execute(select(ShiftReview, User).join(User, User.id == ShiftReview.reviewer_id).where(ShiftReview.entry_id == entry.id).order_by(ShiftReview.id.desc()))]

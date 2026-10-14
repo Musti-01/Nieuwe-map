@@ -32,7 +32,7 @@ def show_platform(api, token, me, run):
         if me['platform_owner']:
             st.markdown("**Platformbeheerders machtigen** — geef een bestaand account platformrechten of trek die in. Alleen jij als platformeigenaar kunt dit doen.")
             st.button("Beheer platformbeheerders", on_click=navigate, args=("Platformbeheerders",))
-        st.markdown("**Vestigingen, medewerkers en uren beheren** — kies links bij Werkruimte voor **Vestigingen**. Selecteer daar een vestiging voor het team, rollen, uren en auditlog.")
+        st.markdown("**Vestigingen, medewerkers en uren beheren** — kies links bij Werkruimte voor **Vestigingen**. Selecteer daar een vestiging voor het team, rollen, uren en auditlog. Bij **Shiften controleren** kun je tijden met een reden corrigeren en uren goedkeuren; je eigen shifts moeten door een andere beheerder worden gecontroleerd.")
         st.info("Medewerkers beheren: in de vestiging bij Team & rechten. Accountverwijdering, volledige accountdeactivering en shiftplanning zijn nog niet beschikbaar.")
         st.caption("E-mails bij besluiten worden in een wachtrij gezet. Echte verzending vereist een geconfigureerde mailworker.")
     elif page == "Aanvragen":

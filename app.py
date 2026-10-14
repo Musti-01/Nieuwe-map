@@ -136,7 +136,7 @@ if b['status'] != 'approved' or b['organization_status'] != 'approved':
     st.info("Operationele toegang en rolbeheer worden beschikbaar zodra de platformbeheerder zowel de organisatie als de vestiging goedkeurt. Bij blokkering vervalt de toegang direct.")
     st.stop()
 st.caption(f"{b['organization']} · {'Organisatie-eigenaar' if b['owner'] else 'Vestigingsadmin' if b['admin'] else 'Medewerker'}")
-tabs = st.tabs(["In- en uitklokken", "Mijn shiften"] + (["Dashboard", "Team & rechten", "Auditlog"] if b['admin'] else []))
+tabs = st.tabs(["In- en uitklokken", "Mijn shiften"] + (["Dashboard", "Shiften controleren", "Team & rechten", "Auditlog"] if b['admin'] else []))
 zone = os.getenv('APP_TIMEZONE', 'Europe/Brussels')
 try:
     tz = ZoneInfo(zone)
@@ -161,6 +161,7 @@ with tabs[0]:
                 if run(lambda: api.clock_out(token, branch_id), "Je bent uitgeklokt."):
                     st.rerun()
     st.caption("Een actieve sessie in een andere vestiging moet je daar eerst afsluiten.")
+    st.caption("Onderstaande uren zijn geregistreerd en kunnen nog op controle wachten. Definitief goedgekeurde uren staan bij Mijn shiften.")
     today = datetime.now(tz).date()
     columns = st.columns(3)
     for col, period in zip(columns, ["Dag", "Week", "Maand"]):
@@ -179,14 +180,24 @@ with tabs[1]:
     snapshot = now()
     rows = shift_rows(entries, begin, end, tz, snapshot)
     total = sum(r['Uren'] for r in hours(entries, begin, end, snapshot))
-    a, c = st.columns(2)
+    a, c, d = st.columns(3)
+    approved = sum(r['Uren'] for r in hours([e for e in entries if e['review_status'] == 'approved'], begin, end, snapshot))
     a.metric("Shiften in deze periode", len(rows))
-    c.metric("Gewerkte uren binnen deze periode", f"{total:.2f} uur")
+    c.metric("Goedgekeurde uren", f"{approved:.2f} uur")
+    d.metric("Geregistreerde uren (alle statussen)", f"{total:.2f} uur")
     st.caption("Duur in de tabel geldt voor de volledige shift; het urentotaal hierboven telt alleen het deel binnen de gekozen periode. Lopende shiften tellen mee tot het laatste verversen.")
     if rows:
         st.dataframe(rows, hide_index=True, use_container_width=True)
     else:
         st.info("Je hebt nog geen shiften in deze periode. Gebruik In- en uitklokken om een shift te starten.")
+    if entries:
+        with st.expander("Mijn correcties en goedkeuringen"):
+            selected = st.selectbox("Mijn shift bekijken", [e['id'] for e in entries], format_func=lambda i: next(e['start'].astimezone(tz).strftime('%d-%m-%Y %H:%M') for e in entries if e['id'] == i))
+            history = run(lambda: api.shift_history(token, branch_id, selected))
+            if history:
+                st.dataframe(history, hide_index=True, use_container_width=True)
+            else:
+                st.caption("Nog geen correcties of goedkeuringen voor deze shift.")
     if st.button("Shiften verversen"):
         st.rerun()
 
@@ -203,11 +214,17 @@ if b['admin']:
         period = st.selectbox("Periode", ["Dag", "Week", "Maand"])
         day = st.date_input("Datum", value=datetime.now(tz).date())
         begin, end = period_bounds(day, period, zone)
-        totals = hours(team, begin, end, now())
-        st.metric("Totaal gewerkte uren", f"{sum(r['Uren'] for r in totals):.2f}")
-        st.dataframe(totals, hide_index=True, use_container_width=True)
-        st.caption("Actieve diensten tellen mee tot nu. Periodes worden berekend in de ingestelde tijdzone.")
+        snapshot = now()
+        for label, selected in [("Goedgekeurde uren", [e for e in team if e['review_status'] == 'approved']), ("Wacht op controle", [e for e in team if e['end'] is not None and e['review_status'] != 'approved']), ("Lopende uren (voorlopig)", [e for e in team if e['end'] is None])]:
+            totals = hours(selected, begin, end, snapshot)
+            st.metric(label, f"{sum(r['Uren'] for r in totals):.2f} uur")
+            if totals:
+                st.dataframe(totals, hide_index=True, use_container_width=True)
+        st.caption("Alleen goedgekeurde uren zijn gecontroleerd. Ongecontroleerde en lopende uren staan apart. Periodes worden berekend in de ingestelde tijdzone.")
     with tabs[3]:
+        from workforce.ui_review import show_reviews
+        show_reviews(api, token, branch_id, team, me, tz, run)
+    with tabs[4]:
         st.subheader("Medewerkers & bevoegdheden")
         members = run(lambda: api.members(token, branch_id))
         st.dataframe(members or [], hide_index=True, use_container_width=True)
@@ -237,5 +254,5 @@ if b['admin']:
                     except SQLAlchemyError:
                         st.error("Database niet beschikbaar.")
         st.caption("Alleen organisatie-eigenaars en platformbeheerders kunnen vestigingsadmins aanwijzen of hun rechten intrekken.")
-    with tabs[4]:
+    with tabs[5]:
         st.dataframe(run(lambda: api.audit(token, branch_id)) or [], hide_index=True, use_container_width=True)
