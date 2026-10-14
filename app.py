@@ -105,51 +105,8 @@ if me['platform_admin']:
     with st.sidebar:
         workspace = st.radio("Werkruimte", ["Platformdashboard", "Vestigingen"])
     if workspace == "Platformdashboard":
-        st.subheader("Platformdashboard · Registratieaanvragen")
-        labels = {"pending": "In afwachting", "approved": "Goedgekeurd", "rejected": "Geweigerd", "blocked": "Geblokkeerd"}
-        applications = run(lambda: api.applications(token))
-        if applications is None:
-            st.stop()
-        a, c, d = st.columns(3)
-        a.metric("In afwachting", sum(r['status'] == 'pending' for r in applications))
-        c.metric("Goedgekeurd", sum(r['status'] == 'approved' for r in applications))
-        d.metric("Geblokkeerd", sum(r['status'] == 'blocked' for r in applications))
-        status_filter = st.selectbox("Filter op status", ["Alle"] + list(labels.values()))
-        visible = [r for r in applications if status_filter == "Alle" or labels[r['status']] == status_filter]
-        st.dataframe([{"Type": "Organisatie" if r['kind'] == 'organization' else "Vestiging", "Bedrijf": r['bedrijf'], "Vestiging": r['vestiging'], "Status": labels[r['status']], "Adres": r['adres'], "Verantwoordelijke": r['verantwoordelijke'], "E-mailadres": r['email'], "Telefoon": r['telefoon'], "Aangevraagd": r['aangevraagd'], "Beoordeeld": r['beoordeeld']} for r in visible], hide_index=True, use_container_width=True)
-        if visible:
-            choices = {f"{r['kind']}:{r['id']}": r for r in visible}
-            selected = st.selectbox("Aanvraag beoordelen", list(choices), format_func=lambda k: f"{choices[k]['bedrijf']} · {choices[k]['vestiging']} ({'Organisatie' if choices[k]['kind'] == 'organization' else 'Vestiging'}) · {labels[choices[k]['status']]}")
-            item = choices[selected]
-            st.write(f"Verantwoordelijke: {item['verantwoordelijke']}")
-            st.write(f"Contact: {item['email']} · {item['telefoon']}")
-            st.write(f"Adres: {item['adres'] or 'Niet opgegeven bij eerdere registratie'}")
-            actions = {"pending": {"Goedkeuren": "approve", "Weigeren": "reject"}, "approved": {"Blokkeren": "block"}, "blocked": {"Opnieuw activeren": "reactivate"}, "rejected": {}}[item['status']]
-            if actions:
-                with st.form(f"decision_{selected}_{item['status']}"):
-                    action = st.selectbox("Besluit", list(actions))
-                    reason = st.text_area("Toelichting (verplicht bij weigeren of blokkeren)", max_chars=500)
-                    if st.form_submit_button("Besluit bevestigen", type="primary"):
-                        if run(lambda: api.decide(token, item['kind'], item['id'], actions[action], reason), "Besluit opgeslagen; bericht staat in de e-mailwachtrij."):
-                            st.rerun()
-        with st.expander("Besluitgeschiedenis"):
-            st.dataframe(run(lambda: api.decisions(token)) or [], hide_index=True, use_container_width=True)
-        st.caption("E-mailberichten worden bewaard in een wachtrij. Configureer beveiligde SMTP en plan de mailworker voor verzending; zie README.")
-        if me['platform_owner']:
-            with st.expander("Platformbeheerders machtigen"):
-                st.dataframe(run(lambda: api.platform_users(token)) or [], hide_index=True, use_container_width=True)
-                with st.form("delegate"):
-                    email = st.text_input("E-mailadres bestaand account")
-                    enabled = st.checkbox("Machtiging als platformbeheerder actief", value=True)
-                    if st.form_submit_button("Machtiging opslaan"):
-                        try:
-                            api.delegate_platform(token, email, enabled)
-                            st.session_state['notice'] = "Platformmachtiging bijgewerkt."
-                            st.rerun()
-                        except ValueError as exc:
-                            st.error(str(exc))
-                        except SQLAlchemyError:
-                            st.error("Database niet beschikbaar.")
+        from workforce.ui_platform import show_platform
+        show_platform(api, token, me, run)
         st.stop()
 
 branches = run(lambda: api.branches(token))
@@ -179,7 +136,7 @@ if b['status'] != 'approved' or b['organization_status'] != 'approved':
     st.info("Operationele toegang en rolbeheer worden beschikbaar zodra de platformbeheerder zowel de organisatie als de vestiging goedkeurt. Bij blokkering vervalt de toegang direct.")
     st.stop()
 st.caption(f"{b['organization']} · {'Organisatie-eigenaar' if b['owner'] else 'Vestigingsadmin' if b['admin'] else 'Medewerker'}")
-tabs = st.tabs(["Mijn tijd"] + (["Dashboard", "Team & rechten", "Auditlog"] if b['admin'] else []))
+tabs = st.tabs(["In- en uitklokken", "Mijn shiften"] + (["Dashboard", "Team & rechten", "Auditlog"] if b['admin'] else []))
 zone = os.getenv('APP_TIMEZONE', 'Europe/Brussels')
 try:
     tz = ZoneInfo(zone)
@@ -210,11 +167,31 @@ with tabs[0]:
         begin, end = period_bounds(today, period, zone)
         total = sum(r['Uren'] for r in hours(entries, begin, end, now()))
         col.metric(f"Deze {period.lower()}", f"{total:.2f} uur")
-    st.subheader("Mijn registraties")
-    st.dataframe([{"Start": e['start'].astimezone(tz), "Einde": e['end'].astimezone(tz) if e['end'] else "Actief", "Uren": round(((e['end'] or now()) - e['start']).total_seconds()/3600, 2)} for e in entries], hide_index=True, use_container_width=True)
+
+with tabs[1]:
+    from workforce.shift_view import shift_rows
+    st.subheader("Mijn shiften")
+    st.write("Jouw geregistreerde shiften in deze vestiging, met begin, einde, status en gewerkte uren.")
+    st.caption("Dit zijn geklokte diensten. Toekomstige shiften inplannen is nog niet beschikbaar.")
+    period = st.selectbox("Toon shiften per", ["Dag", "Week", "Maand"], index=2)
+    day = st.date_input("Kies een datum in de gewenste periode", value=datetime.now(tz).date())
+    begin, end = period_bounds(day, period, zone)
+    snapshot = now()
+    rows = shift_rows(entries, begin, end, tz, snapshot)
+    total = sum(r['Uren'] for r in hours(entries, begin, end, snapshot))
+    a, c = st.columns(2)
+    a.metric("Shiften in deze periode", len(rows))
+    c.metric("Gewerkte uren binnen deze periode", f"{total:.2f} uur")
+    st.caption("Duur in de tabel geldt voor de volledige shift; het urentotaal hierboven telt alleen het deel binnen de gekozen periode. Lopende shiften tellen mee tot het laatste verversen.")
+    if rows:
+        st.dataframe(rows, hide_index=True, use_container_width=True)
+    else:
+        st.info("Je hebt nog geen shiften in deze periode. Gebruik In- en uitklokken om een shift te starten.")
+    if st.button("Shiften verversen"):
+        st.rerun()
 
 if b['admin']:
-    with tabs[1]:
+    with tabs[2]:
         team = run(lambda: api.entries(token, branch_id, team=True))
         if team is None:
             st.stop()
@@ -230,7 +207,7 @@ if b['admin']:
         st.metric("Totaal gewerkte uren", f"{sum(r['Uren'] for r in totals):.2f}")
         st.dataframe(totals, hide_index=True, use_container_width=True)
         st.caption("Actieve diensten tellen mee tot nu. Periodes worden berekend in de ingestelde tijdzone.")
-    with tabs[2]:
+    with tabs[3]:
         st.subheader("Medewerkers & bevoegdheden")
         members = run(lambda: api.members(token, branch_id))
         st.dataframe(members or [], hide_index=True, use_container_width=True)
@@ -260,5 +237,5 @@ if b['admin']:
                     except SQLAlchemyError:
                         st.error("Database niet beschikbaar.")
         st.caption("Alleen organisatie-eigenaars en platformbeheerders kunnen vestigingsadmins aanwijzen of hun rechten intrekken.")
-    with tabs[3]:
+    with tabs[4]:
         st.dataframe(run(lambda: api.audit(token, branch_id)) or [], hide_index=True, use_container_width=True)
