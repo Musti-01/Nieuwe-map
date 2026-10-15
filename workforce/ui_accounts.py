@@ -74,19 +74,62 @@ def invitations(api, token, branch_id, run):
 
 
 def account_management(api, token, run):
-    st.write('Deactiveren blokkeert het volledige account, trekt sessies in en sluit lopende diensten af. Historische uren blijven bewaard. Heractiveren herstelt bestaande vestigingsrollen.')
-    accounts=run(lambda: api.accounts(token))
-    if not accounts:
+    st.write('Zoek de juiste persoon en klik op Beheren. Deactiveren stopt toegang en bewaart uren. Alleen een ongebruikt account kan definitief verwijderd worden.')
+    accounts = run(lambda: api.accounts(token))
+    if accounts is None:
         return
-    st.dataframe([{k:v for k,v in row.items() if k!='id'} for row in accounts],hide_index=True,use_container_width=True)
-    uid=st.selectbox('Account beheren',[u['id'] for u in accounts],format_func=lambda i: next(f"{u['naam']} · {u['email']} · {'Actief' if u['actief'] else 'Inactief'}" for u in accounts if u['id']==i))
-    target=next(u for u in accounts if u['id']==uid)
-    with st.form('account_status'):
-        reason=st.text_input('Reden voor accountwijziging',max_chars=300)
-        confirmed=st.checkbox('Ik bevestig deze wijziging van de volledige accounttoegang')
+    def clear_selection():
+        st.session_state.pop('managed_account_id', None)
+    search = st.text_input('Zoek op naam of e-mailadres', placeholder='Bijvoorbeeld: test123', key='account_search', on_change=clear_selection).strip().casefold()
+    status = st.selectbox('Toon accounts', ['Alle accounts', 'Actief', 'Inactief'], key='account_filter', on_change=clear_selection)
+    visible = [u for u in accounts if (not search or search in u['naam'].casefold() or search in u['email'].casefold()) and (status == 'Alle accounts' or u['actief'] == (status == 'Actief'))]
+    if not visible:
+        st.info('Geen accounts gevonden. Pas je zoekopdracht of filter aan.')
+    for user in visible:
+        with st.container(border=True):
+            person, state, action = st.columns([3, 1, 1])
+            with person:
+                st.text(user['naam'])
+                st.caption(user['email'])
+                if user['platformeigenaar']:
+                    st.caption('Platformeigenaar · beschermd account')
+                elif user['platformbeheerder']:
+                    st.caption('Platformbeheerder')
+                if not user['can_manage']:
+                    st.caption(user['manage_reason'])
+            state.write('Actief' if user['actief'] else 'Inactief')
+            if action.button('Beheren' if user['can_manage'] else 'Bekijken', key=f"manage_user_{user['id']}", use_container_width=True):
+                st.session_state['managed_account_id'] = user['id']
+    uid = st.session_state.get('managed_account_id')
+    target = next((u for u in accounts if u['id'] == uid), None)
+    if target is None:
+        st.info('Kies hierboven eerst de persoon die je wilt beheren.')
+        return
+    st.divider()
+    st.subheader('Account: ' + target['naam'])
+    st.text(target['email'])
+    if not target['can_manage']:
+        st.info(target['manage_reason'])
+        return
+    if target['actief']:
+        st.write('Deactiveren: deze persoon kan nergens meer inloggen. Lopende diensten worden afgesloten; uren blijven bewaard.')
+    else:
+        st.write('Heractiveren: deze persoon kan weer inloggen met de bestaande vestigingsrechten.')
+    with st.form(f'account_status_{uid}'):
+        reason = st.text_input('Reden voor accountwijziging', value='Toegang gewijzigd door platformbeheerder', max_chars=300)
         if st.form_submit_button('Account deactiveren' if target['actief'] else 'Account heractiveren'):
-            if not confirmed:
-                st.error('Bevestig eerst de wijziging.')
-            elif run(lambda: api.set_account_active(token,uid,not target['actief'],reason),'Accountstatus gewijzigd.'):
+            if run(lambda: api.set_account_active(token, uid, not target['actief'], reason), 'Accountstatus gewijzigd.'):
                 st.rerun()
-    st.caption('De platformeigenaar en je eigen account kunnen niet worden gedeactiveerd. Een organisatie-eigenaar vereist eerst eigendomsoverdracht; blokkeer zo nodig de organisatie. Alleen de platformeigenaar mag andere platformbeheerders deactiveren.')
+    if target['can_delete']:
+        with st.expander('Ongebruikt account definitief verwijderen'):
+            st.warning('Dit verwijdert het account en eventuele vestigingskoppelingen. Dit kan niet ongedaan worden gemaakt. Gebruik deactiveren als je alleen toegang wilt stoppen.')
+            with st.form(f'delete_account_{uid}'):
+                confirmed = st.checkbox('Ja, verwijder dit ongebruikte account definitief')
+                if st.form_submit_button('Account definitief verwijderen'):
+                    if not confirmed:
+                        st.error('Bevestig eerst dat je dit account definitief wilt verwijderen.')
+                    elif run(lambda: api.delete_unused_account(token, uid), 'Het ongebruikte account is definitief verwijderd.'):
+                        st.session_state.pop('managed_account_id', None)
+                        st.rerun()
+    else:
+        st.caption(target['delete_reason'])

@@ -15,15 +15,16 @@ h1,h2,h3 {color:#006491;} [data-testid=stMetric] {background:#F1F5FA;padding:1re
 </style>""", unsafe_allow_html=True)
 
 @st.cache_resource
-def backend(schema_revision="0004"):
+def backend_engine(schema_revision="0004"):
     engine = make_engine()
     if os.getenv('AUTO_MIGRATE') == '1':
         from workforce.hosting import migrate
         migrate(engine)
-    return Service(sessions(engine))
+    return engine
 
 try:
-    api = backend()
+    # Cache only the engine: service code must refresh with application updates.
+    api = Service(sessions(backend_engine()))
 except (RuntimeError, SQLAlchemyError):
     st.error("Database nog niet geconfigureerd. Stel DATABASE_URL in en voer de migraties uit; zie README.")
     st.stop()

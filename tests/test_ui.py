@@ -60,9 +60,8 @@ def test_owner_deactivates_employee_from_user_page(api,team,engine,monkeypatch):
     app=app_for(team['pt'],engine,monkeypatch)
     app.radio(key='platform_page').set_value('Gebruikers').run()
     assert not app.exception
-    next(s for s in app.selectbox if s.label=='Account beheren').set_value(team['worker']).run()
+    app.button(key=f"manage_user_{team['worker']}").click().run()
     next(i for i in app.text_input if i.label=='Reden voor accountwijziging').set_value('Contract ended')
-    next(c for c in app.checkbox if c.label.startswith('Ik bevestig')).check()
     next(b for b in app.button if b.label=='Account deactiveren').click().run()
     assert not app.exception
     assert next(u for u in api.accounts(team['pt']) if u['id']==team['worker'])['actief'] is False
@@ -96,3 +95,33 @@ def test_invitation_creates_new_personal_account_through_ui(api,team,engine,monk
     assert not app.exception
     token=api.login('invite-ui@example.test','New-password-123!')
     assert api.branches(token)[0]['id']==team['branch']
+
+
+def test_user_cards_search_and_protected_account_explained_before_action(api,team,engine,monkeypatch):
+    app=app_for(team['pt'],engine,monkeypatch)
+    app.radio(key='platform_page').set_value('Gebruikers').run()
+    assert not any(b.label=='Account deactiveren' for b in app.button)
+    assert not any(s.label=='Account beheren' for s in app.selectbox)
+    root=api.identity(team['pt'])['id']
+    app.button(key=f'manage_user_{root}').click().run()
+    assert not app.exception
+    assert any('eigen account' in i.value for i in app.info)
+    assert not any(b.label=='Account deactiveren' for b in app.button)
+    next(i for i in app.text_input if i.label=='Zoek op naam of e-mailadres').set_value('worker@example.test').run()
+    assert not app.exception
+    assert app.button(key=f"manage_user_{team['worker']}")
+    assert not any(b.key==f'manage_user_{root}' for b in app.button)
+
+
+def test_unused_account_delete_requires_explicit_confirmation(api,team,engine,monkeypatch):
+    app=app_for(team['pt'],engine,monkeypatch)
+    app.radio(key='platform_page').set_value('Gebruikers').run()
+    app.button(key=f"manage_user_{team['worker']}").click().run()
+    next(b for b in app.button if b.label=='Account definitief verwijderen').click().run()
+    assert not app.exception
+    assert any('Bevestig eerst' in e.value for e in app.error)
+    assert any(u['id']==team['worker'] for u in api.accounts(team['pt']))
+    next(c for c in app.checkbox if c.label.startswith('Ja, verwijder')).check()
+    next(b for b in app.button if b.label=='Account definitief verwijderen').click().run()
+    assert not app.exception
+    assert not any(u['id']==team['worker'] for u in api.accounts(team['pt']))

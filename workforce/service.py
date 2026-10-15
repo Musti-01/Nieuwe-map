@@ -125,7 +125,7 @@ class Service:
         else:
             org = s.get(Organization, b.organization_id)
         u = s.get(User, u.id, populate_existing=True)
-        if not u.is_active:
+        if not u or not u.is_active:
             raise Denied("Dit account is gedeactiveerd.")
         if org.status != "approved" or b.status != "approved":
             raise Denied("Organisatie en vestiging moeten actief en goedgekeurd zijn.")
@@ -284,7 +284,7 @@ class Service:
     def _platform(self, s, token, owner=False):
         u = self._actor(s, token)
         u = s.scalar(select(User).where(User.id == u.id).with_for_update().execution_options(populate_existing=True))
-        if not u.is_active or not u.platform_admin or (owner and not u.platform_owner):
+        if not u or not u.is_active or not u.platform_admin or (owner and not u.platform_owner):
             raise Denied("Alleen bevoegde platformbeheerders hebben toegang.")
         return u
 
@@ -537,10 +537,71 @@ class Service:
             self._audit(s,actor,None,'password.changed','Alle bestaande sessies ingetrokken')
             return True
 
+    def _account_actions(self, s, actor, target):
+        owner = s.scalar(select(Organization.id).where(Organization.owner_id == target.id)) is not None
+        blocked = None
+        if target.id == actor.id:
+            blocked = 'Dit is je eigen account. Je kunt jezelf niet deactiveren of verwijderen.'
+        elif target.platform_owner:
+            blocked = 'De platformeigenaar is beschermd en kan niet worden gedeactiveerd of verwijderd.'
+        elif target.platform_admin and not actor.platform_owner:
+            blocked = 'Alleen de platformeigenaar kan andere platformbeheerders beheren.'
+        elif owner and target.is_active:
+            blocked = 'Dit account is eigenaar van een organisatie. Blokkeer de organisatie via Aanvragen; eigendomsoverdracht is nog niet beschikbaar.'
+        references = [
+            select(WorkEntry.id).where(or_(WorkEntry.user_id == target.id, WorkEntry.reviewed_by == target.id)),
+            select(ShiftPlan.id).where(or_(ShiftPlan.user_id == target.id, ShiftPlan.created_by == target.id)),
+            select(Audit.id).where(Audit.actor_id == target.id),
+            select(ApprovalDecision.id).where(ApprovalDecision.reviewer_id == target.id),
+            select(Organization.id).where(Organization.reviewed_by == target.id),
+            select(Branch.id).where(Branch.reviewed_by == target.id),
+            select(ShiftReview.id).where(ShiftReview.reviewer_id == target.id),
+            select(AccountToken.token_hash).where(or_(AccountToken.user_id == target.id, AccountToken.created_by == target.id, AccountToken.email == target.email)),
+        ]
+        delete_reason = blocked
+        if not delete_reason and (owner or target.platform_admin):
+            delete_reason = 'Eigenaar- en platformbeheerderaccounts kunnen niet definitief worden verwijderd.'
+        if not delete_reason and any(s.scalar(q.limit(1)) is not None for q in references):
+            delete_reason = 'Dit account heeft werkuren, planning of beveiligingshistoriek. Deactiveer het account om de toegang te stoppen en de historiek te bewaren.'
+        return {'can_manage': blocked is None, 'manage_reason': blocked, 'can_delete': delete_reason is None, 'delete_reason': delete_reason}
+
     def accounts(self, token):
         with self.sessions.begin() as s:
-            self._platform(s,token)
-            return [{'id':u.id,'naam':u.name,'email':u.email,'actief':u.is_active,'platformbeheerder':u.platform_admin,'platformeigenaar':u.platform_owner} for u in s.scalars(select(User).order_by(User.name))]
+            actor = self._platform(s, token)
+            return [{'id': u.id, 'naam': u.name, 'email': u.email, 'actief': u.is_active,
+                     'platformbeheerder': u.platform_admin, 'platformeigenaar': u.platform_owner,
+                     **self._account_actions(s, actor, u)} for u in s.scalars(select(User).order_by(User.name, User.id))]
+
+    def delete_unused_account(self, token, user_id):
+        try:
+            with self.sessions.begin() as s:
+                actor = self._platform(s, token)
+                target = s.get(User, user_id)
+                if not target:
+                    raise ValueError('Account bestaat niet meer. Ververs het overzicht.')
+                org_ids = list(s.scalars(select(Organization.id).join(Branch, Branch.organization_id == Organization.id).join(Membership, Membership.branch_id == Branch.id).where(Membership.user_id == user_id).distinct().order_by(Organization.id)))
+                for oid in org_ids:
+                    s.scalar(select(Organization).where(Organization.id == oid).with_for_update())
+                # Match login lock order so an in-progress login cannot recreate a session.
+                key = digest(target.email)
+                s.execute(insert(LoginLimit).values(key=key, failures=0, window_start=now()).on_conflict_do_nothing())
+                s.scalar(select(LoginLimit).where(LoginLimit.key == key).with_for_update())
+                target = s.scalar(select(User).where(User.id == user_id).with_for_update().execution_options(populate_existing=True))
+                if not target:
+                    raise ValueError('Account bestaat niet meer. Ververs het overzicht.')
+                s.execute(text('SELECT pg_advisory_xact_lock(793125043, :uid)'), {'uid': user_id})
+                policy = self._account_actions(s, actor, target)
+                if not policy['can_delete']:
+                    raise Denied(policy['delete_reason'])
+                s.execute(delete(AuthSession).where(AuthSession.user_id == user_id))
+                s.execute(delete(Membership).where(Membership.user_id == user_id))
+                s.delete(target)
+                s.flush()
+                s.execute(delete(LoginLimit).where(LoginLimit.key == key))
+                self._audit(s, actor, None, 'account.deleted', f'user={user_id}; unused account removed')
+                return True
+        except IntegrityError as exc:
+            raise ValueError('Het account is ondertussen in gebruik genomen. Ververs het overzicht; historische gegevens worden niet verwijderd.') from exc
 
     def set_account_active(self, token, user_id, enabled, reason):
         if type(enabled) is not bool:

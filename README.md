@@ -147,7 +147,7 @@ De mailworker is getest met een nagebootste SMTP-client, inclusief TLS en retry.
 
 Medewerkers openen **In- en uitklokken** om een dienst te starten of af te sluiten. Bij **Mijn shiften** zien zij alleen hun eigen geklokte diensten van de geselecteerde vestiging, met datum, begin/einde, status en volledige shiftduur. Een dag-, week- of maandfilter bepaalt welke diensten zichtbaar zijn. Het urentotaal telt alleen het deel van de diensten binnen die periode; een lopende dienst telt mee tot het laatste verversen. Er is een knop **Shiften verversen** en een uitleg wanneer er nog geen diensten zijn. Dit is registratiehistoriek; toekomstige diensten staan op het aparte tabblad Planning.
 
-Platformbeheer start met **Overzicht**, met uitleg van alle beschikbare bevoegdheden en knoppen naar **Aanvragen** en **Besluitgeschiedenis**. Uitsluitend de platformeigenaar krijgt daarnaast **Platformbeheerders**, voor het expliciet machtigen en intrekken van platformrechten. **Werkruimte → Vestigingen** opent de bestaande dashboards, teams, rollen, uren en auditlog. Via Gebruikers kunnen platformbeheerders accounts deactiveren en heractiveren. Volledige accountverwijdering is niet beschikbaar.
+Platformbeheer start met **Overzicht**, met uitleg van alle beschikbare bevoegdheden en knoppen naar **Aanvragen** en **Besluitgeschiedenis**. Uitsluitend de platformeigenaar krijgt daarnaast **Platformbeheerders**, voor het expliciet machtigen en intrekken van platformrechten. **Werkruimte → Vestigingen** opent de bestaande dashboards, teams, rollen, uren en auditlog. Via Gebruikers kunnen platformbeheerders accounts deactiveren en heractiveren. Ongebruikte, gewone accounts kunnen via Gebruikers definitief verwijderd worden; bij accounts met historiek blijft deactiveren beschikbaar.
 
 ## Shiften controleren voordat uren definitief zijn
 
@@ -170,7 +170,7 @@ Migratie `0003` bewaart alle bestaande werkregistraties en zet ze op **Wacht op 
 - **Mijn wachtwoord wijzigen** staat links voor ingelogde gebruikers. Het huidige wachtwoord is vereist en alle sessies worden na de wijziging ingetrokken.
 - **Inloggen → Wachtwoord vergeten?** maakt een eenmalige e-maillink (één uur geldig) wanneer e-mailherstel geactiveerd is. De respons onthult niet of een e-mailadres bestaat; maximaal drie aanvragen per adres per 15 minuten. Een nieuw verzoek vervangt eerdere links. Na herstel vervallen alle sessies en wordt de loginblokkering gewist. Zonder ingestelde verzending meldt de app expliciet dat e-mailherstel nog niet beschikbaar is.
 - **Platformdashboard → Gebruikers**: platformbeheerders kunnen accounts deactiveren/heractiveren met een reden en bevestiging. Deactivering trekt sessies in, blokkeert nieuwe logins en sluit actieve diensten af, met behoud van uren en auditlogs. Heractiveren herstelt bestaande vestigingsrollen; er worden geen extra rechten toegekend.
-- De platformeigenaar en het eigen account zijn beschermd. Alleen de platformeigenaar kan andere platformbeheerders deactiveren. Een organisatie-eigenaar kan pas na een toekomstige eigendomsoverdrachtfunctie worden gedeactiveerd; gebruik zo nodig organisatieblokkering. Er is geen definitieve accountverwijdering.
+- De platformeigenaar en het eigen account zijn beschermd. Alleen de platformeigenaar kan andere platformbeheerders deactiveren. Een organisatie-eigenaar kan pas na een toekomstige eigendomsoverdrachtfunctie worden gedeactiveerd; gebruik zo nodig organisatieblokkering. Definitieve verwijdering is uitsluitend mogelijk voor ongebruikte, gewone accounts zonder uren, planning of beveiligingshistoriek. Eigenaar- en platformbeheerderaccounts blijven beschermd.
 
 ### Instellingen voor uitnodigingen en e-mailherstel
 
@@ -205,3 +205,9 @@ Bij **In- en uitklokken → Inklokken voor** kan een medewerker expliciet de gep
 - Voor beheerders: afgesloten diensten die op controle wachten.
 
 Medewerkers zien alleen hun eigen uitklokwaarschuwingen; beheerders zien hun vestiging. Gebruik **Meldingen verversen** om opnieuw te berekenen. Er zijn geen pushnotificaties, achtergrondherinneringen of automatische uitklokacties. Deze signalen vereisen beoordeling van de werkelijke tijden. Geplande of geregistreerde uren worden niet vanzelf definitief goedgekeurd.
+
+## Eenvoudiger gebruikersbeheer
+
+Platformdashboard → Gebruikers toont zoekbare accountkaarten met naam, e-mailadres, status en een knop **Beheren**. Er is geen vooraf geselecteerd account. Je eigen account en andere beschermde accounts tonen vooraf waarom ze niet gewijzigd mogen worden, zonder onbruikbare actieknoppen.
+
+Na Beheren staat de gekozen persoon duidelijk boven de acties. Deactiveren/heractiveren heeft één actieknop en een auditreden. Voor definitief verwijderen van een ongebruikt gewoon account is een afzonderlijke bevestiging vereist. De server controleert opnieuw de rechten en aanwezigheid van gegevens in dezelfde transactie. Registraties, planning, eigendom en beveiligings-/beoordelingshistoriek blokkeren fysieke verwijdering. Verwijderen ruimt alleen het ongebruikte account, de sessies en eventuele losse vestigingskoppelingen op en bewaart een auditgebeurtenis bij de beheerder. Er worden geen uren, organisaties of auditlogs verwijderd.

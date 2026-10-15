@@ -35,7 +35,7 @@ def show_platform(api, token, me, run):
         st.markdown("**Vestigingen, medewerkers en uren beheren** — kies links bij Werkruimte voor **Vestigingen**. Selecteer daar een vestiging voor het team, rollen, uren en auditlog. Bij **Shiften controleren** kun je tijden met een reden corrigeren en uren goedkeuren; je eigen shifts moeten door een andere beheerder worden gecontroleerd.")
         st.markdown("**Accounts beheren** — bekijk gebruikers en deactiveer of heractiveer accounts. Historische gegevens blijven bewaard.")
         st.button("Beheer gebruikersaccounts", on_click=navigate, args=("Gebruikers",))
-        st.info("In de vestiging: Team & rechten voor uitnodigingen en rollen, Planning voor geplande shiften en Meldingen voor vergeten uitklokken en controlewerk. Volledige accountverwijdering is niet beschikbaar.")
+        st.info("In de vestiging: Team & rechten voor uitnodigingen en rollen, Planning voor geplande shiften en Meldingen voor vergeten uitklokken en controlewerk. Ongebruikte accounts kun je via Gebruikers verwijderen; accounts met historiek kun je deactiveren.")
         st.caption("E-mails bij besluiten worden in een wachtrij gezet. Echte verzending vereist een geconfigureerde mailworker.")
     elif page == "Aanvragen":
         st.write("Keur eerst de organisatie goed, daarna haar vestigingen. Gebruik de statusfilter om ook blokkeringen te beheren.")
