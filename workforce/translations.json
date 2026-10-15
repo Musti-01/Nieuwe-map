@@ -1,0 +1,2486 @@
+{
+  "Inloggen": {
+    "fr": "Se connecter",
+    "en": "Log in",
+    "de": "Anmelden",
+    "es": "Iniciar sesión"
+  },
+  "Registreren": {
+    "fr": "Créer un compte",
+    "en": "Register",
+    "de": "Registrieren",
+    "es": "Registrarse"
+  },
+  "Welkom terug": {
+    "fr": "Bon retour",
+    "en": "Welcome back",
+    "de": "Willkommen zurück",
+    "es": "Bienvenido de nuevo"
+  },
+  "ShiftFlow · Personeel & tijd": {
+    "fr": "ShiftFlow · Personnel et temps",
+    "en": "ShiftFlow · Staff & time",
+    "de": "ShiftFlow · Personal und Zeit",
+    "es": "ShiftFlow · Personal y tiempo"
+  },
+  "Personeel & tijd · Eén platform voor al jouw vestigingen": {
+    "fr": "Personnel et temps · Une plateforme pour tous vos établissements",
+    "en": "Staff & time · One platform for all your branches",
+    "de": "Personal und Zeit · Eine Plattform für alle Standorte",
+    "es": "Personal y tiempo · Una plataforma para todos tus locales"
+  },
+  "E-mailadres": {
+    "fr": "Adresse e-mail",
+    "en": "Email address",
+    "de": "E-Mail-Adresse",
+    "es": "Correo electrónico"
+  },
+  "Wachtwoord": {
+    "fr": "Mot de passe",
+    "en": "Password",
+    "de": "Passwort",
+    "es": "Contraseña"
+  },
+  "Wachtwoord vergeten?": {
+    "fr": "Mot de passe oublié ?",
+    "en": "Forgot password?",
+    "de": "Passwort vergessen?",
+    "es": "¿Olvidaste tu contraseña?"
+  },
+  "Uitloggen": {
+    "fr": "Se déconnecter",
+    "en": "Log out",
+    "de": "Abmelden",
+    "es": "Cerrar sesión"
+  },
+  "Account aanmaken": {
+    "fr": "Créer un compte",
+    "en": "Create account",
+    "de": "Konto erstellen",
+    "es": "Crear cuenta"
+  },
+  "Start met jouw team": {
+    "fr": "Commencez avec votre équipe",
+    "en": "Get started with your team",
+    "de": "Mit deinem Team starten",
+    "es": "Empieza con tu equipo"
+  },
+  "Volledige naam": {
+    "fr": "Nom complet",
+    "en": "Full name",
+    "de": "Vollständiger Name",
+    "es": "Nombre completo"
+  },
+  "Wachtwoord (minimaal 12 tekens)": {
+    "fr": "Mot de passe (12 caractères minimum)",
+    "en": "Password (at least 12 characters)",
+    "de": "Passwort (mindestens 12 Zeichen)",
+    "es": "Contraseña (mínimo 12 caracteres)"
+  },
+  "Herhaal wachtwoord": {
+    "fr": "Confirmer le mot de passe",
+    "en": "Confirm password",
+    "de": "Passwort wiederholen",
+    "es": "Repetir contraseña"
+  },
+  "Ik registreer een organisatie met een eerste vestiging": {
+    "fr": "J'inscris une organisation avec un premier établissement",
+    "en": "I am registering an organization and its first branch",
+    "de": "Ich registriere eine Organisation mit dem ersten Standort",
+    "es": "Registro una organización con su primer local"
+  },
+  "Vestigingsadres (straat, nummer, postcode en plaats)": {
+    "fr": "Adresse (rue, numéro, code postal et ville)",
+    "en": "Branch address (street, number, postcode and city)",
+    "de": "Standortadresse (Straße, Hausnummer, PLZ und Ort)",
+    "es": "Dirección del local (calle, número, código postal y ciudad)"
+  },
+  "Contacttelefoon": {
+    "fr": "Téléphone de contact",
+    "en": "Contact phone",
+    "de": "Kontakttelefon",
+    "es": "Teléfono de contacto"
+  },
+  "Organisatienaam / franchisenemer": {
+    "fr": "Nom de l'organisation / franchisé",
+    "en": "Organization name / franchisee",
+    "de": "Organisationsname / Franchisenehmer",
+    "es": "Nombre de organización / franquiciado"
+  },
+  "Restaurantketen": {
+    "fr": "Chaîne de restauration",
+    "en": "Restaurant chain",
+    "de": "Restaurantkette",
+    "es": "Cadena de restaurantes"
+  },
+  "Naam eerste vestiging": {
+    "fr": "Nom du premier établissement",
+    "en": "First branch name",
+    "de": "Name des ersten Standorts",
+    "es": "Nombre del primer local"
+  },
+  "De wachtwoorden komen niet overeen.": {
+    "fr": "Les mots de passe ne correspondent pas.",
+    "en": "Passwords do not match.",
+    "de": "Die Passwörter stimmen nicht überein.",
+    "es": "Las contraseñas no coinciden."
+  },
+  "Werkruimte": {
+    "fr": "Espace de travail",
+    "en": "Workspace",
+    "de": "Arbeitsbereich",
+    "es": "Espacio de trabajo"
+  },
+  "Platformdashboard": {
+    "fr": "Tableau de bord de la plateforme",
+    "en": "Platform dashboard",
+    "de": "Plattformübersicht",
+    "es": "Panel de plataforma"
+  },
+  "Vestigingen": {
+    "fr": "Établissements",
+    "en": "Branches",
+    "de": "Standorte",
+    "es": "Locales"
+  },
+  "Platformonderdeel": {
+    "fr": "Section de la plateforme",
+    "en": "Platform section",
+    "de": "Plattformbereich",
+    "es": "Sección de plataforma"
+  },
+  "Overzicht": {
+    "fr": "Vue d'ensemble",
+    "en": "Overview",
+    "de": "Übersicht",
+    "es": "Resumen"
+  },
+  "Aanvragen": {
+    "fr": "Demandes",
+    "en": "Applications",
+    "de": "Anträge",
+    "es": "Solicitudes"
+  },
+  "Besluitgeschiedenis": {
+    "fr": "Historique des décisions",
+    "en": "Decision history",
+    "de": "Entscheidungsverlauf",
+    "es": "Historial de decisiones"
+  },
+  "Gebruikers": {
+    "fr": "Utilisateurs",
+    "en": "Users",
+    "de": "Benutzer",
+    "es": "Usuarios"
+  },
+  "Platformbeheerders": {
+    "fr": "Administrateurs de plateforme",
+    "en": "Platform administrators",
+    "de": "Plattformadministratoren",
+    "es": "Administradores de plataforma"
+  },
+  "Platformeigenaar": {
+    "fr": "Propriétaire de la plateforme",
+    "en": "Platform owner",
+    "de": "Plattformeigentümer",
+    "es": "Propietario de plataforma"
+  },
+  "Platformbeheerder": {
+    "fr": "Administrateur de plateforme",
+    "en": "Platform administrator",
+    "de": "Plattformadministrator",
+    "es": "Administrador de plataforma"
+  },
+  "Organisatie-eigenaar": {
+    "fr": "Propriétaire de l'organisation",
+    "en": "Organization owner",
+    "de": "Organisationseigentümer",
+    "es": "Propietario de organización"
+  },
+  "Vestigingsadmin": {
+    "fr": "Administrateur d'établissement",
+    "en": "Branch administrator",
+    "de": "Standortadministrator",
+    "es": "Administrador del local"
+  },
+  "Medewerker": {
+    "fr": "Employé",
+    "en": "Employee",
+    "de": "Mitarbeiter",
+    "es": "Empleado"
+  },
+  "Organisatie": {
+    "fr": "Organisation",
+    "en": "Organization",
+    "de": "Organisation",
+    "es": "Organización"
+  },
+  "Organisaties": {
+    "fr": "Organisations",
+    "en": "Organizations",
+    "de": "Organisationen",
+    "es": "Organizaciones"
+  },
+  "Actieve vestiging": {
+    "fr": "Établissement actif",
+    "en": "Active branch",
+    "de": "Aktiver Standort",
+    "es": "Local activo"
+  },
+  "Vestiging toevoegen": {
+    "fr": "Ajouter un établissement",
+    "en": "Add branch",
+    "de": "Standort hinzufügen",
+    "es": "Añadir local"
+  },
+  "Vestigingsnaam": {
+    "fr": "Nom de l'établissement",
+    "en": "Branch name",
+    "de": "Standortname",
+    "es": "Nombre del local"
+  },
+  "Vestigingsadres": {
+    "fr": "Adresse de l'établissement",
+    "en": "Branch address",
+    "de": "Standortadresse",
+    "es": "Dirección del local"
+  },
+  "Toevoegen": {
+    "fr": "Ajouter",
+    "en": "Add",
+    "de": "Hinzufügen",
+    "es": "Añadir"
+  },
+  "In- en uitklokken": {
+    "fr": "Pointer l'entrée et la sortie",
+    "en": "Clock in and out",
+    "de": "Ein- und ausstempeln",
+    "es": "Fichar entrada y salida"
+  },
+  "Mijn shiften": {
+    "fr": "Mes services",
+    "en": "My shifts",
+    "de": "Meine Schichten",
+    "es": "Mis turnos"
+  },
+  "Dashboard": {
+    "fr": "Tableau de bord",
+    "en": "Dashboard",
+    "de": "Übersicht",
+    "es": "Panel"
+  },
+  "Shiften controleren": {
+    "fr": "Contrôler les services",
+    "en": "Review shifts",
+    "de": "Schichten prüfen",
+    "es": "Revisar turnos"
+  },
+  "Team & rechten": {
+    "fr": "Équipe et droits",
+    "en": "Team & permissions",
+    "de": "Team und Rechte",
+    "es": "Equipo y permisos"
+  },
+  "Auditlog": {
+    "fr": "Journal d'audit",
+    "en": "Audit log",
+    "de": "Prüfprotokoll",
+    "es": "Registro de auditoría"
+  },
+  "Planning": {
+    "fr": "Planning",
+    "en": "Schedule",
+    "de": "Dienstplan",
+    "es": "Planificación"
+  },
+  "Meldingen": {
+    "fr": "Notifications",
+    "en": "Notifications",
+    "de": "Meldungen",
+    "es": "Avisos"
+  },
+  "Inklokken": {
+    "fr": "Pointer l'entrée",
+    "en": "Clock in",
+    "de": "Einstempeln",
+    "es": "Fichar entrada"
+  },
+  "Uitklokken": {
+    "fr": "Pointer la sortie",
+    "en": "Clock out",
+    "de": "Ausstempeln",
+    "es": "Fichar salida"
+  },
+  "Inklokken voor": {
+    "fr": "Pointer pour",
+    "en": "Clock in for",
+    "de": "Einstempeln für",
+    "es": "Fichar para"
+  },
+  "Zonder geplande shift": {
+    "fr": "Sans service planifié",
+    "en": "Without a scheduled shift",
+    "de": "Ohne geplante Schicht",
+    "es": "Sin turno planificado"
+  },
+  "🟢 Je bent ingeklokt": {
+    "fr": "🟢 Vous êtes en service",
+    "en": "🟢 You are clocked in",
+    "de": "🟢 Du bist eingestempelt",
+    "es": "🟢 Has fichado la entrada"
+  },
+  "Je bent momenteel uitgeklokt": {
+    "fr": "Vous êtes actuellement hors service",
+    "en": "You are currently clocked out",
+    "de": "Du bist derzeit ausgestempelt",
+    "es": "Actualmente no estás fichado"
+  },
+  "Dag": {
+    "fr": "Jour",
+    "en": "Day",
+    "de": "Tag",
+    "es": "Día"
+  },
+  "Week": {
+    "fr": "Semaine",
+    "en": "Week",
+    "de": "Woche",
+    "es": "Semana"
+  },
+  "Maand": {
+    "fr": "Mois",
+    "en": "Month",
+    "de": "Monat",
+    "es": "Mes"
+  },
+  "Periode": {
+    "fr": "Période",
+    "en": "Period",
+    "de": "Zeitraum",
+    "es": "Periodo"
+  },
+  "Datum": {
+    "fr": "Date",
+    "en": "Date",
+    "de": "Datum",
+    "es": "Fecha"
+  },
+  "Deze {v0}": {
+    "fr": "Période actuelle : {v0}",
+    "en": "Current {v0}",
+    "de": "Aktuelle(r) {v0}",
+    "es": "Periodo actual: {v0}"
+  },
+  "{v0:.2f} uur": {
+    "fr": "{v0:.2f} h",
+    "en": "{v0:.2f} h",
+    "de": "{v0:.2f} Std.",
+    "es": "{v0:.2f} h"
+  },
+  "Toon shiften per": {
+    "fr": "Afficher les services par",
+    "en": "Show shifts by",
+    "de": "Schichten anzeigen nach",
+    "es": "Mostrar turnos por"
+  },
+  "Kies een datum in de gewenste periode": {
+    "fr": "Choisir une date dans la période",
+    "en": "Choose a date in the desired period",
+    "de": "Datum im gewünschten Zeitraum wählen",
+    "es": "Elige una fecha del periodo deseado"
+  },
+  "Shiften in deze periode": {
+    "fr": "Services dans cette période",
+    "en": "Shifts in this period",
+    "de": "Schichten in diesem Zeitraum",
+    "es": "Turnos en este periodo"
+  },
+  "Goedgekeurde uren": {
+    "fr": "Heures approuvées",
+    "en": "Approved hours",
+    "de": "Genehmigte Stunden",
+    "es": "Horas aprobadas"
+  },
+  "Geregistreerde uren (alle statussen)": {
+    "fr": "Heures enregistrées (tous statuts)",
+    "en": "Recorded hours (all statuses)",
+    "de": "Erfasste Stunden (alle Status)",
+    "es": "Horas registradas (todos los estados)"
+  },
+  "Shiften verversen": {
+    "fr": "Actualiser les services",
+    "en": "Refresh shifts",
+    "de": "Schichten aktualisieren",
+    "es": "Actualizar turnos"
+  },
+  "Mijn correcties en goedkeuringen": {
+    "fr": "Mes corrections et approbations",
+    "en": "My corrections and approvals",
+    "de": "Meine Korrekturen und Genehmigungen",
+    "es": "Mis correcciones y aprobaciones"
+  },
+  "Mijn shift bekijken": {
+    "fr": "Consulter mon service",
+    "en": "View my shift",
+    "de": "Meine Schicht ansehen",
+    "es": "Ver mi turno"
+  },
+  "Nu aan het werk": {
+    "fr": "Actuellement en service",
+    "en": "Currently working",
+    "de": "Derzeit im Dienst",
+    "es": "Trabajando ahora"
+  },
+  "Ingeklokte medewerkers": {
+    "fr": "Employés en service",
+    "en": "Clocked-in employees",
+    "de": "Eingestempelte Mitarbeiter",
+    "es": "Empleados fichados"
+  },
+  "Wacht op controle": {
+    "fr": "En attente de contrôle",
+    "en": "Awaiting review",
+    "de": "Prüfung ausstehend",
+    "es": "Pendiente de revisión"
+  },
+  "Lopende uren (voorlopig)": {
+    "fr": "Heures en cours (provisoires)",
+    "en": "Ongoing hours (provisional)",
+    "de": "Laufende Stunden (vorläufig)",
+    "es": "Horas en curso (provisionales)"
+  },
+  "Bezig": {
+    "fr": "En cours",
+    "en": "In progress",
+    "de": "Laufend",
+    "es": "En curso"
+  },
+  "Afgesloten": {
+    "fr": "Terminé",
+    "en": "Closed",
+    "de": "Abgeschlossen",
+    "es": "Finalizado"
+  },
+  "Goedgekeurd": {
+    "fr": "Approuvé",
+    "en": "Approved",
+    "de": "Genehmigt",
+    "es": "Aprobado"
+  },
+  "In afwachting": {
+    "fr": "En attente",
+    "en": "Pending",
+    "de": "Ausstehend",
+    "es": "Pendiente"
+  },
+  "Geweigerd": {
+    "fr": "Refusé",
+    "en": "Rejected",
+    "de": "Abgelehnt",
+    "es": "Rechazado"
+  },
+  "Geblokkeerd": {
+    "fr": "Bloqué",
+    "en": "Blocked",
+    "de": "Gesperrt",
+    "es": "Bloqueado"
+  },
+  "Alle": {
+    "fr": "Tous",
+    "en": "All",
+    "de": "Alle",
+    "es": "Todos"
+  },
+  "Actief": {
+    "fr": "Actif",
+    "en": "Active",
+    "de": "Aktiv",
+    "es": "Activo"
+  },
+  "Inactief": {
+    "fr": "Inactif",
+    "en": "Inactive",
+    "de": "Inaktiv",
+    "es": "Inactivo"
+  },
+  "Alle accounts": {
+    "fr": "Tous les comptes",
+    "en": "All accounts",
+    "de": "Alle Konten",
+    "es": "Todas las cuentas"
+  },
+  "Begindatum": {
+    "fr": "Date de début",
+    "en": "Start date",
+    "de": "Startdatum",
+    "es": "Fecha de inicio"
+  },
+  "Begintijd": {
+    "fr": "Heure de début",
+    "en": "Start time",
+    "de": "Startzeit",
+    "es": "Hora de inicio"
+  },
+  "Einddatum": {
+    "fr": "Date de fin",
+    "en": "End date",
+    "de": "Enddatum",
+    "es": "Fecha de fin"
+  },
+  "Eindtijd": {
+    "fr": "Heure de fin",
+    "en": "End time",
+    "de": "Endzeit",
+    "es": "Hora de fin"
+  },
+  "Goedkeuren": {
+    "fr": "Approuver",
+    "en": "Approve",
+    "de": "Genehmigen",
+    "es": "Aprobar"
+  },
+  "Corrigeren": {
+    "fr": "Corriger",
+    "en": "Correct",
+    "de": "Korrigieren",
+    "es": "Corregir"
+  },
+  "Weigeren": {
+    "fr": "Refuser",
+    "en": "Reject",
+    "de": "Ablehnen",
+    "es": "Rechazar"
+  },
+  "Blokkeren": {
+    "fr": "Bloquer",
+    "en": "Block",
+    "de": "Sperren",
+    "es": "Bloquear"
+  },
+  "Opnieuw activeren": {
+    "fr": "Réactiver",
+    "en": "Reactivate",
+    "de": "Erneut aktivieren",
+    "es": "Reactivar"
+  },
+  "Welke shiften controleren?": {
+    "fr": "Quels services contrôler ?",
+    "en": "Which shifts to review?",
+    "de": "Welche Schichten prüfen?",
+    "es": "¿Qué turnos revisar?"
+  },
+  "Shift selecteren": {
+    "fr": "Sélectionner un service",
+    "en": "Select shift",
+    "de": "Schicht auswählen",
+    "es": "Seleccionar turno"
+  },
+  "Shiftactie": {
+    "fr": "Action sur le service",
+    "en": "Shift action",
+    "de": "Schichtaktion",
+    "es": "Acción del turno"
+  },
+  "Shiftactie bevestigen": {
+    "fr": "Confirmer l'action",
+    "en": "Confirm shift action",
+    "de": "Schichtaktion bestätigen",
+    "es": "Confirmar acción"
+  },
+  "Reden / opmerking (verplicht bij corrigeren)": {
+    "fr": "Motif / remarque (obligatoire pour corriger)",
+    "en": "Reason / note (required for corrections)",
+    "de": "Grund / Hinweis (bei Korrektur erforderlich)",
+    "es": "Motivo / comentario (obligatorio al corregir)"
+  },
+  "Historiek van deze shift": {
+    "fr": "Historique de ce service",
+    "en": "History of this shift",
+    "de": "Verlauf dieser Schicht",
+    "es": "Historial de este turno"
+  },
+  "Medewerkers & bevoegdheden": {
+    "fr": "Employés et droits",
+    "en": "Employees & permissions",
+    "de": "Mitarbeiter und Berechtigungen",
+    "es": "Empleados y permisos"
+  },
+  "Selecteer een bestaande gebruiker via exact e-mailadres": {
+    "fr": "Rechercher un utilisateur par son adresse e-mail exacte",
+    "en": "Select an existing user by exact email address",
+    "de": "Vorhandenen Benutzer über die genaue E-Mail-Adresse suchen",
+    "es": "Selecciona un usuario por su correo electrónico exacto"
+  },
+  "Gebruiker zoeken": {
+    "fr": "Rechercher un utilisateur",
+    "en": "Find user",
+    "de": "Benutzer suchen",
+    "es": "Buscar usuario"
+  },
+  "Bevoegdheid": {
+    "fr": "Droit d'accès",
+    "en": "Permission",
+    "de": "Berechtigung",
+    "es": "Permiso"
+  },
+  "Bevoegdheid opslaan": {
+    "fr": "Enregistrer le droit",
+    "en": "Save permission",
+    "de": "Berechtigung speichern",
+    "es": "Guardar permiso"
+  },
+  "Toegang intrekken": {
+    "fr": "Retirer l'accès",
+    "en": "Revoke access",
+    "de": "Zugriff entziehen",
+    "es": "Revocar acceso"
+  },
+  "Nieuwe medewerker uitnodigen": {
+    "fr": "Inviter un nouvel employé",
+    "en": "Invite a new employee",
+    "de": "Neuen Mitarbeiter einladen",
+    "es": "Invitar a un empleado"
+  },
+  "E-mailadres nieuwe medewerker": {
+    "fr": "Adresse e-mail du nouvel employé",
+    "en": "New employee email address",
+    "de": "E-Mail-Adresse des neuen Mitarbeiters",
+    "es": "Correo del nuevo empleado"
+  },
+  "Uitnodiging maken": {
+    "fr": "Créer une invitation",
+    "en": "Create invitation",
+    "de": "Einladung erstellen",
+    "es": "Crear invitación"
+  },
+  "Shiftplanning": {
+    "fr": "Planification des services",
+    "en": "Shift schedule",
+    "de": "Schichtplanung",
+    "es": "Planificación de turnos"
+  },
+  "Datum voor planning": {
+    "fr": "Date du planning",
+    "en": "Schedule date",
+    "de": "Plandatum",
+    "es": "Fecha de planificación"
+  },
+  "Planningperiode": {
+    "fr": "Période du planning",
+    "en": "Schedule period",
+    "de": "Planungszeitraum",
+    "es": "Periodo de planificación"
+  },
+  "Shift toevoegen of wijzigen": {
+    "fr": "Ajouter ou modifier un service",
+    "en": "Add or edit shift",
+    "de": "Schicht hinzufügen oder ändern",
+    "es": "Añadir o modificar turno"
+  },
+  "Geplande shift bewerken": {
+    "fr": "Modifier un service planifié",
+    "en": "Edit scheduled shift",
+    "de": "Geplante Schicht bearbeiten",
+    "es": "Editar turno planificado"
+  },
+  "Nieuwe shift": {
+    "fr": "Nouveau service",
+    "en": "New shift",
+    "de": "Neue Schicht",
+    "es": "Nuevo turno"
+  },
+  "Medewerker inplannen": {
+    "fr": "Planifier un employé",
+    "en": "Schedule employee",
+    "de": "Mitarbeiter einplanen",
+    "es": "Programar empleado"
+  },
+  "Geplande begindatum": {
+    "fr": "Date de début prévue",
+    "en": "Planned start date",
+    "de": "Geplantes Startdatum",
+    "es": "Fecha de inicio prevista"
+  },
+  "Geplande begintijd": {
+    "fr": "Heure de début prévue",
+    "en": "Planned start time",
+    "de": "Geplante Startzeit",
+    "es": "Hora de inicio prevista"
+  },
+  "Geplande einddatum": {
+    "fr": "Date de fin prévue",
+    "en": "Planned end date",
+    "de": "Geplantes Enddatum",
+    "es": "Fecha de fin prevista"
+  },
+  "Geplande eindtijd": {
+    "fr": "Heure de fin prévue",
+    "en": "Planned end time",
+    "de": "Geplante Endzeit",
+    "es": "Hora de fin prevista"
+  },
+  "Opmerking bij planning": {
+    "fr": "Remarque sur le planning",
+    "en": "Schedule note",
+    "de": "Hinweis zur Planung",
+    "es": "Comentario de planificación"
+  },
+  "Planning opslaan": {
+    "fr": "Enregistrer le planning",
+    "en": "Save schedule",
+    "de": "Dienstplan speichern",
+    "es": "Guardar planificación"
+  },
+  "Reden annulering": {
+    "fr": "Motif d'annulation",
+    "en": "Cancellation reason",
+    "de": "Stornierungsgrund",
+    "es": "Motivo de cancelación"
+  },
+  "Geplande shift annuleren": {
+    "fr": "Annuler le service planifié",
+    "en": "Cancel scheduled shift",
+    "de": "Geplante Schicht absagen",
+    "es": "Cancelar turno planificado"
+  },
+  "Gepland": {
+    "fr": "Planifié",
+    "en": "Scheduled",
+    "de": "Geplant",
+    "es": "Planificado"
+  },
+  "Geannuleerd": {
+    "fr": "Annulé",
+    "en": "Cancelled",
+    "de": "Abgesagt",
+    "es": "Cancelado"
+  },
+  "Meldingen verversen": {
+    "fr": "Actualiser les notifications",
+    "en": "Refresh notifications",
+    "de": "Meldungen aktualisieren",
+    "es": "Actualizar avisos"
+  },
+  "Account: ": {
+    "fr": "Compte : ",
+    "en": "Account: ",
+    "de": "Konto: ",
+    "es": "Cuenta: "
+  },
+  "Platformbeheer · ": {
+    "fr": "Administration de la plateforme · ",
+    "en": "Platform management · ",
+    "de": "Plattformverwaltung · ",
+    "es": "Gestión de plataforma · "
+  },
+  "Aanvraag beoordelen": {
+    "fr": "Examiner une demande",
+    "en": "Review application",
+    "de": "Antrag prüfen",
+    "es": "Revisar solicitud"
+  },
+  "Aanvragen die op jouw besluit wachten": {
+    "fr": "Demandes en attente de votre décision",
+    "en": "Applications awaiting your decision",
+    "de": "Anträge, die auf deine Entscheidung warten",
+    "es": "Solicitudes pendientes de tu decisión"
+  },
+  "Filter op status": {
+    "fr": "Filtrer par statut",
+    "en": "Filter by status",
+    "de": "Nach Status filtern",
+    "es": "Filtrar por estado"
+  },
+  "Besluit": {
+    "fr": "Décision",
+    "en": "Decision",
+    "de": "Entscheidung",
+    "es": "Decisión"
+  },
+  "Besluit bevestigen": {
+    "fr": "Confirmer la décision",
+    "en": "Confirm decision",
+    "de": "Entscheidung bestätigen",
+    "es": "Confirmar decisión"
+  },
+  "Toelichting (verplicht bij weigeren of blokkeren)": {
+    "fr": "Explication (obligatoire pour refuser ou bloquer)",
+    "en": "Explanation (required for rejection or blocking)",
+    "de": "Begründung (bei Ablehnung oder Sperrung erforderlich)",
+    "es": "Explicación (obligatoria al rechazar o bloquear)"
+  },
+  "Naar aanvragen en blokkeringen": {
+    "fr": "Accéder aux demandes et blocages",
+    "en": "Go to applications and blocks",
+    "de": "Zu Anträgen und Sperren",
+    "es": "Ir a solicitudes y bloqueos"
+  },
+  "Bekijk besluitgeschiedenis": {
+    "fr": "Consulter l'historique des décisions",
+    "en": "View decision history",
+    "de": "Entscheidungsverlauf ansehen",
+    "es": "Ver historial de decisiones"
+  },
+  "Beheer platformbeheerders": {
+    "fr": "Gérer les administrateurs de plateforme",
+    "en": "Manage platform administrators",
+    "de": "Plattformadministratoren verwalten",
+    "es": "Gestionar administradores de plataforma"
+  },
+  "Beheer gebruikersaccounts": {
+    "fr": "Gérer les comptes utilisateurs",
+    "en": "Manage user accounts",
+    "de": "Benutzerkonten verwalten",
+    "es": "Gestionar cuentas de usuario"
+  },
+  "E-mailadres bestaand account": {
+    "fr": "Adresse e-mail du compte existant",
+    "en": "Existing account email address",
+    "de": "E-Mail-Adresse des bestehenden Kontos",
+    "es": "Correo de la cuenta existente"
+  },
+  "Machtiging als platformbeheerder actief": {
+    "fr": "Autorisation d'administrateur de plateforme active",
+    "en": "Platform administrator permission active",
+    "de": "Plattformadministrator-Berechtigung aktiv",
+    "es": "Permiso de administrador de plataforma activo"
+  },
+  "Machtiging opslaan": {
+    "fr": "Enregistrer l'autorisation",
+    "en": "Save authorization",
+    "de": "Berechtigung speichern",
+    "es": "Guardar autorización"
+  },
+  "Zoek op naam of e-mailadres": {
+    "fr": "Rechercher par nom ou adresse e-mail",
+    "en": "Search by name or email address",
+    "de": "Nach Name oder E-Mail-Adresse suchen",
+    "es": "Buscar por nombre o correo"
+  },
+  "Toon accounts": {
+    "fr": "Afficher les comptes",
+    "en": "Show accounts",
+    "de": "Konten anzeigen",
+    "es": "Mostrar cuentas"
+  },
+  "Beheren": {
+    "fr": "Gérer",
+    "en": "Manage",
+    "de": "Verwalten",
+    "es": "Gestionar"
+  },
+  "Bekijken": {
+    "fr": "Consulter",
+    "en": "View",
+    "de": "Ansehen",
+    "es": "Ver"
+  },
+  "Platformeigenaar · beschermd account": {
+    "fr": "Propriétaire de plateforme · compte protégé",
+    "en": "Platform owner · protected account",
+    "de": "Plattformeigentümer · geschütztes Konto",
+    "es": "Propietario de plataforma · cuenta protegida"
+  },
+  "Reden voor accountwijziging": {
+    "fr": "Motif de modification du compte",
+    "en": "Reason for account change",
+    "de": "Grund der Kontoänderung",
+    "es": "Motivo del cambio de cuenta"
+  },
+  "Account deactiveren": {
+    "fr": "Désactiver le compte",
+    "en": "Deactivate account",
+    "de": "Konto deaktivieren",
+    "es": "Desactivar cuenta"
+  },
+  "Account heractiveren": {
+    "fr": "Réactiver le compte",
+    "en": "Reactivate account",
+    "de": "Konto reaktivieren",
+    "es": "Reactivar cuenta"
+  },
+  "Ongebruikt account definitief verwijderen": {
+    "fr": "Supprimer définitivement le compte inutilisé",
+    "en": "Permanently delete unused account",
+    "de": "Unbenutztes Konto endgültig löschen",
+    "es": "Eliminar definitivamente la cuenta sin uso"
+  },
+  "Ja, verwijder dit ongebruikte account definitief": {
+    "fr": "Oui, supprimer définitivement ce compte inutilisé",
+    "en": "Yes, permanently delete this unused account",
+    "de": "Ja, dieses unbenutzte Konto endgültig löschen",
+    "es": "Sí, eliminar definitivamente esta cuenta sin uso"
+  },
+  "Account definitief verwijderen": {
+    "fr": "Supprimer définitivement le compte",
+    "en": "Permanently delete account",
+    "de": "Konto endgültig löschen",
+    "es": "Eliminar cuenta definitivamente"
+  },
+  "Mijn wachtwoord wijzigen": {
+    "fr": "Modifier mon mot de passe",
+    "en": "Change my password",
+    "de": "Mein Passwort ändern",
+    "es": "Cambiar mi contraseña"
+  },
+  "Huidig wachtwoord": {
+    "fr": "Mot de passe actuel",
+    "en": "Current password",
+    "de": "Aktuelles Passwort",
+    "es": "Contraseña actual"
+  },
+  "Nieuw persoonlijk wachtwoord": {
+    "fr": "Nouveau mot de passe personnel",
+    "en": "New personal password",
+    "de": "Neues persönliches Passwort",
+    "es": "Nueva contraseña personal"
+  },
+  "Herhaal persoonlijk wachtwoord": {
+    "fr": "Confirmer le mot de passe personnel",
+    "en": "Confirm personal password",
+    "de": "Persönliches Passwort wiederholen",
+    "es": "Repetir contraseña personal"
+  },
+  "Wachtwoord wijzigen": {
+    "fr": "Modifier le mot de passe",
+    "en": "Change password",
+    "de": "Passwort ändern",
+    "es": "Cambiar contraseña"
+  },
+  "Nieuw wachtwoord instellen": {
+    "fr": "Définir un nouveau mot de passe",
+    "en": "Set new password",
+    "de": "Neues Passwort festlegen",
+    "es": "Establecer nueva contraseña"
+  },
+  "Nieuw wachtwoord (minimaal 12 tekens)": {
+    "fr": "Nouveau mot de passe (12 caractères minimum)",
+    "en": "New password (at least 12 characters)",
+    "de": "Neues Passwort (mindestens 12 Zeichen)",
+    "es": "Nueva contraseña (mínimo 12 caracteres)"
+  },
+  "Herhaal nieuw wachtwoord": {
+    "fr": "Confirmer le nouveau mot de passe",
+    "en": "Confirm new password",
+    "de": "Neues Passwort wiederholen",
+    "es": "Repetir nueva contraseña"
+  },
+  "Nieuw wachtwoord opslaan": {
+    "fr": "Enregistrer le nouveau mot de passe",
+    "en": "Save new password",
+    "de": "Neues Passwort speichern",
+    "es": "Guardar nueva contraseña"
+  },
+  "E-mailadres voor wachtwoordherstel": {
+    "fr": "Adresse e-mail pour la récupération",
+    "en": "Password recovery email address",
+    "de": "E-Mail-Adresse zur Passwortwiederherstellung",
+    "es": "Correo para recuperar la contraseña"
+  },
+  "Herstellink aanvragen": {
+    "fr": "Demander un lien de récupération",
+    "en": "Request recovery link",
+    "de": "Wiederherstellungslink anfordern",
+    "es": "Solicitar enlace de recuperación"
+  },
+  "Uitnodiging voor een vestiging": {
+    "fr": "Invitation à un établissement",
+    "en": "Branch invitation",
+    "de": "Einladung zu einem Standort",
+    "es": "Invitación a un local"
+  },
+  "Ik heb al een ShiftFlow-account": {
+    "fr": "J'ai déjà un compte ShiftFlow",
+    "en": "I already have a ShiftFlow account",
+    "de": "Ich habe bereits ein ShiftFlow-Konto",
+    "es": "Ya tengo una cuenta ShiftFlow"
+  },
+  "Jouw volledige naam": {
+    "fr": "Votre nom complet",
+    "en": "Your full name",
+    "de": "Dein vollständiger Name",
+    "es": "Tu nombre completo"
+  },
+  "Kies een wachtwoord (minimaal 12 tekens)": {
+    "fr": "Choisissez un mot de passe (12 caractères minimum)",
+    "en": "Choose a password (at least 12 characters)",
+    "de": "Passwort wählen (mindestens 12 Zeichen)",
+    "es": "Elige una contraseña (mínimo 12 caracteres)"
+  },
+  "Herhaal gekozen wachtwoord": {
+    "fr": "Confirmer le mot de passe choisi",
+    "en": "Confirm chosen password",
+    "de": "Gewähltes Passwort wiederholen",
+    "es": "Repetir contraseña elegida"
+  },
+  "Uitnodiging accepteren": {
+    "fr": "Accepter l'invitation",
+    "en": "Accept invitation",
+    "de": "Einladung annehmen",
+    "es": "Aceptar invitación"
+  },
+  "### Wat kun je hier doen?": {
+    "fr": "### Que pouvez-vous faire ici ?",
+    "en": "### What can you do here?",
+    "de": "### Was kannst du hier tun?",
+    "es": "### ¿Qué puedes hacer aquí?"
+  },
+  "**Aanvragen beoordelen** — bekijk bedrijfs- en contactgegevens. Keur eerst een organisatie en daarna iedere vestiging goed, of weiger met een reden.": {
+    "fr": "**Examiner les demandes** — consultez les informations de l'entreprise et les coordonnées. Approuvez d'abord l'organisation, puis chaque établissement, ou refusez avec un motif.",
+    "en": "**Review applications** — view business and contact details. Approve the organization first, then each branch, or reject with a reason.",
+    "de": "**Anträge prüfen** — Unternehmens- und Kontaktdaten ansehen. Zuerst die Organisation, dann jeden Standort genehmigen oder mit Begründung ablehnen.",
+    "es": "**Revisar solicitudes** — consulta los datos de empresa y contacto. Aprueba primero la organización y después cada local, o rechaza con un motivo."
+  },
+  "**Accounts beheren** — bekijk gebruikers en deactiveer of heractiveer accounts. Historische gegevens blijven bewaard.": {
+    "fr": "**Gérer les comptes** — consultez les utilisateurs et désactivez ou réactivez leurs comptes. L'historique est conservé.",
+    "en": "**Manage accounts** — view users and deactivate or reactivate accounts. Historical data is retained.",
+    "de": "**Konten verwalten** — Benutzer anzeigen und Konten deaktivieren oder reaktivieren. Historische Daten bleiben erhalten.",
+    "es": "**Gestionar cuentas** — consulta usuarios y desactiva o reactiva cuentas. Se conserva el historial."
+  },
+  "**Besluiten controleren** — bekijk wie een besluit nam, wanneer en met welke reden.": {
+    "fr": "**Consulter les décisions** — voyez qui a décidé, quand et pour quel motif.",
+    "en": "**Check decisions** — see who made a decision, when and why.",
+    "de": "**Entscheidungen prüfen** — sehen, wer wann und warum entschieden hat.",
+    "es": "**Consultar decisiones** — comprueba quién decidió, cuándo y por qué."
+  },
+  "**Platformbeheerders machtigen** — geef een bestaand account platformrechten of trek die in. Alleen jij als platformeigenaar kunt dit doen.": {
+    "fr": "**Autoriser les administrateurs** — accordez ou retirez les droits de plateforme à un compte existant. Seul le propriétaire de la plateforme peut le faire.",
+    "en": "**Authorize platform administrators** — grant or revoke platform permissions for an existing account. Only the platform owner can do this.",
+    "de": "**Plattformadministratoren berechtigen** — bestehenden Konten Plattformrechte geben oder entziehen. Das darf nur der Plattformeigentümer.",
+    "es": "**Autorizar administradores** — concede o revoca permisos de plataforma a una cuenta existente. Solo puede hacerlo el propietario de la plataforma."
+  },
+  "**Toegang blokkeren of herstellen** — kies bij Aanvragen een goedgekeurde of geblokkeerde organisatie/vestiging. Blokkeren sluit actieve shiften af; heractiveren bewaart de eerdere gegevens.": {
+    "fr": "**Bloquer ou rétablir l'accès** — sélectionnez une organisation ou un établissement approuvé ou bloqué dans Demandes. Le blocage clôture les services actifs ; la réactivation conserve les données.",
+    "en": "**Block or restore access** — select an approved or blocked organization/branch under Applications. Blocking closes active shifts; reactivation retains existing data.",
+    "de": "**Zugriff sperren oder wiederherstellen** — unter Anträge eine genehmigte oder gesperrte Organisation/einen Standort wählen. Sperren beendet laufende Schichten; Reaktivieren erhält bisherige Daten.",
+    "es": "**Bloquear o restablecer acceso** — selecciona una organización o local aprobado o bloqueado en Solicitudes. Bloquear cierra turnos activos; reactivar conserva los datos."
+  },
+  "**Vestigingen, medewerkers en uren beheren** — kies links bij Werkruimte voor **Vestigingen**. Selecteer daar een vestiging voor het team, rollen, uren en auditlog. Bij **Shiften controleren** kun je tijden met een reden corrigeren en uren goedkeuren; je eigen shifts moeten door een andere beheerder worden gecontroleerd.": {
+    "fr": "**Gérer les établissements, employés et heures** — choisissez **Établissements** dans l'espace de travail. Sélectionnez un établissement pour l'équipe, les droits, les heures et l'audit. **Contrôler les services** permet de corriger les heures avec un motif et de les approuver. Un autre administrateur doit contrôler vos propres services.",
+    "en": "**Manage branches, employees and hours** — choose **Branches** in the workspace. Select a branch for its team, permissions, hours and audit log. **Review shifts** lets you correct times with a reason and approve hours; another administrator must review your own shifts.",
+    "de": "**Standorte, Mitarbeiter und Stunden verwalten** — im Arbeitsbereich **Standorte** wählen. Dort einen Standort für Team, Rechte, Stunden und Prüfprotokoll auswählen. Unter **Schichten prüfen** Zeiten mit Begründung korrigieren und Stunden genehmigen; eigene Schichten muss ein anderer Administrator prüfen.",
+    "es": "**Gestionar locales, empleados y horas** — elige **Locales** en el espacio de trabajo. Selecciona un local para equipo, permisos, horas y auditoría. **Revisar turnos** permite corregir horas con un motivo y aprobarlas; otro administrador debe revisar tus propios turnos."
+  },
+  "APP_TIMEZONE is ongeldig.": {
+    "fr": "APP_TIMEZONE n'est pas valide.",
+    "en": "APP_TIMEZONE is invalid.",
+    "de": "APP_TIMEZONE ist ungültig.",
+    "es": "APP_TIMEZONE no es válida."
+  },
+  "Adres: {v0}": {
+    "fr": "Adresse : {v0}",
+    "en": "Address: {v0}",
+    "de": "Adresse: {v0}",
+    "es": "Dirección: {v0}"
+  },
+  "Alle besluiten met beoordelaar, tijdstip, statuswijziging en toelichting.": {
+    "fr": "Toutes les décisions avec responsable, date, changement de statut et explication.",
+    "en": "All decisions with reviewer, timestamp, status change and explanation.",
+    "de": "Alle Entscheidungen mit Prüfer, Zeitpunkt, Statusänderung und Begründung.",
+    "es": "Todas las decisiones con responsable, fecha, cambio de estado y explicación."
+  },
+  "Alleen goedgekeurde uren zijn gecontroleerd. Ongecontroleerde en lopende uren staan apart. Periodes worden berekend in de ingestelde tijdzone.": {
+    "fr": "Seules les heures approuvées sont contrôlées. Les heures non contrôlées et en cours sont séparées. Les périodes utilisent le fuseau horaire configuré.",
+    "en": "Only approved hours have been reviewed. Unreviewed and ongoing hours are shown separately. Periods use the configured time zone.",
+    "de": "Nur genehmigte Stunden sind geprüft. Ungeprüfte und laufende Stunden werden getrennt angezeigt. Zeiträume verwenden die eingestellte Zeitzone.",
+    "es": "Solo las horas aprobadas están revisadas. Las pendientes y en curso se muestran aparte. Los periodos usan la zona horaria configurada."
+  },
+  "Alleen organisatie-eigenaars en platformbeheerders kunnen vestigingsadmins aanwijzen of hun rechten intrekken.": {
+    "fr": "Seuls les propriétaires d'organisation et administrateurs de plateforme peuvent désigner des administrateurs d'établissement ou retirer leurs droits.",
+    "en": "Only organization owners and platform administrators can appoint branch administrators or revoke their rights.",
+    "de": "Nur Organisationseigentümer und Plattformadministratoren können Standortadministratoren ernennen oder ihre Rechte entziehen.",
+    "es": "Solo los propietarios de organización y administradores de plataforma pueden nombrar administradores de local o revocar sus derechos."
+  },
+  "Als dit een actief account is, staat een herstellink klaar voor verzending. Controleer je e-mail.": {
+    "fr": "Si ce compte est actif, un lien de récupération est prêt à être envoyé. Vérifiez vos e-mails.",
+    "en": "If this is an active account, a recovery link is queued for delivery. Check your email.",
+    "de": "Falls dieses Konto aktiv ist, steht ein Wiederherstellungslink zum Versand bereit. Prüfe deine E-Mails.",
+    "es": "Si la cuenta está activa, hay un enlace de recuperación pendiente de envío. Revisa tu correo."
+  },
+  "Beheer hier de toegang van organisaties en vestigingen tot ShiftFlow.": {
+    "fr": "Gérez ici l'accès des organisations et établissements à ShiftFlow.",
+    "en": "Manage organization and branch access to ShiftFlow here.",
+    "de": "Hier den Zugriff von Organisationen und Standorten auf ShiftFlow verwalten.",
+    "es": "Gestiona aquí el acceso de organizaciones y locales a ShiftFlow."
+  },
+  "Bekijk geplande diensten en vergelijk ze met de gekoppelde tijdregistratie.": {
+    "fr": "Consultez les services planifiés et comparez-les aux heures enregistrées associées.",
+    "en": "View scheduled shifts and compare them with linked time records.",
+    "de": "Geplante Schichten ansehen und mit den zugeordneten Zeitregistrierungen vergleichen.",
+    "es": "Consulta turnos planificados y compáralos con los registros vinculados."
+  },
+  "Bevestig eerst dat je dit account definitief wilt verwijderen.": {
+    "fr": "Confirmez d'abord la suppression définitive de ce compte.",
+    "en": "First confirm that you want to permanently delete this account.",
+    "de": "Bestätige zuerst, dass du dieses Konto endgültig löschen möchtest.",
+    "es": "Primero confirma que deseas eliminar definitivamente esta cuenta."
+  },
+  "Bij Goedkeuren worden de opgeslagen tijden goedgekeurd; gewijzigde tijdvelden gelden alleen bij Corrigeren. Een correctie moet daarna apart goedgekeurd worden.": {
+    "fr": "Approuver valide les heures enregistrées ; les champs modifiés ne s'appliquent qu'à Corriger. Une correction doit ensuite être approuvée séparément.",
+    "en": "Approve accepts the stored times; edited time fields apply only to Correct. A correction must then be approved separately.",
+    "de": "Genehmigen bestätigt die gespeicherten Zeiten; geänderte Zeitfelder gelten nur bei Korrigieren. Eine Korrektur muss danach separat genehmigt werden.",
+    "es": "Aprobar acepta las horas guardadas; los campos modificados solo se aplican al Corregir. La corrección requiere aprobación posterior."
+  },
+  "Contact: {v0} · {v1}": {
+    "fr": "Contact : {v0} · {v1}",
+    "en": "Contact: {v0} · {v1}",
+    "de": "Kontakt: {v0} · {v1}",
+    "es": "Contacto: {v0} · {v1}"
+  },
+  "Controleer de werkelijk gewerkte tijden voordat je uren goedkeurt. Bij een vergeten uitklok kun je de shift hier afsluiten met de juiste eindtijd en een reden.": {
+    "fr": "Vérifiez les heures réellement travaillées avant approbation. En cas d'oubli de sortie, clôturez le service ici avec l'heure correcte et un motif.",
+    "en": "Check the actual working times before approving hours. If clock-out was forgotten, close the shift here with the correct end time and a reason.",
+    "de": "Prüfe die tatsächlich gearbeiteten Zeiten vor der Genehmigung. Bei vergessenem Ausstempeln die Schicht hier mit korrekter Endzeit und Grund abschließen.",
+    "es": "Comprueba las horas realmente trabajadas antes de aprobarlas. Si se olvidó fichar la salida, cierra el turno aquí con la hora correcta y un motivo."
+  },
+  "Database niet beschikbaar.": {
+    "fr": "Base de données indisponible.",
+    "en": "Database unavailable.",
+    "de": "Datenbank nicht verfügbar.",
+    "es": "Base de datos no disponible."
+  },
+  "Database niet beschikbaar. Neem contact op met de beheerder.": {
+    "fr": "Base de données indisponible. Contactez l'administrateur.",
+    "en": "Database unavailable. Contact the administrator.",
+    "de": "Datenbank nicht verfügbar. Wende dich an den Administrator.",
+    "es": "Base de datos no disponible. Contacta con el administrador."
+  },
+  "Database nog niet geconfigureerd. Stel DATABASE_URL in en voer de migraties uit; zie README.": {
+    "fr": "Base de données non configurée ou inaccessible. Vérifiez DATABASE_URL et les migrations ; consultez le README.",
+    "en": "Database not configured or unavailable. Check DATABASE_URL and migrations; see README.",
+    "de": "Datenbank nicht konfiguriert oder nicht erreichbar. DATABASE_URL und Migrationen prüfen; siehe README.",
+    "es": "Base de datos sin configurar o no disponible. Revisa DATABASE_URL y las migraciones; consulta README."
+  },
+  "Deactiveren: deze persoon kan nergens meer inloggen. Lopende diensten worden afgesloten; uren blijven bewaard.": {
+    "fr": "Désactiver : cette personne ne pourra plus se connecter. Les services en cours seront clôturés ; les heures seront conservées.",
+    "en": "Deactivate: this person can no longer log in anywhere. Ongoing shifts will be closed; hours are retained.",
+    "de": "Deaktivieren: Diese Person kann sich nicht mehr anmelden. Laufende Schichten werden beendet; Stunden bleiben erhalten.",
+    "es": "Desactivar: esta persona ya no podrá iniciar sesión. Los turnos activos se cerrarán; las horas se conservarán."
+  },
+  "Deel deze link alleen met de bedoelde medewerker. Geldig voor 7 dagen; een nieuwe uitnodiging maakt de vorige link voor dit adres ongeldig.": {
+    "fr": "Partagez ce lien uniquement avec l'employé concerné. Valable 7 jours ; une nouvelle invitation invalide le lien précédent pour cette adresse.",
+    "en": "Share this link only with the intended employee. Valid for 7 days; a new invitation invalidates the previous link for this address.",
+    "de": "Diesen Link nur mit dem vorgesehenen Mitarbeiter teilen. 7 Tage gültig; eine neue Einladung macht den bisherigen Link für diese Adresse ungültig.",
+    "es": "Comparte este enlace solo con el empleado destinatario. Válido 7 días; una nueva invitación invalida el enlace anterior para esta dirección."
+  },
+  "Deze medewerker is niet meer actief; annuleer de planning hieronder.": {
+    "fr": "Cet employé n'est plus actif ; annulez le service ci-dessous.",
+    "en": "This employee is no longer active; cancel the schedule below.",
+    "de": "Dieser Mitarbeiter ist nicht mehr aktiv; sage die geplante Schicht unten ab.",
+    "es": "Este empleado ya no está activo; cancela la planificación abajo."
+  },
+  "Deze meldingen worden bij openen of verversen berekend. Er zijn geen automatische pushberichten of automatische uitklokacties.": {
+    "fr": "Les notifications sont calculées à l'ouverture ou à l'actualisation. Il n'y a pas de notifications push ni de sortie automatique.",
+    "en": "Notifications are calculated when opened or refreshed. There are no automatic push notifications or clock-outs.",
+    "de": "Meldungen werden beim Öffnen oder Aktualisieren berechnet. Es gibt keine automatischen Pushmeldungen oder Ausstempelaktionen.",
+    "es": "Los avisos se calculan al abrir o actualizar. No hay notificaciones push ni fichajes de salida automáticos."
+  },
+  "Dit verwijdert het account en eventuele vestigingskoppelingen. Dit kan niet ongedaan worden gemaakt. Gebruik deactiveren als je alleen toegang wilt stoppen.": {
+    "fr": "Le compte et ses liens éventuels aux établissements seront supprimés. Cette action est irréversible. Pour arrêter seulement l'accès, désactivez le compte.",
+    "en": "This deletes the account and any branch memberships. This cannot be undone. Use deactivation if you only want to stop access.",
+    "de": "Das Konto und eventuelle Standortzuordnungen werden gelöscht. Dies ist nicht rückgängig zu machen. Zum reinen Sperren des Zugriffs deaktivieren.",
+    "es": "Se eliminarán la cuenta y sus vinculaciones a locales. No se puede deshacer. Para detener solo el acceso, desactiva la cuenta."
+  },
+  "Dit zijn geklokte diensten. Toekomstige diensten vind je bij Planning.": {
+    "fr": "Voici vos services enregistrés. Les services à venir figurent dans Planning.",
+    "en": "These are recorded shifts. Find upcoming shifts under Schedule.",
+    "de": "Dies sind erfasste Schichten. Künftige Dienste findest du im Dienstplan.",
+    "es": "Estos son turnos registrados. Los próximos están en Planificación."
+  },
+  "Duur in de tabel geldt voor de volledige shift; het urentotaal hierboven telt alleen het deel binnen de gekozen periode. Lopende shiften tellen mee tot het laatste verversen.": {
+    "fr": "La durée du tableau couvre tout le service ; le total ci-dessus ne compte que la partie dans la période choisie. Les services en cours comptent jusqu'à la dernière actualisation.",
+    "en": "The table shows full shift duration; the total above counts only time within the selected period. Ongoing shifts count up to the last refresh.",
+    "de": "Die Tabelle zeigt die gesamte Schichtdauer; die Summe oben zählt nur den Anteil im gewählten Zeitraum. Laufende Schichten zählen bis zur letzten Aktualisierung.",
+    "es": "La tabla muestra la duración completa del turno; el total superior solo cuenta la parte dentro del periodo elegido. Los turnos activos cuentan hasta la última actualización."
+  },
+  "E-mails bij besluiten worden in een wachtrij gezet. Echte verzending vereist een geconfigureerde mailworker.": {
+    "fr": "Les e-mails de décision sont mis en attente. L'envoi réel nécessite un service de messagerie configuré.",
+    "en": "Decision emails are queued. Actual delivery requires a configured mail worker.",
+    "de": "Entscheidungs-E-Mails werden vorgemerkt. Für den Versand ist ein eingerichteter E-Mail-Dienst erforderlich.",
+    "es": "Los correos de decisiones quedan en cola. Su envío requiere un servicio de correo configurado."
+  },
+  "Een actieve sessie in een andere vestiging moet je daar eerst afsluiten.": {
+    "fr": "Terminez d'abord tout service actif dans un autre établissement.",
+    "en": "Close any active shift in another branch there first.",
+    "de": "Eine laufende Schicht an einem anderen Standort musst du zuerst dort beenden.",
+    "es": "Primero cierra cualquier turno activo en otro local."
+  },
+  "Een herstellink wordt alleen per e-mail verzonden wanneer de platformeigenaar e-mailverzending heeft ingesteld.": {
+    "fr": "Un lien de récupération est envoyé uniquement si le propriétaire de la plateforme a configuré l'envoi d'e-mails.",
+    "en": "A recovery link is emailed only when the platform owner has configured email delivery.",
+    "de": "Ein Wiederherstellungslink wird nur gesendet, wenn der Plattformeigentümer den E-Mail-Versand eingerichtet hat.",
+    "es": "El enlace de recuperación solo se envía si el propietario ha configurado el correo."
+  },
+  "Een uitnodiging geeft alleen medewerkersrechten. De link is 7 dagen geldig en eenmalig te gebruiken.": {
+    "fr": "Une invitation donne uniquement les droits d'employé. Le lien est valable 7 jours et utilisable une seule fois.",
+    "en": "An invitation grants employee permissions only. The link is valid for 7 days and can be used once.",
+    "de": "Eine Einladung gibt nur Mitarbeiterrechte. Der Link gilt 7 Tage und ist einmalig nutzbar.",
+    "es": "Una invitación solo concede permisos de empleado. El enlace dura 7 días y solo se usa una vez."
+  },
+  "Er zijn nog geen besluiten geregistreerd.": {
+    "fr": "Aucune décision enregistrée.",
+    "en": "No decisions have been recorded yet.",
+    "de": "Noch keine Entscheidungen erfasst.",
+    "es": "Todavía no hay decisiones registradas."
+  },
+  "Gebruik Shiften controleren voor correcties en goedkeuringen.": {
+    "fr": "Utilisez Contrôler les services pour les corrections et approbations.",
+    "en": "Use Review shifts for corrections and approvals.",
+    "de": "Verwende Schichten prüfen für Korrekturen und Genehmigungen.",
+    "es": "Usa Revisar turnos para correcciones y aprobaciones."
+  },
+  "Geen aanvragen met deze status.": {
+    "fr": "Aucune demande avec ce statut.",
+    "en": "No applications with this status.",
+    "de": "Keine Anträge mit diesem Status.",
+    "es": "No hay solicitudes con este estado."
+  },
+  "Geen accounts gevonden. Pas je zoekopdracht of filter aan.": {
+    "fr": "Aucun compte trouvé. Modifiez la recherche ou le filtre.",
+    "en": "No accounts found. Adjust your search or filter.",
+    "de": "Keine Konten gefunden. Suche oder Filter anpassen.",
+    "es": "No se encontraron cuentas. Ajusta la búsqueda o el filtro."
+  },
+  "Geen gebruiker gevonden. Laat de medewerker eerst een persoonlijk account registreren.": {
+    "fr": "Utilisateur introuvable. L'employé doit d'abord créer un compte personnel.",
+    "en": "No user found. Ask the employee to register a personal account first.",
+    "de": "Kein Benutzer gefunden. Der Mitarbeiter muss zuerst ein persönliches Konto anlegen.",
+    "es": "Usuario no encontrado. El empleado debe crear primero una cuenta personal."
+  },
+  "Geen openstaande meldingen.": {
+    "fr": "Aucune notification en attente.",
+    "en": "No outstanding notifications.",
+    "de": "Keine offenen Meldungen.",
+    "es": "No hay avisos pendientes."
+  },
+  "Geen shiften met deze status.": {
+    "fr": "Aucun service avec ce statut.",
+    "en": "No shifts with this status.",
+    "de": "Keine Schichten mit diesem Status.",
+    "es": "No hay turnos con este estado."
+  },
+  "Geregistreerde uren kunnen nog op controle wachten. Goedkeuring gebeurt via Shiften controleren; planning keurt geen uren automatisch goed.": {
+    "fr": "Les heures enregistrées peuvent attendre un contrôle. L'approbation se fait via Contrôler les services ; le planning n'approuve aucune heure automatiquement.",
+    "en": "Recorded hours may still await review. Approve them under Review shifts; scheduling never automatically approves hours.",
+    "de": "Erfasste Stunden können noch ungeprüft sein. Genehmigung erfolgt unter Schichten prüfen; der Dienstplan genehmigt keine Stunden automatisch.",
+    "es": "Las horas registradas pueden estar pendientes de revisión. Se aprueban en Revisar turnos; la planificación no aprueba horas automáticamente."
+  },
+  "Geselecteerd: {v0} ({v1})": {
+    "fr": "Sélectionné : {v0} ({v1})",
+    "en": "Selected: {v0} ({v1})",
+    "de": "Ausgewählt: {v0} ({v1})",
+    "es": "Seleccionado: {v0} ({v1})"
+  },
+  "Heractiveren: deze persoon kan weer inloggen met de bestaande vestigingsrechten.": {
+    "fr": "Réactiver : cette personne pourra se reconnecter avec ses droits d'établissement existants.",
+    "en": "Reactivate: this person can log in again with existing branch permissions.",
+    "de": "Reaktivieren: Diese Person kann sich mit den bisherigen Standortrechten wieder anmelden.",
+    "es": "Reactivar: esta persona podrá iniciar sesión con sus permisos de local existentes."
+  },
+  "In de vestiging: Team & rechten voor uitnodigingen en rollen, Planning voor geplande shiften en Meldingen voor vergeten uitklokken en controlewerk. Ongebruikte accounts kun je via Gebruikers verwijderen; accounts met historiek kun je deactiveren.": {
+    "fr": "Dans l'établissement : Équipe et droits pour les invitations et rôles, Planning pour les services prévus, Notifications pour les sorties oubliées et contrôles. Supprimez les comptes inutilisés via Utilisateurs ; désactivez les comptes avec historique.",
+    "en": "Within a branch: Team & permissions for invitations and roles, Schedule for planned shifts and Notifications for forgotten clock-outs and reviews. Delete unused accounts under Users; deactivate accounts with history.",
+    "de": "Im Standort: Team und Rechte für Einladungen und Rollen, Dienstplan für geplante Schichten, Meldungen für vergessenes Ausstempeln und Prüfungen. Unbenutzte Konten unter Benutzer löschen; Konten mit Verlauf deaktivieren.",
+    "es": "En el local: Equipo y permisos para invitaciones y roles, Planificación para turnos y Avisos para salidas olvidadas y revisiones. Elimina cuentas sin uso en Usuarios; desactiva las que tengan historial."
+  },
+  "Je account is klaar. Vraag jouw beheerder om je via jouw e-mailadres aan een vestiging te koppelen.": {
+    "fr": "Votre compte est prêt. Demandez à votre administrateur de vous associer à un établissement via votre adresse e-mail.",
+    "en": "Your account is ready. Ask your administrator to link you to a branch using your email address.",
+    "de": "Dein Konto ist bereit. Bitte den Administrator, dich über deine E-Mail-Adresse einem Standort zuzuordnen.",
+    "es": "Tu cuenta está lista. Pide al administrador que te vincule a un local mediante tu correo."
+  },
+  "Je hebt nog geen shiften in deze periode. Gebruik In- en uitklokken om een shift te starten.": {
+    "fr": "Aucun service dans cette période. Utilisez Pointer l'entrée et la sortie pour commencer un service.",
+    "en": "You have no shifts in this period yet. Use Clock in and out to start a shift.",
+    "de": "Noch keine Schichten in diesem Zeitraum. Starte eine Schicht unter Ein- und ausstempeln.",
+    "es": "Aún no tienes turnos en este periodo. Usa Fichar entrada y salida para comenzar."
+  },
+  "Je mag je eigen shift niet corrigeren of goedkeuren. Vraag een andere bevoegde beheerder.": {
+    "fr": "Vous ne pouvez pas corriger ou approuver votre propre service. Demandez à un autre administrateur autorisé.",
+    "en": "You cannot correct or approve your own shift. Ask another authorized administrator.",
+    "de": "Du darfst deine eigene Schicht nicht korrigieren oder genehmigen. Bitte einen anderen berechtigten Administrator.",
+    "es": "No puedes corregir ni aprobar tu propio turno. Pide a otro administrador autorizado."
+  },
+  "Jouw geregistreerde shiften in deze vestiging, met begin, einde, status en gewerkte uren.": {
+    "fr": "Vos services enregistrés dans cet établissement, avec début, fin, statut et heures travaillées.",
+    "en": "Your recorded shifts at this branch, with start, end, status and hours worked.",
+    "de": "Deine erfassten Schichten an diesem Standort mit Beginn, Ende, Status und Arbeitsstunden.",
+    "es": "Tus turnos registrados en este local, con inicio, fin, estado y horas trabajadas."
+  },
+  "Keur eerst de organisatie goed, daarna haar vestigingen. Gebruik de statusfilter om ook blokkeringen te beheren.": {
+    "fr": "Approuvez d'abord l'organisation, puis ses établissements. Utilisez le filtre de statut pour gérer aussi les blocages.",
+    "en": "Approve the organization first, then its branches. Use the status filter to manage blocks too.",
+    "de": "Zuerst die Organisation, dann ihre Standorte genehmigen. Mit dem Statusfilter auch Sperren verwalten.",
+    "es": "Aprueba primero la organización y después sus locales. Usa el filtro de estado para gestionar bloqueos."
+  },
+  "Kies hierboven eerst de persoon die je wilt beheren.": {
+    "fr": "Choisissez d'abord ci-dessus la personne à gérer.",
+    "en": "First choose the person you want to manage above.",
+    "de": "Wähle oben zuerst die Person aus, die du verwalten möchtest.",
+    "es": "Primero elige arriba a la persona que quieres gestionar."
+  },
+  "Koppel eerst een actieve medewerker via Team & rechten.": {
+    "fr": "Associez d'abord un employé actif via Équipe et droits.",
+    "en": "First link an active employee under Team & permissions.",
+    "de": "Zuerst einen aktiven Mitarbeiter unter Team und Rechte zuordnen.",
+    "es": "Primero vincula un empleado activo en Equipo y permisos."
+  },
+  "Log hieronder in met het e-mailadres waarop je bent uitgenodigd. Daarna kun je de uitnodiging accepteren.": {
+    "fr": "Connectez-vous ci-dessous avec l'adresse e-mail invitée. Vous pourrez ensuite accepter l'invitation.",
+    "en": "Log in below with the invited email address. You can then accept the invitation.",
+    "de": "Melde dich unten mit der eingeladenen E-Mail-Adresse an. Danach kannst du die Einladung annehmen.",
+    "es": "Inicia sesión abajo con el correo invitado. Después podrás aceptar la invitación."
+  },
+  "Maak een eenmalige uitnodigingslink voor een medewerker. Je kunt de link zelf delen; e-mail staat in de verzendwachtrij.": {
+    "fr": "Créez un lien d'invitation à usage unique. Vous pouvez le partager vous-même ; l'e-mail est en attente d'envoi.",
+    "en": "Create a single-use employee invitation link. You can share it yourself; the email is queued for delivery.",
+    "de": "Erstelle einen einmaligen Einladungslink. Du kannst ihn selbst teilen; die E-Mail ist zum Versand vorgemerkt.",
+    "es": "Crea un enlace de invitación de un solo uso. Puedes compartirlo tú; el correo queda en cola de envío."
+  },
+  "Medewerkers registreren een persoonlijk account. Een bevoegde beheerder koppelt hen daarna aan een vestiging.": {
+    "fr": "Les employés créent un compte personnel. Un administrateur autorisé les associe ensuite à un établissement.",
+    "en": "Employees register a personal account. An authorized administrator then links them to a branch.",
+    "de": "Mitarbeiter registrieren ein persönliches Konto. Ein berechtigter Administrator ordnet sie danach einem Standort zu.",
+    "es": "Los empleados crean una cuenta personal. Después, un administrador autorizado los vincula a un local."
+  },
+  "Nog geen correcties of goedkeuringen geregistreerd.": {
+    "fr": "Aucune correction ni approbation enregistrée.",
+    "en": "No corrections or approvals recorded yet.",
+    "de": "Noch keine Korrekturen oder Genehmigungen erfasst.",
+    "es": "Todavía no hay correcciones ni aprobaciones registradas."
+  },
+  "Nog geen correcties of goedkeuringen voor deze shift.": {
+    "fr": "Aucune correction ni approbation pour ce service.",
+    "en": "No corrections or approvals for this shift yet.",
+    "de": "Noch keine Korrekturen oder Genehmigungen für diese Schicht.",
+    "es": "Todavía no hay correcciones ni aprobaciones para este turno."
+  },
+  "Nog geen shiften gepland in deze periode.": {
+    "fr": "Aucun service planifié dans cette période.",
+    "en": "No shifts scheduled in this period yet.",
+    "de": "Noch keine Schichten in diesem Zeitraum geplant.",
+    "es": "Todavía no hay turnos planificados en este periodo."
+  },
+  "Onderstaande uren zijn geregistreerd en kunnen nog op controle wachten. Definitief goedgekeurde uren staan bij Mijn shiften.": {
+    "fr": "Les heures ci-dessous sont enregistrées et peuvent attendre un contrôle. Les heures approuvées figurent dans Mes services.",
+    "en": "The hours below are recorded and may await review. Approved hours are shown under My shifts.",
+    "de": "Die folgenden Stunden sind erfasst, aber möglicherweise noch ungeprüft. Genehmigte Stunden stehen unter Meine Schichten.",
+    "es": "Las horas de abajo están registradas y pueden estar pendientes de revisión. Las aprobadas aparecen en Mis turnos."
+  },
+  "Operationele toegang en rolbeheer worden beschikbaar zodra de platformbeheerder zowel de organisatie als de vestiging goedkeurt. Bij blokkering vervalt de toegang direct.": {
+    "fr": "L'accès opérationnel et la gestion des rôles sont disponibles après approbation de l'organisation et de l'établissement. Un blocage retire immédiatement l'accès.",
+    "en": "Operational access and role management become available after both the organization and branch are approved. Blocking removes access immediately.",
+    "de": "Operativer Zugriff und Rollenverwaltung stehen nach Genehmigung von Organisation und Standort zur Verfügung. Eine Sperrung entzieht den Zugriff sofort.",
+    "es": "El acceso operativo y la gestión de roles se habilitan cuando se aprueban organización y local. Un bloqueo retira el acceso de inmediato."
+  },
+  "Organisatie: {v0} · Vestiging: {v1}": {
+    "fr": "Organisation : {v0} · Établissement : {v1}",
+    "en": "Organization: {v0} · Branch: {v1}",
+    "de": "Organisation: {v0} · Standort: {v1}",
+    "es": "Organización: {v0} · Local: {v1}"
+  },
+  "Sessie verlopen. Log opnieuw in.": {
+    "fr": "Session expirée. Reconnectez-vous.",
+    "en": "Session expired. Log in again.",
+    "de": "Sitzung abgelaufen. Bitte erneut anmelden.",
+    "es": "Sesión caducada. Vuelve a iniciar sesión."
+  },
+  "Verantwoordelijke: {v0}": {
+    "fr": "Responsable : {v0}",
+    "en": "Responsible person: {v0}",
+    "de": "Verantwortlich: {v0}",
+    "es": "Responsable: {v0}"
+  },
+  "Vergeten uitklokken: meer dan 15 minuten na de gekoppelde geplande eindtijd, of meer dan 12 uur ingeklokt zonder zo’n afwijking. Controleer de werkelijke tijden voordat je uren goedkeurt.": {
+    "fr": "Oubli de sortie : plus de 15 minutes après la fin planifiée associée, ou plus de 12 heures en service. Vérifiez les heures réelles avant approbation.",
+    "en": "Forgotten clock-out: more than 15 minutes after the linked planned end, or more than 12 hours clocked in. Check actual times before approving hours.",
+    "de": "Vergessenes Ausstempeln: mehr als 15 Minuten nach dem zugeordneten geplanten Ende oder mehr als 12 Stunden eingestempelt. Tatsächliche Zeiten vor der Genehmigung prüfen.",
+    "es": "Salida olvidada: más de 15 minutos tras el fin planificado vinculado, o más de 12 horas fichado. Comprueba las horas reales antes de aprobarlas."
+  },
+  "Zoek de juiste persoon en klik op Beheren. Deactiveren stopt toegang en bewaart uren. Alleen een ongebruikt account kan definitief verwijderd worden.": {
+    "fr": "Recherchez la personne et cliquez sur Gérer. La désactivation arrête l'accès et conserve les heures. Seul un compte inutilisé peut être supprimé définitivement.",
+    "en": "Find the person and click Manage. Deactivation stops access and retains hours. Only an unused account can be permanently deleted.",
+    "de": "Person suchen und Verwalten anklicken. Deaktivieren sperrt den Zugriff und bewahrt Stunden. Nur unbenutzte Konten können endgültig gelöscht werden.",
+    "es": "Busca a la persona y pulsa Gestionar. Desactivar detiene el acceso y conserva las horas. Solo se elimina definitivamente una cuenta sin uso."
+  },
+  "Zoek een bestaand persoonlijk account op exact e-mailadres. Machtigen geeft toegang tot alle platformaanvragen; intrekken beëindigt die rechten.": {
+    "fr": "Recherchez un compte personnel par son adresse e-mail exacte. L'autorisation donne accès à toutes les demandes de plateforme ; son retrait supprime ces droits.",
+    "en": "Find an existing personal account by exact email. Authorization grants access to all platform applications; revocation removes those rights.",
+    "de": "Bestehendes persönliches Konto über die genaue E-Mail-Adresse suchen. Berechtigung gibt Zugriff auf alle Plattformanträge; Entzug beendet diese Rechte.",
+    "es": "Busca una cuenta personal por correo exacto. Autorizar da acceso a todas las solicitudes; revocar elimina esos permisos."
+  },
+  "ShiftFlow": {
+    "fr": "ShiftFlow",
+    "en": "ShiftFlow",
+    "de": "ShiftFlow",
+    "es": "ShiftFlow"
+  },
+  "{v0} · {v1}": {
+    "fr": "{v0} · {v1}",
+    "en": "{v0} · {v1}",
+    "de": "{v0} · {v1}",
+    "es": "{v0} · {v1}"
+  },
+  "{v0}: {v1}": {
+    "fr": "{v0}: {v1}",
+    "en": "{v0}: {v1}",
+    "de": "{v0}: {v1}",
+    "es": "{v0}: {v1}"
+  },
+  "Ongeldige inloggegevens.": {
+    "fr": "Identifiants incorrects.",
+    "en": "Invalid login details.",
+    "de": "Ungültige Anmeldedaten.",
+    "es": "Datos de acceso incorrectos."
+  },
+  "Te veel pogingen. Probeer over 15 minuten opnieuw.": {
+    "fr": "Trop de tentatives. Réessayez dans 15 minutes.",
+    "en": "Too many attempts. Try again in 15 minutes.",
+    "de": "Zu viele Versuche. Versuche es in 15 Minuten erneut.",
+    "es": "Demasiados intentos. Vuelve a intentarlo en 15 minutos."
+  },
+  "Log opnieuw in.": {
+    "fr": "Veuillez vous reconnecter.",
+    "en": "Please log in again.",
+    "de": "Bitte erneut anmelden.",
+    "es": "Vuelve a iniciar sesión."
+  },
+  "Vul een geldig e-mailadres in.": {
+    "fr": "Saisissez une adresse e-mail valide.",
+    "en": "Enter a valid email address.",
+    "de": "Gib eine gültige E-Mail-Adresse ein.",
+    "es": "Introduce un correo electrónico válido."
+  },
+  "Gebruik een wachtwoord van 12 tot 128 tekens.": {
+    "fr": "Utilisez un mot de passe de 12 à 128 caractères.",
+    "en": "Use a password of 12 to 128 characters.",
+    "de": "Verwende ein Passwort mit 12 bis 128 Zeichen.",
+    "es": "Usa una contraseña de entre 12 y 128 caracteres."
+  },
+  "Registratie niet mogelijk met dit e-mailadres.": {
+    "fr": "Inscription impossible avec cette adresse e-mail.",
+    "en": "Registration is not possible with this email address.",
+    "de": "Registrierung mit dieser E-Mail-Adresse nicht möglich.",
+    "es": "No se puede registrar este correo electrónico."
+  },
+  "Geen toegang tot deze vestiging.": {
+    "fr": "Accès refusé à cet établissement.",
+    "en": "No access to this branch.",
+    "de": "Kein Zugriff auf diesen Standort.",
+    "es": "Sin acceso a este local."
+  },
+  "Organisatie en vestiging moeten actief en goedgekeurd zijn.": {
+    "fr": "L'organisation et l'établissement doivent être actifs et approuvés.",
+    "en": "The organization and branch must be active and approved.",
+    "de": "Organisation und Standort müssen aktiv und genehmigt sein.",
+    "es": "La organización y el local deben estar activos y aprobados."
+  },
+  "Alleen de organisatie-eigenaar kan vestigingen toevoegen.": {
+    "fr": "Seul le propriétaire de l'organisation peut ajouter des établissements.",
+    "en": "Only the organization owner can add branches.",
+    "de": "Nur der Organisationseigentümer kann Standorte hinzufügen.",
+    "es": "Solo el propietario de la organización puede añadir locales."
+  },
+  "Ongeldige rol.": {
+    "fr": "Rôle non valide.",
+    "en": "Invalid role.",
+    "de": "Ungültige Rolle.",
+    "es": "Rol no válido."
+  },
+  "Actieve gebruiker niet gevonden.": {
+    "fr": "Utilisateur actif introuvable.",
+    "en": "Active user not found.",
+    "de": "Aktiver Benutzer nicht gefunden.",
+    "es": "Usuario activo no encontrado."
+  },
+  "Alleen de eigenaar kan beheerdersrechten wijzigen.": {
+    "fr": "Seul le propriétaire peut modifier les droits d'administration.",
+    "en": "Only the owner can change administrator permissions.",
+    "de": "Nur der Eigentümer kann Administratorrechte ändern.",
+    "es": "Solo el propietario puede modificar permisos de administrador."
+  },
+  "De eigenaar behoudt zijn beheerdersrechten.": {
+    "fr": "Le propriétaire conserve ses droits d'administration.",
+    "en": "The owner retains administrator permissions.",
+    "de": "Der Eigentümer behält seine Administratorrechte.",
+    "es": "El propietario conserva sus permisos de administrador."
+  },
+  "Laat deze medewerker eerst uitklokken.": {
+    "fr": "Demandez d'abord à cet employé de pointer sa sortie.",
+    "en": "Ask this employee to clock out first.",
+    "de": "Dieser Mitarbeiter muss zuerst ausstempeln.",
+    "es": "Este empleado debe fichar la salida primero."
+  },
+  "Je bent geen medewerker van deze vestiging.": {
+    "fr": "Vous n'êtes pas employé dans cet établissement.",
+    "en": "You are not an employee of this branch.",
+    "de": "Du bist kein Mitarbeiter dieses Standorts.",
+    "es": "No eres empleado de este local."
+  },
+  "Geen toegang tot deze geplande shift.": {
+    "fr": "Accès refusé à ce service planifié.",
+    "en": "No access to this scheduled shift.",
+    "de": "Kein Zugriff auf diese geplante Schicht.",
+    "es": "Sin acceso a este turno planificado."
+  },
+  "Deze geplande shift heeft al een tijdregistratie.": {
+    "fr": "Ce service planifié a déjà un enregistrement horaire.",
+    "en": "This scheduled shift already has a time record.",
+    "de": "Diese geplante Schicht hat bereits eine Zeitregistrierung.",
+    "es": "Este turno planificado ya tiene un registro horario."
+  },
+  "Je hebt al een actieve inkloksessie.": {
+    "fr": "Vous avez déjà un service actif.",
+    "en": "You already have an active shift.",
+    "de": "Du hast bereits eine aktive Schicht.",
+    "es": "Ya tienes un turno activo."
+  },
+  "Geen actieve sessie in deze vestiging.": {
+    "fr": "Aucun service actif dans cet établissement.",
+    "en": "No active shift in this branch.",
+    "de": "Keine aktive Schicht an diesem Standort.",
+    "es": "No hay un turno activo en este local."
+  },
+  "Alleen bevoegde platformbeheerders hebben toegang.": {
+    "fr": "Seuls les administrateurs de plateforme autorisés ont accès.",
+    "en": "Only authorized platform administrators have access.",
+    "de": "Nur berechtigte Plattformadministratoren haben Zugriff.",
+    "es": "Solo los administradores de plataforma autorizados tienen acceso."
+  },
+  "Ongeldig besluit.": {
+    "fr": "Décision non valide.",
+    "en": "Invalid decision.",
+    "de": "Ungültige Entscheidung.",
+    "es": "Decisión no válida."
+  },
+  "Geef een reden van maximaal 500 tekens bij weigeren of blokkeren.": {
+    "fr": "Indiquez un motif de 500 caractères maximum pour refuser ou bloquer.",
+    "en": "Provide a reason of up to 500 characters for rejection or blocking.",
+    "de": "Gib beim Ablehnen oder Sperren einen Grund mit höchstens 500 Zeichen an.",
+    "es": "Indica un motivo de hasta 500 caracteres al rechazar o bloquear."
+  },
+  "Aanvraag niet gevonden.": {
+    "fr": "Demande introuvable.",
+    "en": "Application not found.",
+    "de": "Antrag nicht gefunden.",
+    "es": "Solicitud no encontrada."
+  },
+  "Besluit past niet bij de huidige status; vernieuw het overzicht.": {
+    "fr": "Cette décision ne correspond pas au statut actuel ; actualisez la liste.",
+    "en": "This decision does not match the current status; refresh the overview.",
+    "de": "Die Entscheidung passt nicht zum aktuellen Status; Übersicht aktualisieren.",
+    "es": "La decisión no coincide con el estado actual; actualiza el resumen."
+  },
+  "Keur eerst de organisatie goed of activeer deze opnieuw.": {
+    "fr": "Approuvez ou réactivez d'abord l'organisation.",
+    "en": "Approve or reactivate the organization first.",
+    "de": "Zuerst die Organisation genehmigen oder reaktivieren.",
+    "es": "Primero aprueba o reactiva la organización."
+  },
+  "Ongeldige machtiging.": {
+    "fr": "Autorisation non valide.",
+    "en": "Invalid authorization.",
+    "de": "Ungültige Berechtigung.",
+    "es": "Autorización no válida."
+  },
+  "Registreer eerst een persoonlijk account voor deze gebruiker.": {
+    "fr": "Créez d'abord un compte personnel pour cet utilisateur.",
+    "en": "Register a personal account for this user first.",
+    "de": "Zuerst ein persönliches Konto für diesen Benutzer registrieren.",
+    "es": "Primero registra una cuenta personal para este usuario."
+  },
+  "De platformeigenaar kan niet worden ingetrokken.": {
+    "fr": "Les droits du propriétaire de plateforme ne peuvent pas être retirés.",
+    "en": "The platform owner's permissions cannot be revoked.",
+    "de": "Die Rechte des Plattformeigentümers können nicht entzogen werden.",
+    "es": "No se pueden revocar los permisos del propietario de plataforma."
+  },
+  "Ongeldige shiftactie.": {
+    "fr": "Action sur le service non valide.",
+    "en": "Invalid shift action.",
+    "de": "Ungültige Schichtaktion.",
+    "es": "Acción de turno no válida."
+  },
+  "Een correctie vereist een reden van maximaal 500 tekens.": {
+    "fr": "Une correction nécessite un motif de 500 caractères maximum.",
+    "en": "A correction requires a reason of up to 500 characters.",
+    "de": "Eine Korrektur erfordert einen Grund mit höchstens 500 Zeichen.",
+    "es": "Una corrección requiere un motivo de hasta 500 caracteres."
+  },
+  "Shift niet gevonden in deze vestiging.": {
+    "fr": "Service introuvable dans cet établissement.",
+    "en": "Shift not found in this branch.",
+    "de": "Schicht an diesem Standort nicht gefunden.",
+    "es": "Turno no encontrado en este local."
+  },
+  "Laat een andere bevoegde beheerder je eigen shift controleren.": {
+    "fr": "Demandez à un autre administrateur autorisé de contrôler votre propre service.",
+    "en": "Ask another authorized administrator to review your own shift.",
+    "de": "Bitte einen anderen berechtigten Administrator, deine eigene Schicht zu prüfen.",
+    "es": "Pide a otro administrador autorizado que revise tu propio turno."
+  },
+  "Deze shift is ondertussen gewijzigd. Ververs het overzicht.": {
+    "fr": "Ce service a été modifié. Actualisez la liste.",
+    "en": "This shift has changed. Refresh the overview.",
+    "de": "Diese Schicht wurde inzwischen geändert. Aktualisiere die Übersicht.",
+    "es": "Este turno ha cambiado. Actualiza el resumen."
+  },
+  "Een lopende shift kan niet worden goedgekeurd. Sluit of corrigeer deze eerst.": {
+    "fr": "Un service en cours ne peut pas être approuvé. Clôturez-le ou corrigez-le d'abord.",
+    "en": "An ongoing shift cannot be approved. Close or correct it first.",
+    "de": "Eine laufende Schicht kann nicht genehmigt werden. Zuerst beenden oder korrigieren.",
+    "es": "No se puede aprobar un turno activo. Ciérralo o corrígelo primero."
+  },
+  "Deze shift is al goedgekeurd.": {
+    "fr": "Ce service est déjà approuvé.",
+    "en": "This shift is already approved.",
+    "de": "Diese Schicht ist bereits genehmigt.",
+    "es": "Este turno ya está aprobado."
+  },
+  "Geef begin- en eindtijd met tijdzone op.": {
+    "fr": "Indiquez un début et une fin avec fuseau horaire.",
+    "en": "Provide start and end times with a time zone.",
+    "de": "Gib Beginn und Ende mit Zeitzone an.",
+    "es": "Indica inicio y fin con zona horaria."
+  },
+  "Einde moet na begin liggen en mag niet in de toekomst liggen.": {
+    "fr": "La fin doit suivre le début et ne peut pas être dans le futur.",
+    "en": "The end must follow the start and cannot be in the future.",
+    "de": "Das Ende muss nach dem Beginn liegen und darf nicht in der Zukunft liegen.",
+    "es": "El fin debe ser posterior al inicio y no puede estar en el futuro."
+  },
+  "Deze tijden overlappen met een andere shift van deze medewerker.": {
+    "fr": "Ces horaires chevauchent un autre service de cet employé.",
+    "en": "These times overlap another shift for this employee.",
+    "de": "Diese Zeiten überschneiden sich mit einer anderen Schicht dieses Mitarbeiters.",
+    "es": "Estas horas se solapan con otro turno de este empleado."
+  },
+  "De tijden zijn niet gewijzigd.": {
+    "fr": "Les horaires n'ont pas changé.",
+    "en": "The times have not changed.",
+    "de": "Die Zeiten wurden nicht geändert.",
+    "es": "Las horas no han cambiado."
+  },
+  "Shift niet gevonden.": {
+    "fr": "Service introuvable.",
+    "en": "Shift not found.",
+    "de": "Schicht nicht gefunden.",
+    "es": "Turno no encontrado."
+  },
+  "Stel eerst APP_BASE_URL in op het HTTPS-adres van deze app.": {
+    "fr": "Configurez d'abord APP_BASE_URL avec l'adresse HTTPS de cette application.",
+    "en": "First set APP_BASE_URL to this app's HTTPS address.",
+    "de": "Setze APP_BASE_URL zuerst auf die HTTPS-Adresse dieser App.",
+    "es": "Primero configura APP_BASE_URL con la dirección HTTPS de esta app."
+  },
+  "Uitnodiging ongeldig, verlopen of al gebruikt.": {
+    "fr": "Invitation non valide, expirée ou déjà utilisée.",
+    "en": "Invitation invalid, expired or already used.",
+    "de": "Einladung ungültig, abgelaufen oder bereits verwendet.",
+    "es": "Invitación no válida, caducada o ya utilizada."
+  },
+  "De uitnodiging is niet meer geldig.": {
+    "fr": "L'invitation n'est plus valable.",
+    "en": "The invitation is no longer valid.",
+    "de": "Die Einladung ist nicht mehr gültig.",
+    "es": "La invitación ya no es válida."
+  },
+  "Log in met het e-mailadres waarop je bent uitgenodigd.": {
+    "fr": "Connectez-vous avec l'adresse e-mail invitée.",
+    "en": "Log in with the invited email address.",
+    "de": "Melde dich mit der eingeladenen E-Mail-Adresse an.",
+    "es": "Inicia sesión con el correo al que se envió la invitación."
+  },
+  "Log uit om een nieuw account voor deze uitnodiging aan te maken.": {
+    "fr": "Déconnectez-vous pour créer un compte pour cette invitation.",
+    "en": "Log out to create a new account for this invitation.",
+    "de": "Melde dich ab, um ein neues Konto für diese Einladung zu erstellen.",
+    "es": "Cierra sesión para crear una cuenta nueva para esta invitación."
+  },
+  "Wachtwoordherstel per e-mail is nog niet ingesteld. Neem contact op met de platformeigenaar.": {
+    "fr": "La récupération par e-mail n'est pas configurée. Contactez le propriétaire de la plateforme.",
+    "en": "Email password recovery is not configured yet. Contact the platform owner.",
+    "de": "Passwortwiederherstellung per E-Mail ist noch nicht eingerichtet. Wende dich an den Plattformeigentümer.",
+    "es": "La recuperación por correo aún no está configurada. Contacta con el propietario de la plataforma."
+  },
+  "Herstellink ongeldig, verlopen of al gebruikt.": {
+    "fr": "Lien de récupération non valide, expiré ou déjà utilisé.",
+    "en": "Recovery link invalid, expired or already used.",
+    "de": "Wiederherstellungslink ungültig, abgelaufen oder bereits verwendet.",
+    "es": "Enlace de recuperación no válido, caducado o ya utilizado."
+  },
+  "Huidig wachtwoord onjuist.": {
+    "fr": "Mot de passe actuel incorrect.",
+    "en": "Current password is incorrect.",
+    "de": "Aktuelles Passwort ist falsch.",
+    "es": "La contraseña actual es incorrecta."
+  },
+  "Account bestaat niet meer. Ververs het overzicht.": {
+    "fr": "Ce compte n'existe plus. Actualisez la liste.",
+    "en": "This account no longer exists. Refresh the overview.",
+    "de": "Dieses Konto existiert nicht mehr. Aktualisiere die Übersicht.",
+    "es": "Esta cuenta ya no existe. Actualiza el resumen."
+  },
+  "Het account is ondertussen in gebruik genomen. Ververs het overzicht; historische gegevens worden niet verwijderd.": {
+    "fr": "Ce compte a été utilisé entre-temps. Actualisez la liste ; l'historique ne sera pas supprimé.",
+    "en": "The account has since been used. Refresh the overview; historical data will not be deleted.",
+    "de": "Das Konto wurde inzwischen verwendet. Übersicht aktualisieren; historische Daten werden nicht gelöscht.",
+    "es": "La cuenta ya se ha utilizado. Actualiza el resumen; no se eliminará el historial."
+  },
+  "Ongeldige status.": {
+    "fr": "Statut non valide.",
+    "en": "Invalid status.",
+    "de": "Ungültiger Status.",
+    "es": "Estado no válido."
+  },
+  "Account niet gevonden.": {
+    "fr": "Compte introuvable.",
+    "en": "Account not found.",
+    "de": "Konto nicht gefunden.",
+    "es": "Cuenta no encontrada."
+  },
+  "Je mag dit account niet deactiveren of heractiveren.": {
+    "fr": "Vous ne pouvez pas désactiver ou réactiver ce compte.",
+    "en": "You cannot deactivate or reactivate this account.",
+    "de": "Du darfst dieses Konto nicht deaktivieren oder reaktivieren.",
+    "es": "No puedes desactivar ni reactivar esta cuenta."
+  },
+  "Deze gebruiker is organisatie-eigenaar. Blokkeer de organisatie; accountdeactivering vereist eerst eigendomsoverdracht.": {
+    "fr": "Cet utilisateur possède une organisation. Bloquez l'organisation ; sa désactivation nécessite d'abord un transfert de propriété.",
+    "en": "This user owns an organization. Block the organization; account deactivation first requires an ownership transfer.",
+    "de": "Dieser Benutzer besitzt eine Organisation. Sperre die Organisation; vor der Kontodeaktivierung muss das Eigentum übertragen werden.",
+    "es": "Este usuario es propietario de una organización. Bloquea la organización; desactivar su cuenta requiere transferir primero la propiedad."
+  },
+  "Dit account heeft deze status al.": {
+    "fr": "Ce compte a déjà ce statut.",
+    "en": "This account already has this status.",
+    "de": "Dieses Konto hat bereits diesen Status.",
+    "es": "Esta cuenta ya tiene este estado."
+  },
+  "Dit account is gedeactiveerd.": {
+    "fr": "Ce compte est désactivé.",
+    "en": "This account is deactivated.",
+    "de": "Dieses Konto ist deaktiviert.",
+    "es": "Esta cuenta está desactivada."
+  },
+  "Geef geldige begin- en eindtijden met tijdzone; einde moet na begin liggen.": {
+    "fr": "Indiquez des horaires valides avec fuseau horaire ; la fin doit suivre le début.",
+    "en": "Provide valid start and end times with a time zone; the end must follow the start.",
+    "de": "Gib gültige Beginn- und Endzeiten mit Zeitzone an; das Ende muss nach dem Beginn liegen.",
+    "es": "Indica inicio y fin válidos con zona horaria; el fin debe ser posterior al inicio."
+  },
+  "Plan een shift die nog niet volledig voorbij is.": {
+    "fr": "Planifiez un service qui n'est pas entièrement passé.",
+    "en": "Schedule a shift that has not already ended.",
+    "de": "Plane eine Schicht, die noch nicht vollständig vorbei ist.",
+    "es": "Planifica un turno que aún no haya finalizado."
+  },
+  "Gebruik maximaal 500 tekens voor de opmerking.": {
+    "fr": "Utilisez 500 caractères maximum pour la remarque.",
+    "en": "Use up to 500 characters for the note.",
+    "de": "Verwende höchstens 500 Zeichen für den Hinweis.",
+    "es": "Usa hasta 500 caracteres para el comentario."
+  },
+  "Kies een actieve medewerker van deze vestiging.": {
+    "fr": "Choisissez un employé actif de cet établissement.",
+    "en": "Choose an active employee of this branch.",
+    "de": "Wähle einen aktiven Mitarbeiter dieses Standorts.",
+    "es": "Elige un empleado activo de este local."
+  },
+  "De planning is gewijzigd; ververs het overzicht.": {
+    "fr": "Le planning a changé ; actualisez la liste.",
+    "en": "The schedule has changed; refresh the overview.",
+    "de": "Der Dienstplan wurde geändert; Übersicht aktualisieren.",
+    "es": "La planificación ha cambiado; actualiza el resumen."
+  },
+  "Annuleer de shift en maak een nieuwe om de medewerker te wijzigen.": {
+    "fr": "Annulez ce service et créez-en un nouveau pour changer d'employé.",
+    "en": "Cancel this shift and create a new one to change the employee.",
+    "de": "Sage die Schicht ab und erstelle eine neue, um den Mitarbeiter zu ändern.",
+    "es": "Cancela el turno y crea uno nuevo para cambiar de empleado."
+  },
+  "Deze shift heeft al een tijdregistratie en kan niet meer worden verplaatst.": {
+    "fr": "Ce service a déjà un enregistrement horaire et ne peut plus être déplacé.",
+    "en": "This shift already has a time record and can no longer be rescheduled.",
+    "de": "Diese Schicht hat bereits eine Zeitregistrierung und kann nicht mehr verschoben werden.",
+    "es": "Este turno ya tiene un registro horario y no se puede reprogramar."
+  },
+  "Deze medewerker is op dit tijdstip al ingepland, mogelijk in een andere vestiging.": {
+    "fr": "Cet employé est déjà planifié à cette heure, éventuellement dans un autre établissement.",
+    "en": "This employee is already scheduled at this time, possibly at another branch.",
+    "de": "Dieser Mitarbeiter ist zu dieser Zeit bereits eingeplant, möglicherweise an einem anderen Standort.",
+    "es": "Este empleado ya está programado a esta hora, posiblemente en otro local."
+  },
+  "Een shift met tijdregistratie kan niet worden geannuleerd.": {
+    "fr": "Un service avec enregistrement horaire ne peut pas être annulé.",
+    "en": "A shift with a time record cannot be cancelled.",
+    "de": "Eine Schicht mit Zeitregistrierung kann nicht abgesagt werden.",
+    "es": "No se puede cancelar un turno con registro horario."
+  },
+  "Ongeldige taalkeuze.": {
+    "fr": "Langue non valide.",
+    "en": "Invalid language choice.",
+    "de": "Ungültige Sprachauswahl.",
+    "es": "Idioma no válido."
+  },
+  "Platformbeheerder bestaat al; bootstrap is gesloten.": {
+    "fr": "Un administrateur de plateforme existe déjà ; l'initialisation est fermée.",
+    "en": "A platform administrator already exists; bootstrap is closed.",
+    "de": "Ein Plattformadministrator existiert bereits; die Ersteinrichtung ist geschlossen.",
+    "es": "Ya existe un administrador de plataforma; la inicialización está cerrada."
+  },
+  "Registreer eerst jouw persoonlijke account.": {
+    "fr": "Créez d'abord votre compte personnel.",
+    "en": "Register your personal account first.",
+    "de": "Registriere zuerst dein persönliches Konto.",
+    "es": "Primero registra tu cuenta personal."
+  },
+  "{v0}: vul 1 tot {v1} tekens in.": {
+    "fr": "{v0} : saisissez entre 1 et {v1} caractères.",
+    "en": "{v0}: enter between 1 and {v1} characters.",
+    "de": "{v0}: gib 1 bis {v1} Zeichen ein.",
+    "es": "{v0}: introduce entre 1 y {v1} caracteres."
+  },
+  "Account aangemaakt. Je kunt nu inloggen; organisaties en vestigingen wachten eerst op goedkeuring.": {
+    "fr": "Compte créé. Vous pouvez vous connecter ; les organisations et établissements doivent d'abord être approuvés.",
+    "en": "Account created. You can log in; organizations and branches first await approval.",
+    "de": "Konto erstellt. Du kannst dich anmelden; Organisationen und Standorte warten zunächst auf Genehmigung.",
+    "es": "Cuenta creada. Ya puedes iniciar sesión; las organizaciones y locales esperan aprobación."
+  },
+  "Accountstatus gewijzigd.": {
+    "fr": "Statut du compte modifié.",
+    "en": "Account status updated.",
+    "de": "Kontostatus geändert.",
+    "es": "Estado de la cuenta actualizado."
+  },
+  "Besluit opgeslagen; bericht staat in de e-mailwachtrij.": {
+    "fr": "Décision enregistrée ; message en attente d'envoi.",
+    "en": "Decision saved; message queued for email delivery.",
+    "de": "Entscheidung gespeichert; Nachricht zum E-Mail-Versand vorgemerkt.",
+    "es": "Decisión guardada; mensaje en cola de correo."
+  },
+  "Bevoegdheid bijgewerkt.": {
+    "fr": "Droits mis à jour.",
+    "en": "Permission updated.",
+    "de": "Berechtigung aktualisiert.",
+    "es": "Permiso actualizado."
+  },
+  "Correctie opgeslagen. De shift wacht opnieuw op goedkeuring.": {
+    "fr": "Correction enregistrée. Le service attend une nouvelle approbation.",
+    "en": "Correction saved. The shift awaits approval again.",
+    "de": "Korrektur gespeichert. Die Schicht wartet erneut auf Genehmigung.",
+    "es": "Corrección guardada. El turno espera de nuevo aprobación."
+  },
+  "Geplande shift geannuleerd.": {
+    "fr": "Service planifié annulé.",
+    "en": "Scheduled shift cancelled.",
+    "de": "Geplante Schicht abgesagt.",
+    "es": "Turno planificado cancelado."
+  },
+  "Het ongebruikte account is definitief verwijderd.": {
+    "fr": "Le compte inutilisé a été supprimé définitivement.",
+    "en": "The unused account has been permanently deleted.",
+    "de": "Das unbenutzte Konto wurde endgültig gelöscht.",
+    "es": "La cuenta sin uso se ha eliminado definitivamente."
+  },
+  "Je bent gekoppeld aan de vestiging.": {
+    "fr": "Vous êtes associé à l'établissement.",
+    "en": "You have been linked to the branch.",
+    "de": "Du wurdest dem Standort zugeordnet.",
+    "es": "Ya estás vinculado al local."
+  },
+  "Je bent ingeklokt.": {
+    "fr": "Votre entrée a été enregistrée.",
+    "en": "You are clocked in.",
+    "de": "Du bist eingestempelt.",
+    "es": "Has fichado la entrada."
+  },
+  "Je bent uitgeklokt.": {
+    "fr": "Votre sortie a été enregistrée.",
+    "en": "You are clocked out.",
+    "de": "Du bist ausgestempelt.",
+    "es": "Has fichado la salida."
+  },
+  "Planning opgeslagen.": {
+    "fr": "Planning enregistré.",
+    "en": "Schedule saved.",
+    "de": "Dienstplan gespeichert.",
+    "es": "Planificación guardada."
+  },
+  "Platformmachtiging bijgewerkt.": {
+    "fr": "Autorisation de plateforme mise à jour.",
+    "en": "Platform authorization updated.",
+    "de": "Plattformberechtigung aktualisiert.",
+    "es": "Autorización de plataforma actualizada."
+  },
+  "Shift goedgekeurd.": {
+    "fr": "Service approuvé.",
+    "en": "Shift approved.",
+    "de": "Schicht genehmigt.",
+    "es": "Turno aprobado."
+  },
+  "Uitnodiging geaccepteerd. Log in om je vestiging te openen.": {
+    "fr": "Invitation acceptée. Connectez-vous pour ouvrir votre établissement.",
+    "en": "Invitation accepted. Log in to open your branch.",
+    "de": "Einladung angenommen. Melde dich an, um deinen Standort zu öffnen.",
+    "es": "Invitación aceptada. Inicia sesión para abrir tu local."
+  },
+  "Vestigingsaanvraag ingediend; wacht op platformgoedkeuring.": {
+    "fr": "Demande d'établissement envoyée ; en attente d'approbation de plateforme.",
+    "en": "Branch application submitted; awaiting platform approval.",
+    "de": "Standortantrag eingereicht; wartet auf Plattformgenehmigung.",
+    "es": "Solicitud de local enviada; pendiente de aprobación de plataforma."
+  },
+  "Wachtwoord gewijzigd. Log opnieuw in; eerdere sessies zijn ingetrokken.": {
+    "fr": "Mot de passe modifié. Reconnectez-vous ; les anciennes sessions ont été révoquées.",
+    "en": "Password changed. Log in again; previous sessions have been revoked.",
+    "de": "Passwort geändert. Erneut anmelden; bisherige Sitzungen wurden widerrufen.",
+    "es": "Contraseña cambiada. Inicia sesión de nuevo; se han revocado las sesiones anteriores."
+  },
+  "Wachtwoord hersteld. Log opnieuw in.": {
+    "fr": "Mot de passe réinitialisé. Reconnectez-vous.",
+    "en": "Password reset. Log in again.",
+    "de": "Passwort zurückgesetzt. Bitte erneut anmelden.",
+    "es": "Contraseña restablecida. Vuelve a iniciar sesión."
+  },
+  "Je taalkeuze kon niet worden opgeslagen. Probeer opnieuw.": {
+    "fr": "Votre langue n'a pas pu être enregistrée. Réessayez.",
+    "en": "Your language preference could not be saved. Try again.",
+    "de": "Deine Sprachauswahl konnte nicht gespeichert werden. Versuche es erneut.",
+    "es": "No se pudo guardar tu idioma. Vuelve a intentarlo."
+  },
+  "Dit is je eigen account. Je kunt jezelf niet deactiveren of verwijderen.": {
+    "fr": "C'est votre propre compte. Vous ne pouvez pas vous désactiver ni vous supprimer.",
+    "en": "This is your own account. You cannot deactivate or delete yourself.",
+    "de": "Dies ist dein eigenes Konto. Du kannst dich nicht selbst deaktivieren oder löschen.",
+    "es": "Esta es tu propia cuenta. No puedes desactivarte ni eliminarte."
+  },
+  "De platformeigenaar is beschermd en kan niet worden gedeactiveerd of verwijderd.": {
+    "fr": "Le propriétaire de plateforme est protégé et ne peut être désactivé ni supprimé.",
+    "en": "The platform owner is protected and cannot be deactivated or deleted.",
+    "de": "Der Plattformeigentümer ist geschützt und kann nicht deaktiviert oder gelöscht werden.",
+    "es": "El propietario de plataforma está protegido y no se puede desactivar ni eliminar."
+  },
+  "Alleen de platformeigenaar kan andere platformbeheerders beheren.": {
+    "fr": "Seul le propriétaire de plateforme peut gérer les autres administrateurs de plateforme.",
+    "en": "Only the platform owner can manage other platform administrators.",
+    "de": "Nur der Plattformeigentümer kann andere Plattformadministratoren verwalten.",
+    "es": "Solo el propietario de plataforma puede gestionar a otros administradores de plataforma."
+  },
+  "Dit account is eigenaar van een organisatie. Blokkeer de organisatie via Aanvragen; eigendomsoverdracht is nog niet beschikbaar.": {
+    "fr": "Ce compte possède une organisation. Bloquez-la via Demandes ; le transfert de propriété n'est pas encore disponible.",
+    "en": "This account owns an organization. Block it under Applications; ownership transfer is not available yet.",
+    "de": "Dieses Konto besitzt eine Organisation. Sperre sie unter Anträge; Eigentumsübertragung ist noch nicht verfügbar.",
+    "es": "Esta cuenta posee una organización. Bloquéala en Solicitudes; transferir la propiedad aún no está disponible."
+  },
+  "Eigenaar- en platformbeheerderaccounts kunnen niet definitief worden verwijderd.": {
+    "fr": "Les comptes de propriétaire et d'administrateur de plateforme ne peuvent être supprimés définitivement.",
+    "en": "Owner and platform administrator accounts cannot be permanently deleted.",
+    "de": "Eigentümer- und Plattformadministratorkonten können nicht endgültig gelöscht werden.",
+    "es": "Las cuentas de propietario y administrador de plataforma no se pueden eliminar definitivamente."
+  },
+  "Dit account heeft werkuren, planning of beveiligingshistoriek. Deactiveer het account om de toegang te stoppen en de historiek te bewaren.": {
+    "fr": "Ce compte contient des heures, un planning ou un historique de sécurité. Désactivez-le pour arrêter l'accès et conserver l'historique.",
+    "en": "This account has working hours, schedules or security history. Deactivate it to stop access and preserve its history.",
+    "de": "Dieses Konto hat Arbeitsstunden, Planung oder Sicherheitsverlauf. Deaktiviere es, um den Zugriff zu stoppen und den Verlauf zu erhalten.",
+    "es": "Esta cuenta tiene horas, planificación o historial de seguridad. Desactívala para detener el acceso y conservar el historial."
+  },
+  "Nog ingeklokt, meer dan 15 minuten na geplande eindtijd.": {
+    "fr": "Toujours en service, plus de 15 minutes après la fin prévue.",
+    "en": "Still clocked in, more than 15 minutes after the planned end.",
+    "de": "Noch eingestempelt, mehr als 15 Minuten nach dem geplanten Ende.",
+    "es": "Sigue fichado, más de 15 minutos después del fin previsto."
+  },
+  "Meer dan 12 uur ingeklokt. Controleer of uitklokken is vergeten.": {
+    "fr": "En service depuis plus de 12 heures. Vérifiez si la sortie a été oubliée.",
+    "en": "Clocked in for more than 12 hours. Check whether clock-out was forgotten.",
+    "de": "Seit mehr als 12 Stunden eingestempelt. Prüfe, ob das Ausstempeln vergessen wurde.",
+    "es": "Fichado durante más de 12 horas. Comprueba si se olvidó la salida."
+  },
+  "Afgesloten shift wacht op controle.": {
+    "fr": "Service terminé en attente de contrôle.",
+    "en": "Closed shift awaits review.",
+    "de": "Abgeschlossene Schicht wartet auf Prüfung.",
+    "es": "Turno finalizado pendiente de revisión."
+  },
+  "Ingeklokt": {
+    "fr": "Entrée",
+    "en": "Clocked in",
+    "de": "Eingestempelt",
+    "es": "Entrada fichada"
+  },
+  "Uitgeklokt": {
+    "fr": "Sortie",
+    "en": "Clocked out",
+    "de": "Ausgestempelt",
+    "es": "Salida fichada"
+  },
+  "Status": {
+    "fr": "Statut",
+    "en": "Status",
+    "de": "Status",
+    "es": "Estado"
+  },
+  "Duur volledige shift (uur)": {
+    "fr": "Durée totale du service (heures)",
+    "en": "Full shift duration (hours)",
+    "de": "Gesamte Schichtdauer (Stunden)",
+    "es": "Duración completa del turno (horas)"
+  },
+  "Nog bezig": {
+    "fr": "Toujours en cours",
+    "en": "Still ongoing",
+    "de": "Noch laufend",
+    "es": "Aún en curso"
+  },
+  "Uren": {
+    "fr": "Heures",
+    "en": "Hours",
+    "de": "Stunden",
+    "es": "Horas"
+  },
+  "Sinds": {
+    "fr": "Depuis",
+    "en": "Since",
+    "de": "Seit",
+    "es": "Desde"
+  },
+  "Begin": {
+    "fr": "Début",
+    "en": "Start",
+    "de": "Beginn",
+    "es": "Inicio"
+  },
+  "Einde": {
+    "fr": "Fin",
+    "en": "End",
+    "de": "Ende",
+    "es": "Fin"
+  },
+  "Geplande uren": {
+    "fr": "Heures prévues",
+    "en": "Planned hours",
+    "de": "Geplante Stunden",
+    "es": "Horas previstas"
+  },
+  "Geregistreerde uren": {
+    "fr": "Heures enregistrées",
+    "en": "Recorded hours",
+    "de": "Erfasste Stunden",
+    "es": "Horas registradas"
+  },
+  "Verschil (uur)": {
+    "fr": "Écart (heures)",
+    "en": "Difference (hours)",
+    "de": "Differenz (Stunden)",
+    "es": "Diferencia (horas)"
+  },
+  "Opmerking": {
+    "fr": "Remarque",
+    "en": "Note",
+    "de": "Hinweis",
+    "es": "Comentario"
+  },
+  "Type": {
+    "fr": "Type",
+    "en": "Type",
+    "de": "Typ",
+    "es": "Tipo"
+  },
+  "Bedrijf": {
+    "fr": "Entreprise",
+    "en": "Business",
+    "de": "Unternehmen",
+    "es": "Empresa"
+  },
+  "Vestiging": {
+    "fr": "Établissement",
+    "en": "Branch",
+    "de": "Standort",
+    "es": "Local"
+  },
+  "Adres": {
+    "fr": "Adresse",
+    "en": "Address",
+    "de": "Adresse",
+    "es": "Dirección"
+  },
+  "Verantwoordelijke": {
+    "fr": "Responsable",
+    "en": "Responsible person",
+    "de": "Verantwortlicher",
+    "es": "Responsable"
+  },
+  "Telefoon": {
+    "fr": "Téléphone",
+    "en": "Phone",
+    "de": "Telefon",
+    "es": "Teléfono"
+  },
+  "Aangevraagd": {
+    "fr": "Demandé le",
+    "en": "Submitted",
+    "de": "Beantragt",
+    "es": "Solicitado"
+  },
+  "Beoordeeld": {
+    "fr": "Examiné le",
+    "en": "Reviewed",
+    "de": "Geprüft",
+    "es": "Revisado"
+  },
+  "naam": {
+    "fr": "Nom",
+    "en": "Name",
+    "de": "Name",
+    "es": "Nombre"
+  },
+  "name": {
+    "fr": "Nom",
+    "en": "Name",
+    "de": "Name",
+    "es": "Nombre"
+  },
+  "email": {
+    "fr": "E-mail",
+    "en": "Email",
+    "de": "E-Mail",
+    "es": "Correo"
+  },
+  "role": {
+    "fr": "Rôle",
+    "en": "Role",
+    "de": "Rolle",
+    "es": "Rol"
+  },
+  "active": {
+    "fr": "Actif",
+    "en": "Active",
+    "de": "Aktiv",
+    "es": "Activo"
+  },
+  "actief": {
+    "fr": "Actif",
+    "en": "Active",
+    "de": "Aktiv",
+    "es": "Activo"
+  },
+  "admin": {
+    "fr": "Administrateur d'établissement",
+    "en": "Branch administrator",
+    "de": "Standortadministrator",
+    "es": "Administrador del local"
+  },
+  "employee": {
+    "fr": "Employé",
+    "en": "Employee",
+    "de": "Mitarbeiter",
+    "es": "Empleado"
+  },
+  "revoked": {
+    "fr": "Accès retiré",
+    "en": "Access revoked",
+    "de": "Zugriff entzogen",
+    "es": "Acceso revocado"
+  },
+  "organisatie": {
+    "fr": "Organisation",
+    "en": "Organization",
+    "de": "Organisation",
+    "es": "Organización"
+  },
+  "vestiging": {
+    "fr": "Établissement",
+    "en": "Branch",
+    "de": "Standort",
+    "es": "Local"
+  },
+  "beoordelaar": {
+    "fr": "Responsable du contrôle",
+    "en": "Reviewer",
+    "de": "Prüfer",
+    "es": "Revisor"
+  },
+  "van": {
+    "fr": "De",
+    "en": "From",
+    "de": "Von",
+    "es": "De"
+  },
+  "naar": {
+    "fr": "Vers",
+    "en": "To",
+    "de": "Nach",
+    "es": "A"
+  },
+  "reden": {
+    "fr": "Motif",
+    "en": "Reason",
+    "de": "Grund",
+    "es": "Motivo"
+  },
+  "tijd": {
+    "fr": "Date et heure",
+    "en": "Time",
+    "de": "Zeit",
+    "es": "Fecha y hora"
+  },
+  "actie": {
+    "fr": "Action",
+    "en": "Action",
+    "de": "Aktion",
+    "es": "Acción"
+  },
+  "oud_begin": {
+    "fr": "Ancien début",
+    "en": "Previous start",
+    "de": "Vorheriger Beginn",
+    "es": "Inicio anterior"
+  },
+  "oud_einde": {
+    "fr": "Ancienne fin",
+    "en": "Previous end",
+    "de": "Vorheriges Ende",
+    "es": "Fin anterior"
+  },
+  "nieuw_begin": {
+    "fr": "Nouveau début",
+    "en": "New start",
+    "de": "Neuer Beginn",
+    "es": "Nuevo inicio"
+  },
+  "nieuw_einde": {
+    "fr": "Nouvelle fin",
+    "en": "New end",
+    "de": "Neues Ende",
+    "es": "Nuevo fin"
+  },
+  "approve": {
+    "fr": "Approuver",
+    "en": "Approve",
+    "de": "Genehmigen",
+    "es": "Aprobar"
+  },
+  "correct": {
+    "fr": "Corriger",
+    "en": "Correct",
+    "de": "Korrigieren",
+    "es": "Corregir"
+  },
+  "platformeigenaar": {
+    "fr": "Propriétaire de plateforme",
+    "en": "Platform owner",
+    "de": "Plattformeigentümer",
+    "es": "Propietario de plataforma"
+  },
+  "platformbeheerder": {
+    "fr": "Administrateur de plateforme",
+    "en": "Platform administrator",
+    "de": "Plattformadministrator",
+    "es": "Administrador de plataforma"
+  },
+  "Naam": {
+    "fr": "Nom",
+    "en": "Name",
+    "de": "Name",
+    "es": "Nombre"
+  },
+  "Keten": {
+    "fr": "Chaîne",
+    "en": "Chain",
+    "de": "Kette",
+    "es": "Cadena"
+  },
+  "Reden": {
+    "fr": "Motif",
+    "en": "Reason",
+    "de": "Grund",
+    "es": "Motivo"
+  },
+  "{v0:%d-%m %H:%M} – {v1:%H:%M}": {
+    "fr": "{v0:%d-%m %H:%M} – {v1:%H:%M}",
+    "en": "{v0:%d-%m %H:%M} – {v1:%H:%M}",
+    "de": "{v0:%d-%m %H:%M} – {v1:%H:%M}",
+    "es": "{v0:%d-%m %H:%M} – {v1:%H:%M}"
+  },
+  "{v0} · {v1:%d-%m-%Y %H:%M}": {
+    "fr": "{v0} · {v1:%d-%m-%Y %H:%M}",
+    "en": "{v0} · {v1:%d-%m-%Y %H:%M}",
+    "de": "{v0} · {v1:%d-%m-%Y %H:%M}",
+    "es": "{v0} · {v1:%d-%m-%Y %H:%M}"
+  },
+  "{v0} · {v1} ({v2}) · {v3}": {
+    "fr": "{v0} · {v1} ({v2}) · {v3}",
+    "en": "{v0} · {v1} ({v2}) · {v3}",
+    "de": "{v0} · {v1} ({v2}) · {v3}",
+    "es": "{v0} · {v1} ({v2}) · {v3}"
+  },
+  "{v0} · {v1:%d-%m-%Y %H:%M} → {v2}": {
+    "fr": "{v0} · {v1:%d-%m-%Y %H:%M} → {v2}",
+    "en": "{v0} · {v1:%d-%m-%Y %H:%M} → {v2}",
+    "de": "{v0} · {v1:%d-%m-%Y %H:%M} → {v2}",
+    "es": "{v0} · {v1:%d-%m-%Y %H:%M} → {v2}"
+  },
+  "Niet opgegeven bij eerdere registratie": {
+    "fr": "Non renseigné lors de l’inscription",
+    "en": "Not provided at registration",
+    "de": "Bei Registrierung nicht angegeben",
+    "es": "No indicado al registrarse"
+  },
+  "Vandaag": {
+    "fr": "Aujourd’hui",
+    "en": "Today",
+    "de": "Heute",
+    "es": "Hoy"
+  },
+  "Deze week": {
+    "fr": "Cette semaine",
+    "en": "This week",
+    "de": "Diese Woche",
+    "es": "Esta semana"
+  },
+  "Deze maand": {
+    "fr": "Ce mois-ci",
+    "en": "This month",
+    "de": "Dieser Monat",
+    "es": "Este mes"
+  },
+  "Bijvoorbeeld: test123": {
+    "fr": "Par exemple : test123",
+    "en": "For example: test123",
+    "de": "Zum Beispiel: test123",
+    "es": "Por ejemplo: test123"
+  },
+  "Toegang gewijzigd door platformbeheerder": {
+    "fr": "Accès modifié par l’administrateur de plateforme",
+    "en": "Access changed by platform administrator",
+    "de": "Zugriff durch Plattformadministrator geändert",
+    "es": "Acceso modificado por el administrador de plataforma"
+  },
+  "actor": {
+    "fr": "Auteur",
+    "en": "Actor",
+    "de": "Verantwortlicher",
+    "es": "Responsable"
+  },
+  "detail": {
+    "fr": "Détail",
+    "en": "Details",
+    "de": "Details",
+    "es": "Detalle"
+  },
+  "pending": {
+    "fr": "En attente",
+    "en": "Pending",
+    "de": "Ausstehend",
+    "es": "Pendiente"
+  },
+  "approved": {
+    "fr": "Approuvé",
+    "en": "Approved",
+    "de": "Genehmigt",
+    "es": "Aprobado"
+  },
+  "rejected": {
+    "fr": "Refusé",
+    "en": "Rejected",
+    "de": "Abgelehnt",
+    "es": "Rechazado"
+  },
+  "blocked": {
+    "fr": "Bloqué",
+    "en": "Blocked",
+    "de": "Gesperrt",
+    "es": "Bloqueado"
+  },
+  "organization": {
+    "fr": "Organisation",
+    "en": "Organization",
+    "de": "Organisation",
+    "es": "Organización"
+  },
+  "branch": {
+    "fr": "Établissement",
+    "en": "Branch",
+    "de": "Standort",
+    "es": "Local"
+  },
+  "Vestigingen beheren": {
+    "fr": "Gérer les établissements",
+    "en": "Manage branches",
+    "de": "Standorte verwalten",
+    "es": "Gestionar establecimientos"
+  },
+  "Verwijder een vestiging met één bevestiging. De toegang stopt direct; de historiek blijft bewaard.": {
+    "fr": "Supprimez un établissement avec une confirmation. L’accès cesse immédiatement ; l’historique est conservé.",
+    "en": "Remove a branch with one confirmation. Access stops immediately; history is retained.",
+    "de": "Entfernen Sie einen Standort mit einer Bestätigung. Der Zugang endet sofort; der Verlauf bleibt erhalten.",
+    "es": "Elimina un establecimiento con una confirmación. El acceso termina de inmediato; se conserva el historial."
+  },
+  "Verwijderde vestigingen tonen": {
+    "fr": "Afficher les établissements supprimés",
+    "en": "Show removed branches",
+    "de": "Entfernte Standorte anzeigen",
+    "es": "Mostrar establecimientos eliminados"
+  },
+  "Zoek vestiging of organisatie": {
+    "fr": "Rechercher un établissement ou une organisation",
+    "en": "Search branch or organization",
+    "de": "Standort oder Organisation suchen",
+    "es": "Buscar establecimiento u organización"
+  },
+  "Geen vestigingen gevonden.": {
+    "fr": "Aucun établissement trouvé.",
+    "en": "No branches found.",
+    "de": "Keine Standorte gefunden.",
+    "es": "No se encontraron establecimientos."
+  },
+  "Herstellen": {
+    "fr": "Restaurer",
+    "en": "Restore",
+    "de": "Wiederherstellen",
+    "es": "Restaurar"
+  },
+  "Deze vestiging verwijderen? Actieve shiften worden afgesloten. Medewerkers verliezen direct toegang.": {
+    "fr": "Supprimer cet établissement ? Les services en cours seront clôturés. Les employés perdront immédiatement leur accès.",
+    "en": "Remove this branch? Active shifts will be closed. Employees immediately lose access.",
+    "de": "Diesen Standort entfernen? Laufende Schichten werden beendet. Mitarbeitende verlieren sofort den Zugang.",
+    "es": "¿Eliminar este establecimiento? Se cerrarán los turnos activos. Los empleados perderán el acceso inmediatamente."
+  },
+  "Ja, vestiging verwijderen": {
+    "fr": "Oui, supprimer cet établissement",
+    "en": "Yes, remove branch",
+    "de": "Ja, Standort entfernen",
+    "es": "Sí, eliminar establecimiento"
+  },
+  "Vestiging hersteld. Eerdere rechten en goedkeuringsstatus gelden opnieuw.": {
+    "fr": "Établissement restauré. Les droits et le statut d’approbation précédents sont rétablis.",
+    "en": "Branch restored. Previous permissions and approval status apply again.",
+    "de": "Standort wiederhergestellt. Frühere Rechte und Genehmigungsstatus gelten wieder.",
+    "es": "Establecimiento restaurado. Se restablecen los permisos y el estado de aprobación anteriores."
+  },
+  "Vestiging verwijderd. De toegang is stopgezet.": {
+    "fr": "Établissement supprimé. L’accès a été coupé.",
+    "en": "Branch removed. Access has stopped.",
+    "de": "Standort entfernt. Der Zugang wurde gesperrt.",
+    "es": "Establecimiento eliminado. Se ha retirado el acceso."
+  },
+  "Deze vestiging is verwijderd. Herstel deze eerst.": {
+    "fr": "Cet établissement a été supprimé. Restaurez-le d’abord.",
+    "en": "This branch has been removed. Restore it first.",
+    "de": "Dieser Standort wurde entfernt. Stellen Sie ihn zuerst wieder her.",
+    "es": "Este establecimiento se ha eliminado. Restáuralo primero."
+  },
+  "Annuleren": {
+    "fr": "Annuler",
+    "en": "Cancel",
+    "de": "Abbrechen",
+    "es": "Cancelar"
+  },
+  "Verwijderen": {
+    "fr": "Supprimer",
+    "en": "Remove",
+    "de": "Entfernen",
+    "es": "Eliminar"
+  }
+}

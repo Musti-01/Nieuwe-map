@@ -12,6 +12,8 @@ class User(Base):
     email: Mapped[str] = mapped_column(String(254), unique=True)
     name: Mapped[str] = mapped_column(String(120))
     password_hash: Mapped[str] = mapped_column(String(255))
+    language: Mapped[str] = mapped_column(String(2), default="nl")
+    __table_args__ = (CheckConstraint("language IN ('nl', 'fr', 'en', 'de', 'es')", name="user_language"),)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     platform_owner: Mapped[bool] = mapped_column(Boolean, default=False)
     platform_admin: Mapped[bool] = mapped_column(Boolean, default=False)
@@ -40,6 +42,8 @@ class Branch(ApprovalFields, Base):
     organization_id: Mapped[int] = mapped_column(ForeignKey("organizations.id"), index=True)
     name: Mapped[str] = mapped_column(String(120))
     __table_args__ = (CheckConstraint("status IN ('pending', 'approved', 'rejected', 'blocked')", name="branch_status"),)
+    archived_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    archived_by: Mapped[int | None] = mapped_column(ForeignKey("users.id"))
     # Commercial metadata only: no payments or package enforcement in this MVP.
     plan: Mapped[str] = mapped_column(String(30), default="starter")
 

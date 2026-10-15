@@ -211,3 +211,23 @@ Medewerkers zien alleen hun eigen uitklokwaarschuwingen; beheerders zien hun ves
 Platformdashboard → Gebruikers toont zoekbare accountkaarten met naam, e-mailadres, status en een knop **Beheren**. Er is geen vooraf geselecteerd account. Je eigen account en andere beschermde accounts tonen vooraf waarom ze niet gewijzigd mogen worden, zonder onbruikbare actieknoppen.
 
 Na Beheren staat de gekozen persoon duidelijk boven de acties. Deactiveren/heractiveren heeft één actieknop en een auditreden. Voor definitief verwijderen van een ongebruikt gewoon account is een afzonderlijke bevestiging vereist. De server controleert opnieuw de rechten en aanwezigheid van gegevens in dezelfde transactie. Registraties, planning, eigendom en beveiligings-/beoordelingshistoriek blokkeren fysieke verwijdering. Verwijderen ruimt alleen het ongebruikte account, de sessies en eventuele losse vestigingskoppelingen op en bewaart een auditgebeurtenis bij de beheerder. Er worden geen uren, organisaties of auditlogs verwijderd.
+
+## Taalkeuze: Nederlands, Frans, Engels, Duits en Spaans
+
+Bovenaan de app staat **Taal / Language**, met Nederlands, Français, English, Deutsch en Español. Ook vóór inloggen kan de taal worden gekozen. Na inloggen wordt de bij het account bewaarde voorkeur geladen. Een wijziging terwijl je bent ingelogd wordt server-side bij dat eigen account opgeslagen en blijft na opnieuw inloggen behouden. Nieuwe registraties gebruiken de taal die op het registratieformulier gekozen was. Bestaande accounts starten bij migratie 0005 op Nederlands.
+
+Menu's, tabbladen, formulieren, toelichtingen, statuslabels, meldingen, validatiefouten en tabelkoppen gebruiken lokale vertaalcatalogi. Persoonlijke namen, bedrijfsnamen, e-mailadressen, adressen en vrije opmerkingen worden niet automatisch vertaald. De app stuurt geen gebruikersgegevens naar een externe vertaalservice. Interne rol- en statuscodes blijven gelijk; taal wijzigt nooit de autorisatie of de betekenis van een goedkeuringsactie.
+
+De vertaalcatalogus staat in `workforce/translations.json`; `workforce/i18n.py` verzorgt vertaling en gecontroleerde invulling van waarden. Tests controleren catalogusdekking, overeenkomende placeholders, de vijf inlogschermen, vertaalde foutmeldingen, taalvoorkeur per gebruiker, persoonlijke gegevens en het goedkeuren van aanvragen in de vier extra talen.
+
+De taalkeuze geldt voor de eigen ShiftFlow-interface. Externe Streamlit/Neon-beheerpagina's en browsermenu's hebben hun eigen taalinstellingen. Auditactiecodes, de huidige uitgaande e-mailtemplates en documentatie blijven ongewijzigd; er wordt geen vrije tekst vertaald. De datum-/tijdnotatie in registratieoverzichten blijft dag-maand-jaar in de ingestelde vestigingstijdzone. Gebruik de ingebouwde taalkeuze; automatische browservertaling kan de gekozen appteksten opnieuw veranderen.
+
+### Vestigingen eenvoudig verwijderen
+
+Ga als platformbeheerder naar **Platformdashboard → Vestigingen beheren**.
+Zoek de vestiging, klik **Verwijderen** en bevestig met **Ja, vestiging verwijderen**.
+De vestiging verdwijnt direct uit aanvragen en actieve vestigingslijsten; de server weigert ook bestaande sessies toegang tot die vestiging. Actieve shiften worden afgesloten en blijven wachten op controle.
+Organisatie, accounts, rollen, planning, uren en auditgegevens blijven bewaard als archief.
+Via **Verwijderde vestigingen tonen → Herstellen** kun je een vergissing herstellen; eerdere rollen en goedkeuringsstatus gelden dan opnieuw.
+Dit verwijdert geen volledige organisatie en heeft geen effect op andere vestigingen.
+Migratie `0006` voegt de archiefdatum en verantwoordelijke toe en wordt bij Community Cloud automatisch uitgevoerd.

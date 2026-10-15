@@ -40,7 +40,9 @@ class Service:
     def __init__(self, session_factory):
         self.sessions = session_factory
 
-    def register(self, email, name, password, organization=None, chain=None, branch=None, address=None, phone=None):
+    def register(self, email, name, password, organization=None, chain=None, branch=None, address=None, phone=None, language="nl"):
+        if language not in ("nl","fr","en","de","es"):
+            raise ValueError("Ongeldige taalkeuze.")
         email = email_address(email)
         name = clean(name, "Naam")
         if len(password) < 12 or len(password) > 128:
@@ -52,7 +54,7 @@ class Service:
             phone = clean(phone or "", "Telefoon", 40)
         try:
             with self.sessions.begin() as s:
-                u = User(email=email, name=name, password_hash=hasher.hash(password), platform_admin=False)
+                u = User(email=email, name=name, password_hash=hasher.hash(password), platform_admin=False, language=language)
                 s.add(u)
                 s.flush()
                 if organization is not None:
@@ -109,7 +111,7 @@ class Service:
     def identity(self, token):
         with self.sessions.begin() as s:
             u = self._actor(s, token)
-            return {"id": u.id, "name": u.name, "email": u.email, "platform_admin": u.platform_admin, "platform_owner": u.platform_owner}
+            return {"id": u.id, "name": u.name, "email": u.email, "platform_admin": u.platform_admin, "platform_owner": u.platform_owner, "language": u.language}
 
     def logout(self, token):
         with self.sessions.begin() as s:
@@ -127,7 +129,7 @@ class Service:
         u = s.get(User, u.id, populate_existing=True)
         if not u or not u.is_active:
             raise Denied("Dit account is gedeactiveerd.")
-        if org.status != "approved" or b.status != "approved":
+        if b.archived_at is not None or org.status != "approved" or b.status != "approved":
             raise Denied("Organisatie en vestiging moeten actief en goedgekeurd zijn.")
         if u.platform_admin or org.owner_id == u.id:
             return b
@@ -147,7 +149,7 @@ class Service:
     def branches(self, token):
         with self.sessions.begin() as s:
             u = self._actor(s, token)
-            q = select(Branch, Organization).join(Organization)
+            q = select(Branch, Organization).join(Organization).where(Branch.archived_at.is_(None))
             if not u.platform_admin:
                 q = q.where(or_(Organization.owner_id == u.id, Branch.id.in_(select(Membership.branch_id).where(Membership.user_id == u.id, Membership.role != "revoked"))))
             result = []
@@ -293,7 +295,7 @@ class Service:
             self._platform(s, token)
             result = []
             for org, responsible in s.execute(select(Organization, User).join(User, User.id == Organization.owner_id).order_by(Organization.id)):
-                for entity in [org, *s.scalars(select(Branch).where(Branch.organization_id == org.id).order_by(Branch.id))]:
+                for entity in [org, *s.scalars(select(Branch).where(Branch.organization_id == org.id, Branch.archived_at.is_(None)).order_by(Branch.id))]:
                     result.append({"kind": "organization" if entity is org else "branch", "id": entity.id, "organization_id": org.id, "bedrijf": org.name, "vestiging": "—" if entity is org else entity.name, "adres": entity.address, "verantwoordelijke": responsible.name, "email": responsible.email, "telefoon": org.contact_phone, "status": entity.status, "aangevraagd": entity.submitted_at, "beoordelaar": entity.reviewed_by, "beoordeeld": entity.reviewed_at})
             return result
 
@@ -319,6 +321,8 @@ class Service:
             if not org:
                 raise ValueError("Aanvraag niet gevonden.")
             entity = org if kind == "organization" else s.scalar(select(Branch).where(Branch.id == entity_id).with_for_update().execution_options(populate_existing=True))
+            if kind == "branch" and entity.archived_at is not None:
+                raise Denied("Deze vestiging is verwijderd. Herstel deze eerst.")
             old, new = transitions[action]
             if entity.status != old:
                 raise ValueError("Besluit past niet bij de huidige status; vernieuw het overzicht.")
@@ -340,6 +344,37 @@ class Service:
             title = {"approved": "Goedgekeurd", "rejected": "Geweigerd", "blocked": "Geblokkeerd"}[new]
             s.add(Notification(decision_id=d.id, recipient=owner_user.email, subject=f"ShiftFlow: {title}", body=f"Beste {owner_user.name},\n\nDe aanvraag voor {entity.name} ({kind}) heeft status: {title}.\nReden: {reason or 'Geen aanvullende toelichting.'}\n\nOrganisatie en vestiging moeten beide goedgekeurd zijn om operationele functies te gebruiken."))
             return d.id
+
+    def platform_branches(self, token, archived=False):
+        with self.sessions.begin() as s:
+            self._platform(s, token)
+            q = select(Branch, Organization).join(Organization)
+            q = q.where(Branch.archived_at.is_not(None) if archived else Branch.archived_at.is_(None))
+            return [{"id": b.id, "name": b.name, "organization": o.name,
+                     "address": b.address, "status": b.status, "archived_at": b.archived_at}
+                    for b, o in s.execute(q.order_by(Organization.name, Branch.name))]
+
+    def archive_branch(self, token, branch_id, restore=False):
+        with self.sessions.begin() as s:
+            u = self._platform(s, token)
+            initial = s.get(Branch, branch_id)
+            if not initial:
+                raise Denied("Geen toegang tot deze vestiging.")
+            s.scalar(select(Organization).where(Organization.id == initial.organization_id).with_for_update())
+            b = s.scalar(select(Branch).where(Branch.id == branch_id).with_for_update().execution_options(populate_existing=True))
+            if restore:
+                b.archived_at = b.archived_by = None
+            elif b.archived_at is None:
+                b.archived_at, b.archived_by = now(), u.id
+                entries = s.scalars(select(WorkEntry).where(WorkEntry.branch_id == b.id, WorkEntry.ended_at.is_(None)).with_for_update())
+                for entry in entries:
+                    entry.ended_at = b.archived_at
+                    entry.version += 1
+                    self._audit(s, u, b.id, "clock.closed_by_archive", f"entry={entry.id}")
+            else:
+                return True
+            self._audit(s, u, b.id, "branch.restored" if restore else "branch.archived", b.name)
+            return True
 
     def decisions(self, token):
         with self.sessions.begin() as s:
@@ -451,7 +486,9 @@ class Service:
             self._audit(s,actor,branch_id,'account.invited',f'email={email}')
             return url
 
-    def accept_invite(self, raw, token=None, name=None, password=None):
+    def accept_invite(self, raw, token=None, name=None, password=None, language="nl"):
+        if language not in ("nl","fr","en","de","es"):
+            raise ValueError("Ongeldige taalkeuze.")
         with self.sessions.begin() as s:
             invitation = s.scalar(select(AccountToken).where(AccountToken.token_hash==digest(raw), AccountToken.purpose=='invite').with_for_update())
             if not invitation or invitation.consumed_at or invitation.expires_at <= now():
@@ -468,7 +505,7 @@ class Service:
             else:
                 if token:
                     raise Denied('Log uit om een nieuw account voor deze uitnodiging aan te maken.')
-                account = User(email=invitation.email,name=clean(name or '', 'Naam'),password_hash=self._password(password))
+                account = User(email=invitation.email,name=clean(name or '', 'Naam'),password_hash=self._password(password),language=language)
                 s.add(account)
                 s.flush()
             membership = s.get(Membership,(invitation.branch_id,account.id))
@@ -554,7 +591,7 @@ class Service:
             select(Audit.id).where(Audit.actor_id == target.id),
             select(ApprovalDecision.id).where(ApprovalDecision.reviewer_id == target.id),
             select(Organization.id).where(Organization.reviewed_by == target.id),
-            select(Branch.id).where(Branch.reviewed_by == target.id),
+            select(Branch.id).where(or_(Branch.reviewed_by == target.id, Branch.archived_by == target.id)),
             select(ShiftReview.id).where(ShiftReview.reviewer_id == target.id),
             select(AccountToken.token_hash).where(or_(AccountToken.user_id == target.id, AccountToken.created_by == target.id, AccountToken.email == target.email)),
         ]
@@ -726,3 +763,11 @@ class Service:
             elif entry['review_status']=='pending' and team:
                 result.append({'type':'controle','medewerker':entry['name'],'melding':'Afgesloten shift wacht op controle.','shift':entry['id']})
         return result
+
+    def set_language(self, token, language):
+        if language not in ('nl','fr','en','de','es'):
+            raise ValueError('Ongeldige taalkeuze.')
+        with self.sessions.begin() as s:
+            actor=self._actor(s,token)
+            actor.language=language
+            return True
