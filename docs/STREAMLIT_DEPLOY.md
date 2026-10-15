@@ -45,3 +45,13 @@ De eenmalige SQL-bootstrap heeft dezelfde lock en beschermingsvoorwaarden als de
 SMTP-verzending heeft nog steeds een geplande worker nodig. Streamlit Community Cloud voert geen periodieke worker voor deze app uit. Besluiten worden wel betrouwbaar in de outbox opgeslagen; voor echte mail moet een aparte vertrouwde worker met dezelfde database- en SMTP-configuratie worden gehost.
 
 Voor klantgebruik blijven backups, privacybeleid en aanvullende authenticatiebescherming nodig zoals beschreven in README. De gratis hostingpakketten kunnen slapen en hebben providerlimieten; dit document belooft geen SLA.
+
+## Nieuwe medewerkers- en planningfuncties activeren
+
+Na de update naar migratie 0004: herstart de app. Bestaande accounts blijven actief en tijdregistraties blijven bewaard. In de vestiging staan Planning en Meldingen; uitnodigingen staan onder Team & rechten en globale accountstatus onder Platformdashboard → Gebruikers.
+
+Voeg voor deelbare uitnodigingslinks `APP_BASE_URL = "https://jouw-eigen-app.streamlit.app"` toe aan Streamlit Secrets. Gebruik het echte publieke app-adres zonder query of fragment. De app toont daarna een link die je zelf aan de medewerker kunt sturen.
+
+Wachtwoordherstel per e-mail vereist eerst een geconfigureerde, werkende externe SMTP-worker. Zet pas na een geslaagde afleveringscontrole `EMAIL_DELIVERY_ENABLED = "1"` in Streamlit Secrets. Zonder die vlag meldt de app eerlijk dat e-mailherstel nog niet beschikbaar is. Het wijzigen van een bekend wachtwoord werkt voor ingelogde gebruikers via het zijmenu, zonder e-mail.
+
+Meldingen over vergeten uitklokken worden in de app berekend wanneer je het scherm opent of ververst. Dit zijn geen achtergrond- of pushmeldingen. Planning vervangt de afzonderlijke urencontrole niet.

@@ -26,7 +26,7 @@ def engine():
 @pytest.fixture
 def api(engine):
     with engine.begin() as connection:
-        connection.execute(text('TRUNCATE shift_reviews, notifications, approval_decisions, audit_events, auth_sessions, login_limits, work_entries, memberships, branches, organizations, users RESTART IDENTITY CASCADE'))
+        connection.execute(text('TRUNCATE account_tokens, shift_plans, shift_reviews, notifications, approval_decisions, audit_events, auth_sessions, login_limits, work_entries, memberships, branches, organizations, users RESTART IDENTITY CASCADE'))
     return Service(sessions(engine))
 
 @pytest.fixture

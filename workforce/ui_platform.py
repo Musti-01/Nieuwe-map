@@ -4,7 +4,7 @@ from sqlalchemy.exc import SQLAlchemyError
 
 def show_platform(api, token, me, run):
     labels = {"pending": "In afwachting", "approved": "Goedgekeurd", "rejected": "Geweigerd", "blocked": "Geblokkeerd"}
-    pages = ["Overzicht", "Aanvragen", "Besluitgeschiedenis"]
+    pages = ["Overzicht", "Aanvragen", "Besluitgeschiedenis", "Gebruikers"]
     if me['platform_owner']:
         pages.append("Platformbeheerders")
     if st.session_state.get('platform_page') not in pages:
@@ -33,7 +33,9 @@ def show_platform(api, token, me, run):
             st.markdown("**Platformbeheerders machtigen** — geef een bestaand account platformrechten of trek die in. Alleen jij als platformeigenaar kunt dit doen.")
             st.button("Beheer platformbeheerders", on_click=navigate, args=("Platformbeheerders",))
         st.markdown("**Vestigingen, medewerkers en uren beheren** — kies links bij Werkruimte voor **Vestigingen**. Selecteer daar een vestiging voor het team, rollen, uren en auditlog. Bij **Shiften controleren** kun je tijden met een reden corrigeren en uren goedkeuren; je eigen shifts moeten door een andere beheerder worden gecontroleerd.")
-        st.info("Medewerkers beheren: in de vestiging bij Team & rechten. Accountverwijdering, volledige accountdeactivering en shiftplanning zijn nog niet beschikbaar.")
+        st.markdown("**Accounts beheren** — bekijk gebruikers en deactiveer of heractiveer accounts. Historische gegevens blijven bewaard.")
+        st.button("Beheer gebruikersaccounts", on_click=navigate, args=("Gebruikers",))
+        st.info("In de vestiging: Team & rechten voor uitnodigingen en rollen, Planning voor geplande shiften en Meldingen voor vergeten uitklokken en controlewerk. Volledige accountverwijdering is niet beschikbaar.")
         st.caption("E-mails bij besluiten worden in een wachtrij gezet. Echte verzending vereist een geconfigureerde mailworker.")
     elif page == "Aanvragen":
         st.write("Keur eerst de organisatie goed, daarna haar vestigingen. Gebruik de statusfilter om ook blokkeringen te beheren.")
@@ -64,6 +66,9 @@ def show_platform(api, token, me, run):
             st.dataframe(decisions, hide_index=True, use_container_width=True)
         else:
             st.info("Er zijn nog geen besluiten geregistreerd.")
+    elif page == "Gebruikers":
+        from workforce.ui_accounts import account_management
+        account_management(api, token, run)
     elif page == "Platformbeheerders" and me['platform_owner']:
         st.write("Zoek een bestaand persoonlijk account op exact e-mailadres. Machtigen geeft toegang tot alle platformaanvragen; intrekken beëindigt die rechten.")
 

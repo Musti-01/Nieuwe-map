@@ -1,4 +1,6 @@
 """Every public operation authenticates and authorizes in the same transaction."""
+import os
+from urllib.parse import urlsplit, urlencode
 import hashlib
 import re
 import secrets
@@ -8,7 +10,7 @@ from argon2.exceptions import VerificationError, InvalidHashError
 from sqlalchemy import select, or_, text, delete
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.dialects.postgresql import insert
-from workforce.models import User, Organization, Branch, Membership, WorkEntry, AuthSession, LoginLimit, Audit, ApprovalDecision, Notification, ShiftReview
+from workforce.models import User, Organization, Branch, Membership, WorkEntry, AuthSession, LoginLimit, Audit, ApprovalDecision, Notification, ShiftReview, AccountToken, ShiftPlan
 
 hasher = PasswordHasher()
 DUMMY_HASH = hasher.hash(secrets.token_urlsafe(32))
@@ -81,7 +83,7 @@ class Service:
                 raise Denied("Te veel pogingen. Probeer over 15 minuten opnieuw.")
             u = s.scalar(select(User).where(User.email == email))
             try:
-                success = hasher.verify(u.password_hash if u else DUMMY_HASH, password) and u is not None
+                success = hasher.verify(u.password_hash if u else DUMMY_HASH, password) and u is not None and u.is_active
             except (VerificationError, InvalidHashError):
                 success = False
             if success:
@@ -99,7 +101,7 @@ class Service:
     def _actor(self, s, token):
         if not isinstance(token, str) or not token:
             raise Denied("Log opnieuw in.")
-        u = s.scalar(select(User).join(AuthSession).where(AuthSession.token_hash == digest(token), AuthSession.expires_at > now()))
+        u = s.scalar(select(User).join(AuthSession).where(AuthSession.token_hash == digest(token), AuthSession.expires_at > now(), User.is_active.is_(True)))
         if not u:
             raise Denied("Sessie verlopen. Log opnieuw in.")
         return u
@@ -122,6 +124,9 @@ class Service:
             b = s.scalar(select(Branch).where(Branch.id == b.id).with_for_update().execution_options(populate_existing=True))
         else:
             org = s.get(Organization, b.organization_id)
+        u = s.get(User, u.id, populate_existing=True)
+        if not u.is_active:
+            raise Denied("Dit account is gedeactiveerd.")
         if org.status != "approved" or b.status != "approved":
             raise Denied("Organisatie en vestiging moeten actief en goedgekeurd zijn.")
         if u.platform_admin or org.owner_id == u.id:
@@ -182,8 +187,8 @@ class Service:
             b = self._access(s, u, branch_id, admin=True, lock=True)
             org = s.get(Organization, b.organization_id)
             target = s.get(User, target_id)
-            if not target:
-                raise ValueError("Gebruiker niet gevonden.")
+            if not target or not target.is_active:
+                raise ValueError("Actieve gebruiker niet gevonden.")
             m = s.get(Membership, (b.id, target.id), populate_existing=True)
             is_owner = u.platform_admin or org.owner_id == u.id
             if not is_owner and (role == "admin" or (m and m.role == "admin") or target.id == org.owner_id or target.platform_admin):
@@ -206,9 +211,9 @@ class Service:
         with self.sessions.begin() as s:
             u = self._actor(s, token)
             self._access(s, u, branch_id, admin=True)
-            return [{"id": member.id, "name": member.name, "email": member.email, "role": m.role} for member, m in s.execute(select(User, Membership).join(Membership).where(Membership.branch_id == branch_id).order_by(User.name))]
+            return [{"id": member.id, "name": member.name, "email": member.email, "role": m.role, "active": member.is_active} for member, m in s.execute(select(User, Membership).join(Membership).where(Membership.branch_id == branch_id).order_by(User.name))]
 
-    def clock_in(self, token, branch_id):
+    def clock_in(self, token, branch_id, plan_id=None):
         try:
             with self.sessions.begin() as s:
                 u = self._actor(s, token)
@@ -217,7 +222,13 @@ class Service:
                 m = s.get(Membership, (branch_id, u.id))
                 if not m or m.role == "revoked":
                     raise Denied("Je bent geen medewerker van deze vestiging.")
-                e = WorkEntry(branch_id=branch_id, user_id=u.id, started_at=now())
+                if plan_id is not None:
+                    plan = s.get(ShiftPlan, plan_id)
+                    if not plan or plan.branch_id != branch_id or plan.user_id != u.id or plan.status != 'scheduled':
+                        raise Denied("Geen toegang tot deze geplande shift.")
+                    if s.scalar(select(WorkEntry.id).where(WorkEntry.plan_id == plan_id)):
+                        raise ValueError("Deze geplande shift heeft al een tijdregistratie.")
+                e = WorkEntry(branch_id=branch_id, user_id=u.id, started_at=now(), plan_id=plan_id)
                 s.add(e)
                 s.flush()
                 self._audit(s, u, branch_id, "clock.in", f"entry={e.id}")
@@ -245,7 +256,7 @@ class Service:
             q = select(WorkEntry, User.name).join(User, User.id == WorkEntry.user_id).where(WorkEntry.branch_id == branch_id)
             if not team:
                 q = q.where(WorkEntry.user_id == u.id)
-            return [{"id": e.id, "user_id": e.user_id, "name": name, "start": e.started_at, "end": e.ended_at, "review_status": e.review_status, "version": e.version, "reviewed_by": e.reviewed_by, "reviewed_at": e.reviewed_at} for e, name in s.execute(q.order_by(WorkEntry.started_at.desc()))]
+            return [{"id": e.id, "user_id": e.user_id, "name": name, "start": e.started_at, "end": e.ended_at, "review_status": e.review_status, "version": e.version, "reviewed_by": e.reviewed_by, "reviewed_at": e.reviewed_at, "plan_id": e.plan_id} for e, name in s.execute(q.order_by(WorkEntry.started_at.desc()))]
 
     def audit(self, token, branch_id):
         with self.sessions.begin() as s:
@@ -273,7 +284,7 @@ class Service:
     def _platform(self, s, token, owner=False):
         u = self._actor(s, token)
         u = s.scalar(select(User).where(User.id == u.id).with_for_update().execution_options(populate_existing=True))
-        if not u.platform_admin or (owner and not u.platform_owner):
+        if not u.is_active or not u.platform_admin or (owner and not u.platform_owner):
             raise Denied("Alleen bevoegde platformbeheerders hebben toegang.")
         return u
 
@@ -412,3 +423,245 @@ class Service:
             if entry.user_id != actor.id:
                 self._access(s, actor, branch_id, admin=True)
             return [{"actie": r.action, "reden": r.reason, "beoordelaar": reviewer.name, "tijd": r.created_at, "oud_begin": r.old_start, "oud_einde": r.old_end, "nieuw_begin": r.new_start, "nieuw_einde": r.new_end} for r, reviewer in s.execute(select(ShiftReview, User).join(User, User.id == ShiftReview.reviewer_id).where(ShiftReview.entry_id == entry.id).order_by(ShiftReview.id.desc()))]
+
+    def _public_url(self):
+        url = os.getenv('APP_BASE_URL', '').strip().rstrip('/')
+        parsed = urlsplit(url)
+        if parsed.scheme != 'https' or not parsed.hostname or parsed.username or parsed.password or parsed.query or parsed.fragment:
+            raise ValueError('Stel eerst APP_BASE_URL in op het HTTPS-adres van deze app.')
+        return url
+
+    def _password(self, password):
+        if not isinstance(password, str) or not 12 <= len(password) <= 128:
+            raise ValueError('Gebruik een wachtwoord van 12 tot 128 tekens.')
+        return hasher.hash(password)
+
+    def invite(self, token, branch_id, email):
+        email, base = email_address(email), self._public_url()
+        with self.sessions.begin() as s:
+            actor = self._actor(s, token)
+            branch = self._access(s, actor, branch_id, admin=True, lock=True)
+            s.execute(text('SELECT pg_advisory_xact_lock(793125044, :key)'), {'key': int(digest(email)[:7],16)})
+            for old in s.scalars(select(AccountToken).where(AccountToken.purpose=='invite', AccountToken.branch_id==branch_id, AccountToken.email==email, AccountToken.consumed_at.is_(None))):
+                old.consumed_at = now()
+            raw = secrets.token_urlsafe(32)
+            s.add(AccountToken(token_hash=digest(raw),purpose='invite',email=email,branch_id=branch_id,created_by=actor.id,expires_at=now()+timedelta(days=7)))
+            url = base + '?' + urlencode({'invite':raw})
+            s.add(Notification(recipient=email,subject='Uitnodiging voor ShiftFlow',body=f'Je bent uitgenodigd als medewerker bij {branch.name}. Open binnen 7 dagen: {url}\nBestaande gebruikers moeten met hun eigen account inloggen.'))
+            self._audit(s,actor,branch_id,'account.invited',f'email={email}')
+            return url
+
+    def accept_invite(self, raw, token=None, name=None, password=None):
+        with self.sessions.begin() as s:
+            invitation = s.scalar(select(AccountToken).where(AccountToken.token_hash==digest(raw), AccountToken.purpose=='invite').with_for_update())
+            if not invitation or invitation.consumed_at or invitation.expires_at <= now():
+                raise Denied('Uitnodiging ongeldig, verlopen of al gebruikt.')
+            inviter = s.get(User,invitation.created_by)
+            if not inviter or not inviter.is_active:
+                raise Denied('De uitnodiging is niet meer geldig.')
+            self._access(s,inviter,invitation.branch_id,admin=True,lock=True)
+            account = s.scalar(select(User).where(User.email==invitation.email))
+            if account:
+                actor = self._actor(s,token)
+                if actor.id != account.id:
+                    raise Denied('Log in met het e-mailadres waarop je bent uitgenodigd.')
+            else:
+                if token:
+                    raise Denied('Log uit om een nieuw account voor deze uitnodiging aan te maken.')
+                account = User(email=invitation.email,name=clean(name or '', 'Naam'),password_hash=self._password(password))
+                s.add(account)
+                s.flush()
+            membership = s.get(Membership,(invitation.branch_id,account.id))
+            if membership is None:
+                s.add(Membership(branch_id=invitation.branch_id,user_id=account.id,role='employee'))
+            elif membership.role=='revoked':
+                membership.role='employee'
+            invitation.consumed_at=now()
+            self._audit(s,account,invitation.branch_id,'invitation.accepted',f'inviter={inviter.id}')
+            return account.id
+
+    def request_password_reset(self, email):
+        email = email_address(email)
+        if os.getenv('EMAIL_DELIVERY_ENABLED') != '1':
+            raise ValueError('Wachtwoordherstel per e-mail is nog niet ingesteld. Neem contact op met de platformeigenaar.')
+        base = self._public_url()
+        with self.sessions.begin() as s:
+            key=digest('reset:'+email)
+            s.execute(insert(LoginLimit).values(key=key,failures=0,window_start=now()).on_conflict_do_nothing())
+            limit=s.scalar(select(LoginLimit).where(LoginLimit.key==key).with_for_update())
+            if now()-limit.window_start>=timedelta(minutes=15):
+                limit.failures,limit.window_start=0,now()
+            if limit.failures>=3:
+                return True
+            limit.failures+=1
+            account=s.scalar(select(User).where(User.email==email,User.is_active.is_(True)))
+            if account:
+                for old in s.scalars(select(AccountToken).where(AccountToken.purpose=='reset',AccountToken.user_id==account.id,AccountToken.consumed_at.is_(None))):
+                    old.consumed_at=now()
+                raw=secrets.token_urlsafe(32)
+                s.add(AccountToken(token_hash=digest(raw),purpose='reset',email=email,user_id=account.id,expires_at=now()+timedelta(hours=1)))
+                url=base+'?'+urlencode({'reset':raw})
+                s.add(Notification(recipient=email,subject='ShiftFlow wachtwoord herstellen',body=f'Gebruik binnen een uur deze eenmalige link: {url}\nNiet aangevraagd? Negeer dit bericht.'))
+            return True
+
+    def reset_password(self, raw, password):
+        hashed=self._password(password)
+        with self.sessions.begin() as s:
+            reset=s.scalar(select(AccountToken).where(AccountToken.token_hash==digest(raw),AccountToken.purpose=='reset').with_for_update())
+            if not reset or reset.consumed_at or reset.expires_at<=now():
+                raise Denied('Herstellink ongeldig, verlopen of al gebruikt.')
+            key=digest(reset.email)
+            s.execute(insert(LoginLimit).values(key=key,failures=0,window_start=now()).on_conflict_do_nothing())
+            s.scalar(select(LoginLimit).where(LoginLimit.key==key).with_for_update())
+            account=s.scalar(select(User).where(User.id==reset.user_id).with_for_update())
+            if not account or not account.is_active:
+                raise Denied('Herstellink ongeldig, verlopen of al gebruikt.')
+            account.password_hash=hashed
+            for row in s.scalars(select(AccountToken).where(AccountToken.purpose=='reset',AccountToken.user_id==account.id,AccountToken.consumed_at.is_(None))):
+                row.consumed_at=now()
+            s.execute(delete(AuthSession).where(AuthSession.user_id==account.id))
+            s.execute(delete(LoginLimit).where(LoginLimit.key==digest(account.email)))
+            self._audit(s,account,None,'password.reset','Alle bestaande sessies ingetrokken')
+            return True
+
+    def change_password(self, token, current, password):
+        hashed=self._password(password)
+        with self.sessions.begin() as s:
+            actor=self._actor(s,token)
+            try:
+                hasher.verify(actor.password_hash,current)
+            except VerificationError as exc:
+                raise Denied('Huidig wachtwoord onjuist.') from exc
+            actor.password_hash=hashed
+            s.execute(delete(AuthSession).where(AuthSession.user_id==actor.id))
+            self._audit(s,actor,None,'password.changed','Alle bestaande sessies ingetrokken')
+            return True
+
+    def accounts(self, token):
+        with self.sessions.begin() as s:
+            self._platform(s,token)
+            return [{'id':u.id,'naam':u.name,'email':u.email,'actief':u.is_active,'platformbeheerder':u.platform_admin,'platformeigenaar':u.platform_owner} for u in s.scalars(select(User).order_by(User.name))]
+
+    def set_account_active(self, token, user_id, enabled, reason):
+        if type(enabled) is not bool:
+            raise ValueError('Ongeldige status.')
+        reason=clean(reason,'Reden',300)
+        with self.sessions.begin() as s:
+            actor=self._platform(s,token)
+            target=s.get(User,user_id)
+            if not target:
+                raise ValueError('Account niet gevonden.')
+            if target.id==actor.id or target.platform_owner or (target.platform_admin and not actor.platform_owner):
+                raise Denied('Je mag dit account niet deactiveren of heractiveren.')
+            if not enabled and s.scalar(select(Organization.id).where(Organization.owner_id==target.id)):
+                raise Denied('Deze gebruiker is organisatie-eigenaar. Blokkeer de organisatie; accountdeactivering vereist eerst eigendomsoverdracht.')
+            orgs=select(Organization.id).join(Branch,Branch.organization_id==Organization.id).join(Membership,Membership.branch_id==Branch.id).where(Membership.user_id==target.id).distinct().order_by(Organization.id)
+            ids=list(s.scalars(orgs))
+            for oid in ids:
+                s.scalar(select(Organization).where(Organization.id==oid).with_for_update())
+            target=s.scalar(select(User).where(User.id==target.id).with_for_update().execution_options(populate_existing=True))
+            if target.id==actor.id or target.platform_owner or (target.platform_admin and not actor.platform_owner):
+                raise Denied('Je mag dit account niet deactiveren of heractiveren.')
+            s.execute(text('SELECT pg_advisory_xact_lock(793125043, :uid)'),{'uid':target.id})
+            if target.is_active==enabled:
+                raise ValueError('Dit account heeft deze status al.')
+            target.is_active=enabled
+            if not enabled:
+                for entry in s.scalars(select(WorkEntry).where(WorkEntry.user_id==target.id,WorkEntry.ended_at.is_(None)).with_for_update()):
+                    entry.ended_at=now()
+                    entry.version+=1
+                    self._audit(s,actor,entry.branch_id,'clock.closed_by_deactivation',f'entry={entry.id}; user={target.id}')
+                s.execute(delete(AuthSession).where(AuthSession.user_id==target.id))
+            self._audit(s,actor,None,'account.reactivated' if enabled else 'account.deactivated',f'user={target.id}; reason={reason}')
+            return True
+
+    def plans(self, token, branch_id, team=False):
+        with self.sessions.begin() as s:
+            actor=self._actor(s,token)
+            self._access(s,actor,branch_id,admin=team)
+            q=select(ShiftPlan,User.name).join(User,User.id==ShiftPlan.user_id).where(ShiftPlan.branch_id==branch_id)
+            if not team:
+                q=q.where(ShiftPlan.user_id==actor.id)
+            result=[]
+            for plan,name in s.execute(q.order_by(ShiftPlan.starts_at)):
+                entry=s.scalar(select(WorkEntry).where(WorkEntry.plan_id==plan.id))
+                result.append({'id':plan.id,'user_id':plan.user_id,'name':name,'start':plan.starts_at,'end':plan.ends_at,'status':plan.status,'note':plan.note,'version':plan.version,'entry_id':entry.id if entry else None,'actual_start':entry.started_at if entry else None,'actual_end':entry.ended_at if entry else None})
+            return result
+
+    def save_plan(self, token, branch_id, user_id, start, end, note='', plan_id=None, version=None):
+        if not all(isinstance(v,datetime) and v.tzinfo is not None and v.utcoffset() is not None for v in (start,end)) or end<=start:
+            raise ValueError('Geef geldige begin- en eindtijden met tijdzone; einde moet na begin liggen.')
+        if end<=now():
+            raise ValueError('Plan een shift die nog niet volledig voorbij is.')
+        note=note.strip()
+        if len(note)>500:
+            raise ValueError('Gebruik maximaal 500 tekens voor de opmerking.')
+        with self.sessions.begin() as s:
+            actor=self._actor(s,token)
+            self._access(s,actor,branch_id,admin=True,lock=True)
+            s.execute(text('SELECT pg_advisory_xact_lock(793125043, :uid)'),{'uid':user_id})
+            membership=s.get(Membership,(branch_id,user_id))
+            user=s.get(User,user_id)
+            if not membership or membership.role=='revoked' or not user or not user.is_active:
+                raise ValueError('Kies een actieve medewerker van deze vestiging.')
+            plan=None
+            if plan_id is not None:
+                plan=s.scalar(select(ShiftPlan).where(ShiftPlan.id==plan_id,ShiftPlan.branch_id==branch_id).with_for_update())
+                if not plan:
+                    raise Denied('Geen toegang tot deze geplande shift.')
+                if plan.version!=version or plan.status!='scheduled':
+                    raise ValueError('De planning is gewijzigd; ververs het overzicht.')
+                if plan.user_id!=user_id:
+                    raise ValueError('Annuleer de shift en maak een nieuwe om de medewerker te wijzigen.')
+                if s.scalar(select(WorkEntry.id).where(WorkEntry.plan_id==plan.id)):
+                    raise ValueError('Deze shift heeft al een tijdregistratie en kan niet meer worden verplaatst.')
+            overlap=select(ShiftPlan.id).where(ShiftPlan.user_id==user_id,ShiftPlan.status=='scheduled',ShiftPlan.starts_at<end,ShiftPlan.ends_at>start)
+            if plan:
+                overlap=overlap.where(ShiftPlan.id!=plan.id)
+            if s.scalar(overlap):
+                raise ValueError('Deze medewerker is op dit tijdstip al ingepland, mogelijk in een andere vestiging.')
+            old=f'{plan.starts_at.isoformat()}..{plan.ends_at.isoformat()}' if plan else 'nieuw'
+            if plan:
+                plan.starts_at,plan.ends_at,plan.note=start,end,note
+                plan.version+=1
+            else:
+                plan=ShiftPlan(branch_id=branch_id,user_id=user_id,starts_at=start,ends_at=end,note=note,created_by=actor.id)
+                s.add(plan)
+            s.flush()
+            self._audit(s,actor,branch_id,'plan.saved',f'plan={plan.id}; oud={old}; nieuw={start.isoformat()}..{end.isoformat()}')
+            return plan.id
+
+    def cancel_plan(self,token,branch_id,plan_id,version,reason):
+        reason=clean(reason,'Reden',250)
+        with self.sessions.begin() as s:
+            actor=self._actor(s,token)
+            self._access(s,actor,branch_id,admin=True,lock=True)
+            plan=s.scalar(select(ShiftPlan).where(ShiftPlan.id==plan_id,ShiftPlan.branch_id==branch_id).with_for_update())
+            if not plan:
+                raise Denied('Geen toegang tot deze geplande shift.')
+            if plan.version!=version or plan.status!='scheduled':
+                raise ValueError('De planning is gewijzigd; ververs het overzicht.')
+            if s.scalar(select(WorkEntry.id).where(WorkEntry.plan_id==plan.id)):
+                raise ValueError('Een shift met tijdregistratie kan niet worden geannuleerd.')
+            plan.status='cancelled'
+            plan.version+=1
+            self._audit(s,actor,branch_id,'plan.cancelled',f'plan={plan.id}; reason={reason}')
+            return True
+
+    def alerts(self,token,branch_id,team=False):
+        # Uses the same fresh branch and employee authorization as the underlying views.
+        entries=self.entries(token,branch_id,team=team)
+        plans=self.plans(token,branch_id,team=team)
+        snapshot=now()
+        byid={p['id']:p for p in plans}
+        result=[]
+        for entry in entries:
+            plan=byid.get(entry['plan_id'])
+            if entry['end'] is None:
+                if plan and snapshot>plan['end']+timedelta(minutes=15):
+                    result.append({'type':'uitklokken','medewerker':entry['name'],'melding':'Nog ingeklokt, meer dan 15 minuten na geplande eindtijd.','shift':entry['id']})
+                elif snapshot-entry['start']>timedelta(hours=12):
+                    result.append({'type':'uitklokken','medewerker':entry['name'],'melding':'Meer dan 12 uur ingeklokt. Controleer of uitklokken is vergeten.','shift':entry['id']})
+            elif entry['review_status']=='pending' and team:
+                result.append({'type':'controle','medewerker':entry['name'],'melding':'Afgesloten shift wacht op controle.','shift':entry['id']})
+        return result

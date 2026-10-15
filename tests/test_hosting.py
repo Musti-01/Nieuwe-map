@@ -16,4 +16,4 @@ def test_cloud_migrations_are_repeatable_and_serialized(engine):
     with ThreadPoolExecutor(max_workers=2) as pool:
         list(pool.map(lambda _: migrate(engine), range(2)))
     with engine.connect() as connection:
-        assert connection.scalar(text('SELECT version_num FROM alembic_version')) == '0003'
+        assert connection.scalar(text('SELECT version_num FROM alembic_version')) == '0004'

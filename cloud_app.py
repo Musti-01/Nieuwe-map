@@ -5,7 +5,7 @@ from pathlib import Path
 import streamlit as st
 
 try:
-    for key in ('DATABASE_URL', 'APP_TIMEZONE'):
+    for key in ('DATABASE_URL', 'APP_TIMEZONE', 'APP_BASE_URL', 'EMAIL_DELIVERY_ENABLED'):
         if key in st.secrets:
             os.environ[key] = str(st.secrets[key])
 except FileNotFoundError:

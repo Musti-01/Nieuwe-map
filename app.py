@@ -15,7 +15,7 @@ h1,h2,h3 {color:#006491;} [data-testid=stMetric] {background:#F1F5FA;padding:1re
 </style>""", unsafe_allow_html=True)
 
 @st.cache_resource
-def backend():
+def backend(schema_revision="0004"):
     engine = make_engine()
     if os.getenv('AUTO_MIGRATE') == '1':
         from workforce.hosting import migrate
@@ -56,6 +56,9 @@ if token:
         st.error("Database niet beschikbaar.")
         st.stop()
 
+from workforce.ui_accounts import account_links, password_settings, invitations
+account_links(api, token, run)
+
 if not token:
     login_tab, signup_tab = st.tabs(["Inloggen", "Registreren"])
     with login_tab:
@@ -68,6 +71,13 @@ if not token:
                 if result:
                     st.session_state['token'] = result
                     st.rerun()
+        with st.expander("Wachtwoord vergeten?"):
+            st.caption("Een herstellink wordt alleen per e-mail verzonden wanneer de platformeigenaar e-mailverzending heeft ingesteld.")
+            with st.form("request_reset"):
+                reset_email=st.text_input("E-mailadres voor wachtwoordherstel")
+                if st.form_submit_button("Herstellink aanvragen"):
+                    if run(lambda: api.request_password_reset(reset_email)):
+                        st.success("Als dit een actief account is, staat een herstellink klaar voor verzending. Controleer je e-mail.")
     with signup_tab:
         st.subheader("Start met jouw team")
         is_owner = st.checkbox("Ik registreer een organisatie met een eerste vestiging", value=True)
@@ -95,6 +105,7 @@ if not token:
 with st.sidebar:
     st.subheader(me['name'])
     st.caption("Platformeigenaar" if me['platform_owner'] else "Platformbeheerder" if me['platform_admin'] else me['email'])
+    password_settings(api, token, run)
     if st.button("Uitloggen", use_container_width=True):
         run(lambda: api.logout(token))
         st.session_state.clear()
@@ -136,7 +147,7 @@ if b['status'] != 'approved' or b['organization_status'] != 'approved':
     st.info("Operationele toegang en rolbeheer worden beschikbaar zodra de platformbeheerder zowel de organisatie als de vestiging goedkeurt. Bij blokkering vervalt de toegang direct.")
     st.stop()
 st.caption(f"{b['organization']} · {'Organisatie-eigenaar' if b['owner'] else 'Vestigingsadmin' if b['admin'] else 'Medewerker'}")
-tabs = st.tabs(["In- en uitklokken", "Mijn shiften"] + (["Dashboard", "Shiften controleren", "Team & rechten", "Auditlog"] if b['admin'] else []))
+tabs = st.tabs(["In- en uitklokken", "Mijn shiften"] + (["Dashboard", "Shiften controleren", "Team & rechten", "Auditlog"] if b['admin'] else []) + ["Planning", "Meldingen"])
 zone = os.getenv('APP_TIMEZONE', 'Europe/Brussels')
 try:
     tz = ZoneInfo(zone)
@@ -148,13 +159,16 @@ with tabs[0]:
     entries = run(lambda: api.entries(token, branch_id))
     if entries is None:
         st.stop()
+    my_plans = run(lambda: api.plans(token, branch_id)) or []
+    choices = [p for p in my_plans if p['status']=='scheduled' and p['entry_id'] is None]
+    plan_id = st.selectbox("Inklokken voor", [None]+[p['id'] for p in choices], format_func=lambda i: "Zonder geplande shift" if i is None else next(f"{p['start'].astimezone(tz):%d-%m %H:%M} – {p['end'].astimezone(tz):%H:%M}" for p in choices if p['id']==i))
     active = next((e for e in entries if not e['end']), None)
     st.write("🟢 Je bent ingeklokt" if active else "Je bent momenteel uitgeklokt")
     if b['member']:
         a, c = st.columns(2)
         with a:
             if st.button("Inklokken", type="primary", disabled=active is not None, use_container_width=True):
-                if run(lambda: api.clock_in(token, branch_id), "Je bent ingeklokt."):
+                if run(lambda: api.clock_in(token, branch_id, plan_id), "Je bent ingeklokt."):
                     st.rerun()
         with c:
             if st.button("Uitklokken", disabled=active is None, use_container_width=True):
@@ -173,7 +187,7 @@ with tabs[1]:
     from workforce.shift_view import shift_rows
     st.subheader("Mijn shiften")
     st.write("Jouw geregistreerde shiften in deze vestiging, met begin, einde, status en gewerkte uren.")
-    st.caption("Dit zijn geklokte diensten. Toekomstige shiften inplannen is nog niet beschikbaar.")
+    st.caption("Dit zijn geklokte diensten. Toekomstige diensten vind je bij Planning.")
     period = st.selectbox("Toon shiften per", ["Dag", "Week", "Maand"], index=2)
     day = st.date_input("Kies een datum in de gewenste periode", value=datetime.now(tz).date())
     begin, end = period_bounds(day, period, zone)
@@ -226,6 +240,7 @@ if b['admin']:
         show_reviews(api, token, branch_id, team, me, tz, run)
     with tabs[4]:
         st.subheader("Medewerkers & bevoegdheden")
+        invitations(api, token, branch_id, run)
         members = run(lambda: api.members(token, branch_id))
         st.dataframe(members or [], hide_index=True, use_container_width=True)
         with st.form(f"find_{branch_id}"):
@@ -256,3 +271,10 @@ if b['admin']:
         st.caption("Alleen organisatie-eigenaars en platformbeheerders kunnen vestigingsadmins aanwijzen of hun rechten intrekken.")
     with tabs[5]:
         st.dataframe(run(lambda: api.audit(token, branch_id)) or [], hide_index=True, use_container_width=True)
+
+with tabs[-2]:
+    from workforce.ui_planning import show_planning
+    show_planning(api, token, branch_id, b['admin'], tz, zone, run)
+with tabs[-1]:
+    from workforce.ui_planning import show_alerts
+    show_alerts(api, token, branch_id, b['admin'], run)

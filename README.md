@@ -100,7 +100,7 @@ Gebruik een host die een langlopende Python- of Docker-service en WebSockets ond
 
 Streamlit-sessies gebruiken een per-verbinding token in server-side `session_state`; de database bewaart uitsluitend de tokenhash. Browserherladen/opnieuw verbinden kan opnieuw inloggen vereisen. Gebruik één appinstantie of sticky WebSocket-sessies bij schalen. Streamlit heeft geen volwaardige persistente SaaS-authcookie in deze MVP.
 
-Voor commerciële lancering ontbreken onder andere e-mailverificatie, wachtwoordherstel, MFA voor beheerders, operationele registratie-/IP-rate-limiting, monitoring en een privacy-/retentiebeleid. Loginpogingen zijn nu begrensd per e-mailadres (vijf fouten per 15 minuten); dit vervangt geen platformbrede misbruikbescherming. Deze uitbreidingen worden niet zonder volgende opdracht ingebouwd.
+Voor commerciële lancering ontbreken onder andere e-mailverificatie, geactiveerde e-mailverzending voor wachtwoordherstel, MFA voor beheerders, operationele registratie-/IP-rate-limiting, monitoring en een privacy-/retentiebeleid. Loginpogingen zijn nu begrensd per e-mailadres (vijf fouten per 15 minuten); dit vervangt geen platformbrede misbruikbescherming. Deze uitbreidingen worden niet zonder volgende opdracht ingebouwd.
 
 ## Architectuur en grenzen
 
@@ -145,9 +145,9 @@ De mailworker is getest met een nagebootste SMTP-client, inclusief TLS en retry.
 
 ## Duidelijke navigatie en shiftoverzicht
 
-Medewerkers openen **In- en uitklokken** om een dienst te starten of af te sluiten. Bij **Mijn shiften** zien zij alleen hun eigen geklokte diensten van de geselecteerde vestiging, met datum, begin/einde, status en volledige shiftduur. Een dag-, week- of maandfilter bepaalt welke diensten zichtbaar zijn. Het urentotaal telt alleen het deel van de diensten binnen die periode; een lopende dienst telt mee tot het laatste verversen. Er is een knop **Shiften verversen** en een uitleg wanneer er nog geen diensten zijn. Dit is registratiehistoriek; toekomstige diensten plannen is nog niet beschikbaar.
+Medewerkers openen **In- en uitklokken** om een dienst te starten of af te sluiten. Bij **Mijn shiften** zien zij alleen hun eigen geklokte diensten van de geselecteerde vestiging, met datum, begin/einde, status en volledige shiftduur. Een dag-, week- of maandfilter bepaalt welke diensten zichtbaar zijn. Het urentotaal telt alleen het deel van de diensten binnen die periode; een lopende dienst telt mee tot het laatste verversen. Er is een knop **Shiften verversen** en een uitleg wanneer er nog geen diensten zijn. Dit is registratiehistoriek; toekomstige diensten staan op het aparte tabblad Planning.
 
-Platformbeheer start met **Overzicht**, met uitleg van alle beschikbare bevoegdheden en knoppen naar **Aanvragen** en **Besluitgeschiedenis**. Uitsluitend de platformeigenaar krijgt daarnaast **Platformbeheerders**, voor het expliciet machtigen en intrekken van platformrechten. **Werkruimte → Vestigingen** opent de bestaande dashboards, teams, rollen, uren en auditlog. Accountverwijdering en globale accountdeactivering zijn niet beschikbaar en worden niet als actie aangeboden.
+Platformbeheer start met **Overzicht**, met uitleg van alle beschikbare bevoegdheden en knoppen naar **Aanvragen** en **Besluitgeschiedenis**. Uitsluitend de platformeigenaar krijgt daarnaast **Platformbeheerders**, voor het expliciet machtigen en intrekken van platformrechten. **Werkruimte → Vestigingen** opent de bestaande dashboards, teams, rollen, uren en auditlog. Via Gebruikers kunnen platformbeheerders accounts deactiveren en heractiveren. Volledige accountverwijdering is niet beschikbaar.
 
 ## Shiften controleren voordat uren definitief zijn
 
@@ -160,3 +160,48 @@ De datum/tijdvelden gelden uitsluitend bij Corrigeren; bij Goedkeuren worden de 
 Het dashboard toont **Goedgekeurde uren**, **Wacht op controle** en **Lopende uren (voorlopig)** apart. Medewerkers zien de status in **Mijn shiften**, met hun eigen correctiehistoriek. De klokpagina toont geregistreerde uren inclusief nog ongecontroleerde uren; alleen expliciet goedgekeurde uren zijn gecontroleerd. In de audit- en shifthistoriek staan de beoordelaar, het tijdstip, de reden en oude/nieuwe tijden.
 
 Migratie `0003` bewaart alle bestaande werkregistraties en zet ze op **Wacht op controle**; bestaande uren worden niet stilzwijgend goedgekeurd. De migration wordt automatisch uitgevoerd bij starten van `cloud_app.py`. Dit voegt geen automatische uitklok op roostertijden en geen payroll-export toe.
+
+## Medewerkersbeheer, planning en meldingen (migratie 0004)
+
+### Medewerkers uitnodigen en accounts beheren
+
+- **Team & rechten → Nieuwe medewerker uitnodigen**: voer een e-mailadres in. De app maakt een eenmalige link, geldig voor zeven dagen, en een bericht in de e-mailwachtrij. Je kunt de link zelf veilig delen. Een nieuwe uitnodiging voor hetzelfde adres en dezelfde vestiging vervangt de vorige.
+- De ontvanger kan via de link een persoonlijk account aanmaken. Bestaande gebruikers loggen eerst in met het uitgenodigde e-mailadres. Acceptatie kent uitsluitend medewerkersrechten toe; bestaande adminrechten worden niet stilzwijgend gewijzigd. De uitnodiger moet bij acceptatie nog steeds bevoegd zijn en de vestiging moet operationeel zijn.
+- **Mijn wachtwoord wijzigen** staat links voor ingelogde gebruikers. Het huidige wachtwoord is vereist en alle sessies worden na de wijziging ingetrokken.
+- **Inloggen → Wachtwoord vergeten?** maakt een eenmalige e-maillink (één uur geldig) wanneer e-mailherstel geactiveerd is. De respons onthult niet of een e-mailadres bestaat; maximaal drie aanvragen per adres per 15 minuten. Een nieuw verzoek vervangt eerdere links. Na herstel vervallen alle sessies en wordt de loginblokkering gewist. Zonder ingestelde verzending meldt de app expliciet dat e-mailherstel nog niet beschikbaar is.
+- **Platformdashboard → Gebruikers**: platformbeheerders kunnen accounts deactiveren/heractiveren met een reden en bevestiging. Deactivering trekt sessies in, blokkeert nieuwe logins en sluit actieve diensten af, met behoud van uren en auditlogs. Heractiveren herstelt bestaande vestigingsrollen; er worden geen extra rechten toegekend.
+- De platformeigenaar en het eigen account zijn beschermd. Alleen de platformeigenaar kan andere platformbeheerders deactiveren. Een organisatie-eigenaar kan pas na een toekomstige eigendomsoverdrachtfunctie worden gedeactiveerd; gebruik zo nodig organisatieblokkering. Er is geen definitieve accountverwijdering.
+
+### Instellingen voor uitnodigingen en e-mailherstel
+
+Voeg aan **Streamlit → Settings → Secrets** de publieke basis-URL van jouw eigen app toe (zonder queryparameters of fragment):
+
+```toml
+APP_BASE_URL = "https://jouw-eigen-app.streamlit.app"
+```
+
+Dit bevat geen credential. Maak geen link op basis van een onbetrouwbare browserheader. Uitnodigingen kunnen daarna direct handmatig gedeeld worden. Tokens worden in de tokentabel alleen gehasht opgeslagen. De beveiligde notificatiewachtrij bevat de uitgaande links om ze te kunnen mailen; beperk toegang tot de database en log deze berichten nooit.
+
+**Echte e-mailverzending is niet automatisch actief.** Configureer en test eerst de SMTP-worker zoals hierboven beschreven. Deze worker draait op een aparte vertrouwde host of geplande job met dezelfde database. Streamlit Community Cloud voert geen achtergrondcron voor deze app uit. Stel pas nadat de worker aantoonbaar verzendt bij Streamlit in:
+
+```toml
+EMAIL_DELIVERY_ENABLED = "1"
+```
+
+Laat deze vlag weg zolang de worker niet werkt. SMTP-credentials horen alleen bij de verzendworker, niet in gedeelde links, code of chat. Automatische herstelmail is niet live gevalideerd zonder die configuratie. Een ingelogde gebruiker kan het wachtwoord wijzigen zonder SMTP.
+
+### Shiftplanning
+
+**Planning** toont een dag-, week- of maandoverzicht. Medewerkers zien uitsluitend hun eigen diensten. Beheerders zien en beheren het team van hun vestiging, kunnen nieuwe diensten maken, bestaande diensten wijzigen of met een reden annuleren. Een dienst met gekoppelde tijdregistratie kan niet meer verplaatst of geannuleerd worden. Overlappende planning voor dezelfde medewerker wordt over alle vestigingen heen geweigerd, ook bij gelijktijdige aanvragen. Dit controleert geplande diensten, geen wettelijke arbeids- of rusttijden.
+
+Bij **In- en uitklokken → Inklokken voor** kan een medewerker expliciet de geplande shift kiezen. Alleen diens eigen, actieve planning in de gekozen vestiging is toegestaan. Eén geplande shift kan aan één registratie gekoppeld worden; opnieuw inklokken voor dezelfde planning wordt geweigerd. Zonder geplande shift inklokken blijft beschikbaar. Het koppelen stelt geen verplichte starttijd in en stopt de klok niet automatisch. Het planningsoverzicht vergelijkt gekoppelde geregistreerde uren met geplande uren. Die geregistreerde uren kunnen nog op controle wachten; planning vervangt geen shiftgoedkeuring.
+
+### Meldingen bij vergeten uitklokken
+
+**Meldingen** berekent waarschuwingen bij openen of verversen:
+
+- Een actieve registratie meer dan 15 minuten na de eindtijd van de gekoppelde planning.
+- Anders een actieve registratie van meer dan 12 uur.
+- Voor beheerders: afgesloten diensten die op controle wachten.
+
+Medewerkers zien alleen hun eigen uitklokwaarschuwingen; beheerders zien hun vestiging. Gebruik **Meldingen verversen** om opnieuw te berekenen. Er zijn geen pushnotificaties, achtergrondherinneringen of automatische uitklokacties. Deze signalen vereisen beoordeling van de werkelijke tijden. Geplande of geregistreerde uren worden niet vanzelf definitief goedgekeurd.

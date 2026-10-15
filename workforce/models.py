@@ -12,6 +12,7 @@ class User(Base):
     email: Mapped[str] = mapped_column(String(254), unique=True)
     name: Mapped[str] = mapped_column(String(120))
     password_hash: Mapped[str] = mapped_column(String(255))
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     platform_owner: Mapped[bool] = mapped_column(Boolean, default=False)
     platform_admin: Mapped[bool] = mapped_column(Boolean, default=False)
 
@@ -56,6 +57,7 @@ class WorkEntry(Base):
     user_id: Mapped[int] = mapped_column(Integer, index=True)
     started_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     ended_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    plan_id: Mapped[int | None] = mapped_column(ForeignKey("shift_plans.id"), unique=True)
     review_status: Mapped[str] = mapped_column(String(20), default="pending")
     version: Mapped[int] = mapped_column(Integer, default=1)
     reviewed_by: Mapped[int | None] = mapped_column(ForeignKey("users.id"))
@@ -103,7 +105,7 @@ class ApprovalDecision(Base):
 class Notification(Base):
     __tablename__ = "notifications"
     id: Mapped[int] = mapped_column(primary_key=True)
-    decision_id: Mapped[int] = mapped_column(ForeignKey("approval_decisions.id"), unique=True)
+    decision_id: Mapped[int | None] = mapped_column(ForeignKey("approval_decisions.id"), unique=True)
     recipient: Mapped[str] = mapped_column(String(254))
     subject: Mapped[str] = mapped_column(String(200))
     body: Mapped[str] = mapped_column(String(2000))
@@ -123,3 +125,28 @@ class ShiftReview(Base):
     new_end: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     previous_status: Mapped[str] = mapped_column(String(20))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+
+class AccountToken(Base):
+    __tablename__ = "account_tokens"
+    token_hash: Mapped[str] = mapped_column(String(64), primary_key=True)
+    purpose: Mapped[str] = mapped_column(String(20))
+    email: Mapped[str] = mapped_column(String(254))
+    user_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"))
+    branch_id: Mapped[int | None] = mapped_column(ForeignKey("branches.id"))
+    created_by: Mapped[int | None] = mapped_column(ForeignKey("users.id"))
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    consumed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    __table_args__ = (CheckConstraint("purpose IN ('invite', 'reset')", name="account_token_purpose"),)
+
+class ShiftPlan(Base):
+    __tablename__ = "shift_plans"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    branch_id: Mapped[int] = mapped_column(Integer, index=True)
+    user_id: Mapped[int] = mapped_column(Integer, index=True)
+    starts_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    ends_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    created_by: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    status: Mapped[str] = mapped_column(String(20), default="scheduled")
+    note: Mapped[str] = mapped_column(String(500))
+    version: Mapped[int] = mapped_column(Integer, default=1)
+    __table_args__ = (ForeignKeyConstraint(["branch_id", "user_id"], ["memberships.branch_id", "memberships.user_id"]), CheckConstraint("ends_at > starts_at", name="plan_interval"), CheckConstraint("status IN ('scheduled', 'cancelled')", name="plan_status"))
