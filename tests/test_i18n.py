@@ -136,3 +136,21 @@ def test_logout_keeps_language_but_clears_authentication(api,team,engine,monkeyp
     assert [tab.label for tab in app.tabs]==['Se connecter','Créer un compte']
     with pytest.raises(KeyError):
         app.session_state['token']
+
+
+@pytest.mark.parametrize('language',['fr','en','de','es'])
+def test_manager_home_and_direct_invitation_in_every_language(api,team,engine,monkeypatch,language):
+    api.set_language(team['ot'],language)
+    monkeypatch.setenv('DATABASE_URL',engine.url.render_as_string(hide_password=False))
+    monkeypatch.delenv('AUTO_MIGRATE',raising=False)
+    st.cache_resource.clear()
+    app=AppTest.from_file('app.py',default_timeout=10)
+    app.session_state['token']=team['ot']
+    app.run();set_language(language)
+    assert not app.exception
+    assert any(h.value==tr('Jouw vestiging beheren') for h in app.subheader)
+    assert not any(b.label==tr('Inklokken') for b in app.button)
+    assert app.button(key='manager_open_Medewerkers toevoegen').label==tr('Medewerkers toevoegen')
+    app.button(key='manager_open_Medewerkers toevoegen').click().run()
+    assert not app.exception
+    assert any(b.label==tr('Uitnodiging maken') for b in app.button)

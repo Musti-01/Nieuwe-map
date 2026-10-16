@@ -2482,5 +2482,119 @@
     "en": "Remove",
     "de": "Entfernen",
     "es": "Eliminar"
+  },
+  "Vestigingsbeheer": {
+    "fr": "Gestion de l’établissement",
+    "en": "Branch management",
+    "de": "Standortverwaltung",
+    "es": "Gestión del establecimiento"
+  },
+  "Medewerkers toevoegen": {
+    "fr": "Ajouter des employés",
+    "en": "Add employees",
+    "de": "Mitarbeitende hinzufügen",
+    "es": "Añadir empleados"
+  },
+  "Medewerkers & rechten": {
+    "fr": "Équipe et droits",
+    "en": "Team & permissions",
+    "de": "Team und Rechte",
+    "es": "Equipo y permisos"
+  },
+  "Werkuren": {
+    "fr": "Heures travaillées",
+    "en": "Working hours",
+    "de": "Arbeitsstunden",
+    "es": "Horas trabajadas"
+  },
+  "Mijn werktijd": {
+    "fr": "Mon temps de travail",
+    "en": "My working time",
+    "de": "Meine Arbeitszeit",
+    "es": "Mi tiempo de trabajo"
+  },
+  "Jouw vestiging beheren": {
+    "fr": "Gérer votre établissement",
+    "en": "Manage your branch",
+    "de": "Deinen Standort verwalten",
+    "es": "Gestiona tu establecimiento"
+  },
+  "Wat wil je doen? Kies hieronder een actie.": {
+    "fr": "Que souhaitez-vous faire ? Choisissez une action ci-dessous.",
+    "en": "What would you like to do? Choose an action below.",
+    "de": "Was möchtest du tun? Wähle unten eine Aktion.",
+    "es": "¿Qué quieres hacer? Elige una acción abajo."
+  },
+  "Dit onderdeel is alleen voor je eigen gewerkte uren. Je hoeft niet in te klokken om je vestiging te beheren.": {
+    "fr": "Cette section concerne uniquement vos propres heures. Il n’est pas nécessaire de pointer pour gérer votre établissement.",
+    "en": "This section is only for your own working hours. You do not need to clock in to manage your branch.",
+    "de": "Dieser Bereich ist nur für deine eigenen Arbeitsstunden. Du musst nicht einstempeln, um deinen Standort zu verwalten.",
+    "es": "Esta sección es solo para tus propias horas. No necesitas fichar para gestionar tu establecimiento."
+  },
+  "Nodig een nieuwe medewerker uit via e-mail. Heeft de medewerker al een account? Koppel die via Medewerkers & rechten.": {
+    "fr": "Invitez un nouvel employé par e-mail. S’il a déjà un compte, associez-le via Employés et droits.",
+    "en": "Invite a new employee by email. Already has an account? Link it via Employees & permissions.",
+    "de": "Lade neue Mitarbeitende per E-Mail ein. Besteht bereits ein Konto? Verknüpfe es unter Mitarbeitende & Rechte.",
+    "es": "Invita a un empleado por correo. Si ya tiene cuenta, vincúlala en Empleados y permisos."
+  },
+  "Nodig een nieuwe medewerker uit voor deze vestiging.": {
+    "fr": "Invitez un nouvel employé dans cet établissement.",
+    "en": "Invite a new employee to this branch.",
+    "de": "Lade neue Mitarbeitende zu diesem Standort ein.",
+    "es": "Invita a un empleado a este establecimiento."
+  },
+  "Plan diensten en bekijk wie wanneer werkt.": {
+    "fr": "Planifiez les services et consultez les horaires de chacun.",
+    "en": "Schedule shifts and see who works when.",
+    "de": "Plane Schichten und sieh, wer wann arbeitet.",
+    "es": "Planifica turnos y consulta quién trabaja y cuándo."
+  },
+  "Bekijk je team en beheer de toegang en rollen.": {
+    "fr": "Consultez votre équipe et gérez les accès et les rôles.",
+    "en": "View your team and manage access and roles.",
+    "de": "Sieh dein Team und verwalte Zugang und Rollen.",
+    "es": "Consulta tu equipo y gestiona accesos y roles."
+  },
+  "Bekijk gewerkte uren per medewerker en periode.": {
+    "fr": "Consultez les heures travaillées par employé et par période.",
+    "en": "View working hours by employee and period.",
+    "de": "Sieh Arbeitsstunden pro Person und Zeitraum.",
+    "es": "Consulta las horas por empleado y período."
+  },
+  "Controleer, corrigeer en keur geregistreerde uren goed.": {
+    "fr": "Vérifiez, corrigez et approuvez les heures enregistrées.",
+    "en": "Check, correct and approve recorded hours.",
+    "de": "Prüfe, korrigiere und genehmige erfasste Stunden.",
+    "es": "Revisa, corrige y aprueba las horas registradas."
+  },
+  "Bekijk vergeten uitklokacties en openstaande controles.": {
+    "fr": "Consultez les oublis de pointage et les vérifications en attente.",
+    "en": "View missed clock-outs and pending reviews.",
+    "de": "Sieh vergessene Ausstempelungen und ausstehende Prüfungen.",
+    "es": "Consulta fichajes de salida olvidados y revisiones pendientes."
+  },
+  "Actieve teamleden": {
+    "fr": "Membres actifs de l’équipe",
+    "en": "Active team members",
+    "de": "Aktive Teammitglieder",
+    "es": "Miembros activos del equipo"
+  },
+  "Shiften te controleren": {
+    "fr": "Services à vérifier",
+    "en": "Shifts to review",
+    "de": "Zu prüfende Schichten",
+    "es": "Turnos por revisar"
+  },
+  "Open een vestiging voor het beheeroverzicht: Medewerkers toevoegen voor uitnodigingen, Medewerkers & rechten voor rollen en Planning voor diensten.": {
+    "fr": "Ouvrez un établissement : Ajouter des employés pour les invitations, Employés et droits pour les rôles et Planning pour les services.",
+    "en": "Open a branch for its management overview: Add employees for invitations, Employees & permissions for roles and Planning for shifts.",
+    "de": "Öffne einen Standort: Mitarbeitende hinzufügen für Einladungen, Mitarbeitende & Rechte für Rollen und Planung für Schichten.",
+    "es": "Abre un establecimiento: Añadir empleados para invitaciones, Empleados y permisos para roles y Planificación para turnos."
+  },
+  "Koppel eerst een actieve medewerker via Medewerkers & rechten.": {
+    "fr": "Associez d’abord un employé actif via Employés et droits.",
+    "en": "First link an active employee via Employees & permissions.",
+    "de": "Verknüpfe zuerst aktive Mitarbeitende unter Mitarbeitende & Rechte.",
+    "es": "Primero vincula un empleado activo en Empleados y permisos."
   }
 }

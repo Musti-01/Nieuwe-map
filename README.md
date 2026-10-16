@@ -231,3 +231,14 @@ Organisatie, accounts, rollen, planning, uren en auditgegevens blijven bewaard a
 Via **Verwijderde vestigingen tonen → Herstellen** kun je een vergissing herstellen; eerdere rollen en goedkeuringsstatus gelden dan opnieuw.
 Dit verwijdert geen volledige organisatie en heeft geen effect op andere vestigingen.
 Migratie `0006` voegt de archiefdatum en verantwoordelijke toe en wordt bij Community Cloud automatisch uitgevoerd.
+
+## Duidelijk beginscherm voor vestigingsbeheerders
+
+Organisatie-eigenaars en vestigingsadmins openen hun vestiging voortaan op **Overzicht**.
+Zes actiekaarten brengen hen direct naar **Medewerkers toevoegen**, **Planning**,
+**Medewerkers & rechten**, **Werkuren**, **Shiften controleren** en **Meldingen**.
+Het overzicht toont actieve teamleden, ingeklokte medewerkers en nog te controleren shiften.
+**Medewerkers toevoegen** opent meteen het uitnodigingsformulier; bestaande accounts koppel je via **Medewerkers & rechten**.
+De zijbalk houdt de navigatie zichtbaar. De gekozen pagina wordt per vestiging onthouden.
+Voor beheerders die ook een vestigingslidmaatschap hebben, staat eigen tijdregistratie apart onder **Mijn werktijd**.
+Inklokken is nooit nodig om beheerfuncties te gebruiken. Medewerkers behouden hun eigen inklokscherm, shiften, planning en meldingen; de bestaande servercontroles blijven gelden.

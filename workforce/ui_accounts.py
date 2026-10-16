@@ -65,8 +65,8 @@ def password_settings(api, token, run):
                     st.rerun()
 
 
-def invitations(api, token, branch_id, run):
-    with st.expander(tr('Nieuwe medewerker uitnodigen')):
+def invitations(api, token, branch_id, run, expanded=False):
+    with st.expander(tr('Nieuwe medewerker uitnodigen'), expanded=expanded):
         st.write(tr('Maak een eenmalige uitnodigingslink voor een medewerker. Je kunt de link zelf delen; e-mail staat in de verzendwachtrij.'))
         with st.form(f'invite_{branch_id}'):
             email=st.text_input(tr('E-mailadres nieuwe medewerker'))

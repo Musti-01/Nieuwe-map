@@ -37,7 +37,7 @@ def show_platform(api, token, me, run):
         st.button(tr('Vestigingen beheren'), on_click=navigate, args=('Vestigingen beheren',))
         st.markdown(tr('**Accounts beheren** — bekijk gebruikers en deactiveer of heractiveer accounts. Historische gegevens blijven bewaard.'))
         st.button(tr('Beheer gebruikersaccounts'), on_click=navigate, args=("Gebruikers",))
-        st.info(tr('In de vestiging: Team & rechten voor uitnodigingen en rollen, Planning voor geplande shiften en Meldingen voor vergeten uitklokken en controlewerk. Ongebruikte accounts kun je via Gebruikers verwijderen; accounts met historiek kun je deactiveren.'))
+        st.info(tr('Open een vestiging voor het beheeroverzicht: Medewerkers toevoegen voor uitnodigingen, Medewerkers & rechten voor rollen en Planning voor diensten.'))
         st.caption(tr('E-mails bij besluiten worden in een wachtrij gezet. Echte verzending vereist een geconfigureerde mailworker.'))
     elif page == "Aanvragen":
         st.write(tr('Keur eerst de organisatie goed, daarna haar vestigingen. Gebruik de statusfilter om ook blokkeringen te beheren.'))

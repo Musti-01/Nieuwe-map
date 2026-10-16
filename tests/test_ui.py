@@ -42,7 +42,9 @@ def test_employee_shift_history_after_clock_out(api, team, engine, monkeypatch):
 def test_branch_admin_still_has_dashboard_team_and_audit(api, team, engine, monkeypatch):
     app = app_for(team['ot'], engine, monkeypatch)
     assert not app.exception
-    assert [tab.label for tab in app.tabs] == ['In- en uitklokken', 'Mijn shiften', 'Dashboard', 'Shiften controleren', 'Team & rechten', 'Auditlog', 'Planning', 'Meldingen']
+    assert app.radio(key=f"branch_page_{team['branch']}").value == 'Overzicht'
+    assert not any(b.label == 'Inklokken' for b in app.button)
+    app.button(key='manager_open_Medewerkers & rechten').click().run()
     assert any(b.label == 'Gebruiker zoeken' for b in app.button)
 
 
@@ -51,6 +53,7 @@ def test_admin_approves_shift_from_review_tab(api, team, engine, monkeypatch):
     api.clock_out(team['wt'], team['branch'])
     app = app_for(team['ot'], engine, monkeypatch)
     assert not app.exception
+    app.button(key='manager_open_Shiften controleren').click().run()
     next(b for b in app.button if b.label == 'Shiftactie bevestigen').click().run()
     assert not app.exception
     assert api.entries(team['wt'],team['branch'])[0]['review_status'] == 'approved'
@@ -69,6 +72,7 @@ def test_owner_deactivates_employee_from_user_page(api,team,engine,monkeypatch):
 
 def test_admin_plans_employee_shift_and_employee_sees_it(api,team,engine,monkeypatch):
     app=app_for(team['ot'],engine,monkeypatch)
+    app.button(key='manager_open_Planning').click().run()
     next(s for s in app.selectbox if s.label=='Medewerker inplannen').set_value(team['worker'])
     next(b for b in app.button if b.label=='Planning opslaan').click().run()
     assert not app.exception
@@ -125,3 +129,28 @@ def test_unused_account_delete_requires_explicit_confirmation(api,team,engine,mo
     next(b for b in app.button if b.label=='Account definitief verwijderen').click().run()
     assert not app.exception
     assert not any(u['id']==team['worker'] for u in api.accounts(team['pt']))
+
+
+def test_manager_invites_employee_without_clocking_in(api,team,engine,monkeypatch):
+    monkeypatch.setenv('APP_BASE_URL','https://shiftflow.example')
+    app=app_for(team['ot'],engine,monkeypatch)
+    app.button(key='manager_open_Medewerkers toevoegen').click().run()
+    assert not app.exception
+    assert not any(b.label in ('Inklokken','Uitklokken') for b in app.button)
+    next(i for i in app.text_input if i.label=='E-mailadres nieuwe medewerker').set_value('new-team@example.test')
+    next(b for b in app.button if b.label=='Uitnodiging maken').click().run()
+    assert not app.exception
+    assert len(app.code)==1
+    assert not api.entries(team['ot'],team['branch'])
+    app.radio(key=f"branch_page_{team['branch']}").set_value('Mijn werktijd').run()
+    assert not app.exception
+    assert any(b.label=='Inklokken' for b in app.button)
+
+
+def test_employee_cannot_open_manager_page_through_session_state(api,team,engine,monkeypatch):
+    app=app_for(team['wt'],engine,monkeypatch)
+    app.session_state[f"branch_page_{team['branch']}"]='Medewerkers toevoegen'
+    app.run()
+    assert not app.exception
+    assert not any(b.label=='Uitnodiging maken' for b in app.button)
+    assert not any(r.label=='Vestigingsbeheer' for r in app.radio)

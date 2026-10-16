@@ -173,7 +173,18 @@ if b['status'] != 'approved' or b['organization_status'] != 'approved':
     st.info(tr('Operationele toegang en rolbeheer worden beschikbaar zodra de platformbeheerder zowel de organisatie als de vestiging goedkeurt. Bij blokkering vervalt de toegang direct.'))
     st.stop()
 st.caption(tr('{v0} · {v1}', v0=b['organization'], v1=tr('Organisatie-eigenaar' if b['owner'] else 'Vestigingsadmin' if b['admin'] else 'Medewerker')))
-tabs = st.tabs((([tr('In- en uitklokken'), tr('Mijn shiften')] + ([tr('Dashboard'), tr('Shiften controleren'), tr('Team & rechten'), tr('Auditlog')] if b['admin'] else [])) + [tr('Planning'), tr('Meldingen')]))
+if b['admin']:
+    pages = ['Overzicht', 'Medewerkers toevoegen', 'Medewerkers & rechten', 'Planning', 'Werkuren', 'Shiften controleren', 'Meldingen', 'Auditlog']
+    if b['member']:
+        pages.append('Mijn werktijd')
+    page_key = f"branch_page_{branch_id}"
+    if st.session_state.get(page_key) not in pages:
+        st.session_state[page_key] = 'Overzicht'
+    with st.sidebar:
+        page = st.radio(tr('Vestigingsbeheer'), pages, key=page_key, format_func=tr)
+else:
+    page = None
+    tabs = st.tabs([tr('In- en uitklokken'), tr('Mijn shiften'), tr('Planning'), tr('Meldingen')])
 zone = os.getenv('APP_TIMEZONE', 'Europe/Brussels')
 try:
     tz = ZoneInfo(zone)
@@ -181,126 +192,148 @@ except Exception:
     st.error(tr('APP_TIMEZONE is ongeldig.'))
     st.stop()
 
-with tabs[0]:
-    entries = run(lambda: api.entries(token, branch_id))
-    if entries is None:
-        st.stop()
-    my_plans = run(lambda: api.plans(token, branch_id)) or []
-    choices = [p for p in my_plans if p['status']=='scheduled' and p['entry_id'] is None]
-    plan_id = st.selectbox(tr('Inklokken voor'), [None]+[p['id'] for p in choices], format_func=translated_formatter(lambda i: tr('Zonder geplande shift') if i is None else next((tr('{v0:%d-%m %H:%M} – {v1:%H:%M}', v0=p['start'].astimezone(tz), v1=p['end'].astimezone(tz)) for p in choices if p['id'] == i))))
-    active = next((e for e in entries if not e['end']), None)
-    st.write((tr('🟢 Je bent ingeklokt') if active else tr('Je bent momenteel uitgeklokt')))
-    if b['member']:
-        a, c = st.columns(2)
-        with a:
-            if st.button(tr('Inklokken'), type="primary", disabled=active is not None, use_container_width=True):
-                if run(lambda: api.clock_in(token, branch_id, plan_id), "Je bent ingeklokt."):
-                    st.rerun()
-        with c:
-            if st.button(tr('Uitklokken'), disabled=active is None, use_container_width=True):
-                if run(lambda: api.clock_out(token, branch_id), "Je bent uitgeklokt."):
-                    st.rerun()
-    st.caption(tr('Een actieve sessie in een andere vestiging moet je daar eerst afsluiten.'))
-    st.caption(tr('Onderstaande uren zijn geregistreerd en kunnen nog op controle wachten. Definitief goedgekeurde uren staan bij Mijn shiften.'))
-    today = datetime.now(tz).date()
-    columns = st.columns(3)
-    for col, period in zip(columns, ["Dag", "Week", "Maand"]):
-        begin, end = period_bounds(today, period, zone)
-        total = sum(r['Uren'] for r in hours(entries, begin, end, now()))
-        col.metric(tr({'Dag':'Vandaag','Week':'Deze week','Maand':'Deze maand'}[period]), tr('{v0:.2f} uur', v0=total))
+if b['admin'] and page == 'Overzicht':
+    from workforce.ui_manager import show_manager_home
+    show_manager_home(api, token, branch_id, page_key, run)
+if b['admin'] and page == 'Medewerkers toevoegen':
+    st.subheader(tr('Medewerkers toevoegen'))
+    st.write(tr('Nodig een nieuwe medewerker uit via e-mail. Heeft de medewerker al een account? Koppel die via Medewerkers & rechten.'))
+    invitations(api, token, branch_id, run, expanded=True)
 
-with tabs[1]:
-    from workforce.shift_view import shift_rows
-    st.subheader(tr('Mijn shiften'))
-    st.write(tr('Jouw geregistreerde shiften in deze vestiging, met begin, einde, status en gewerkte uren.'))
-    st.caption(tr('Dit zijn geklokte diensten. Toekomstige diensten vind je bij Planning.'))
-    period = st.selectbox(tr('Toon shiften per'), ["Dag", "Week", "Maand"], index=2, format_func=tr)
-    day = st.date_input(tr('Kies een datum in de gewenste periode'), value=datetime.now(tz).date())
-    begin, end = period_bounds(day, period, zone)
-    snapshot = now()
-    rows = shift_rows(entries, begin, end, tz, snapshot)
-    total = sum(r['Uren'] for r in hours(entries, begin, end, snapshot))
-    a, c, d = st.columns(3)
-    approved = sum(r['Uren'] for r in hours([e for e in entries if e['review_status'] == 'approved'], begin, end, snapshot))
-    a.metric(tr('Shiften in deze periode'), tr(len(rows)))
-    c.metric(tr('Goedgekeurde uren'), tr('{v0:.2f} uur', v0=approved))
-    d.metric(tr('Geregistreerde uren (alle statussen)'), tr('{v0:.2f} uur', v0=total))
-    st.caption(tr('Duur in de tabel geldt voor de volledige shift; het urentotaal hierboven telt alleen het deel binnen de gekozen periode. Lopende shiften tellen mee tot het laatste verversen.'))
-    if rows:
-        st.dataframe(translated_table(rows), hide_index=True, use_container_width=True)
-    else:
-        st.info(tr('Je hebt nog geen shiften in deze periode. Gebruik In- en uitklokken om een shift te starten.'))
-    if entries:
-        with st.expander(tr('Mijn correcties en goedkeuringen')):
-            selected = st.selectbox(tr('Mijn shift bekijken'), [e['id'] for e in entries], format_func=translated_formatter(lambda i: next((e['start'].astimezone(tz).strftime('%d-%m-%Y %H:%M') for e in entries if e['id'] == i))))
-            history = run(lambda: api.shift_history(token, branch_id, selected))
-            if history:
-                st.dataframe(translated_table(history), hide_index=True, use_container_width=True)
-            else:
-                st.caption(tr('Nog geen correcties of goedkeuringen voor deze shift.'))
-    if st.button(tr('Shiften verversen')):
-        st.rerun()
-
-if b['admin']:
-    with tabs[2]:
-        team = run(lambda: api.entries(token, branch_id, team=True))
-        if team is None:
+if not b['admin'] or page == 'Mijn werktijd':
+    if b['admin']:
+        st.info(tr('Dit onderdeel is alleen voor je eigen gewerkte uren. Je hoeft niet in te klokken om je vestiging te beheren.'))
+        tabs = st.tabs([tr('In- en uitklokken'), tr('Mijn shiften')])
+    with tabs[0]:
+        entries = run(lambda: api.entries(token, branch_id))
+        if entries is None:
             st.stop()
-        st.subheader(tr('Nu aan het werk'))
-        active = [e for e in team if not e['end']]
-        st.metric(tr('Ingeklokte medewerkers'), tr(len(active)))
-        if active:
-            st.dataframe(translated_table([{'Medewerker': e['name'], 'Sinds': e['start'].astimezone(tz)} for e in active]), hide_index=True, use_container_width=True)
-        period = st.selectbox(tr('Periode'), ["Dag", "Week", "Maand"], format_func=tr)
-        day = st.date_input(tr('Datum'), value=datetime.now(tz).date())
+        my_plans = run(lambda: api.plans(token, branch_id)) or []
+        choices = [p for p in my_plans if p['status']=='scheduled' and p['entry_id'] is None]
+        plan_id = st.selectbox(tr('Inklokken voor'), [None]+[p['id'] for p in choices], format_func=translated_formatter(lambda i: tr('Zonder geplande shift') if i is None else next((tr('{v0:%d-%m %H:%M} – {v1:%H:%M}', v0=p['start'].astimezone(tz), v1=p['end'].astimezone(tz)) for p in choices if p['id'] == i))))
+        active = next((e for e in entries if not e['end']), None)
+        st.write((tr('🟢 Je bent ingeklokt') if active else tr('Je bent momenteel uitgeklokt')))
+        if b['member']:
+            a, c = st.columns(2)
+            with a:
+                if st.button(tr('Inklokken'), type="primary", disabled=active is not None, use_container_width=True):
+                    if run(lambda: api.clock_in(token, branch_id, plan_id), "Je bent ingeklokt."):
+                        st.rerun()
+            with c:
+                if st.button(tr('Uitklokken'), disabled=active is None, use_container_width=True):
+                    if run(lambda: api.clock_out(token, branch_id), "Je bent uitgeklokt."):
+                        st.rerun()
+        st.caption(tr('Een actieve sessie in een andere vestiging moet je daar eerst afsluiten.'))
+        st.caption(tr('Onderstaande uren zijn geregistreerd en kunnen nog op controle wachten. Definitief goedgekeurde uren staan bij Mijn shiften.'))
+        today = datetime.now(tz).date()
+        columns = st.columns(3)
+        for col, period in zip(columns, ["Dag", "Week", "Maand"]):
+            begin, end = period_bounds(today, period, zone)
+            total = sum(r['Uren'] for r in hours(entries, begin, end, now()))
+            col.metric(tr({'Dag':'Vandaag','Week':'Deze week','Maand':'Deze maand'}[period]), tr('{v0:.2f} uur', v0=total))
+
+    with tabs[1]:
+        from workforce.shift_view import shift_rows
+        st.subheader(tr('Mijn shiften'))
+        st.write(tr('Jouw geregistreerde shiften in deze vestiging, met begin, einde, status en gewerkte uren.'))
+        st.caption(tr('Dit zijn geklokte diensten. Toekomstige diensten vind je bij Planning.'))
+        period = st.selectbox(tr('Toon shiften per'), ["Dag", "Week", "Maand"], index=2, format_func=tr)
+        day = st.date_input(tr('Kies een datum in de gewenste periode'), value=datetime.now(tz).date())
         begin, end = period_bounds(day, period, zone)
         snapshot = now()
-        for label, selected in [("Goedgekeurde uren", [e for e in team if e['review_status'] == 'approved']), ("Wacht op controle", [e for e in team if e['end'] is not None and e['review_status'] != 'approved']), ("Lopende uren (voorlopig)", [e for e in team if e['end'] is None])]:
-            totals = hours(selected, begin, end, snapshot)
-            st.metric(tr(label), tr('{v0:.2f} uur', v0=sum((r['Uren'] for r in totals))))
-            if totals:
-                st.dataframe(translated_table(totals), hide_index=True, use_container_width=True)
-        st.caption(tr('Alleen goedgekeurde uren zijn gecontroleerd. Ongecontroleerde en lopende uren staan apart. Periodes worden berekend in de ingestelde tijdzone.'))
-    with tabs[3]:
-        from workforce.ui_review import show_reviews
-        show_reviews(api, token, branch_id, team, me, tz, run)
-    with tabs[4]:
-        st.subheader(tr('Medewerkers & bevoegdheden'))
-        invitations(api, token, branch_id, run)
-        members = run(lambda: api.members(token, branch_id))
-        st.dataframe(translated_table(members or []), hide_index=True, use_container_width=True)
-        with st.form(f"find_{branch_id}"):
-            email = st.text_input(tr('Selecteer een bestaande gebruiker via exact e-mailadres'))
-            find = st.form_submit_button(tr('Gebruiker zoeken'))
-        if find:
-            result = run(lambda: api.lookup_user(token, branch_id, email))
-            st.session_state[f"target_{branch_id}"] = result
-            if not result:
-                st.info(tr('Geen gebruiker gevonden. Laat de medewerker eerst een persoonlijk account registreren.'))
-        target = st.session_state.get(f"target_{branch_id}")
-        if target:
-            st.write(tr('Geselecteerd: {v0} ({v1})', v0=target['name'], v1=target['email']))
-            with st.form(f"role_{branch_id}"):
-                roles = {"Medewerker": "employee", "Toegang intrekken": None}
-                if b['owner']:
-                    roles["Vestigingsadmin"] = "admin"
-                role = st.selectbox(tr('Bevoegdheid'), list(roles), format_func=tr)
-                if st.form_submit_button(tr('Bevoegdheid opslaan')):
-                    try:
-                        api.set_role(token, branch_id, target['id'], roles[role])
-                        st.session_state['notice'] = "Bevoegdheid bijgewerkt."
-                        st.rerun()
-                    except ValueError as exc:
-                        st.error(tr(str(exc)))
-                    except SQLAlchemyError:
-                        st.error(tr('Database niet beschikbaar.'))
-        st.caption(tr('Alleen organisatie-eigenaars en platformbeheerders kunnen vestigingsadmins aanwijzen of hun rechten intrekken.'))
-    with tabs[5]:
-        st.dataframe(translated_table(run(lambda: api.audit(token, branch_id)) or []), hide_index=True, use_container_width=True)
+        rows = shift_rows(entries, begin, end, tz, snapshot)
+        total = sum(r['Uren'] for r in hours(entries, begin, end, snapshot))
+        a, c, d = st.columns(3)
+        approved = sum(r['Uren'] for r in hours([e for e in entries if e['review_status'] == 'approved'], begin, end, snapshot))
+        a.metric(tr('Shiften in deze periode'), tr(len(rows)))
+        c.metric(tr('Goedgekeurde uren'), tr('{v0:.2f} uur', v0=approved))
+        d.metric(tr('Geregistreerde uren (alle statussen)'), tr('{v0:.2f} uur', v0=total))
+        st.caption(tr('Duur in de tabel geldt voor de volledige shift; het urentotaal hierboven telt alleen het deel binnen de gekozen periode. Lopende shiften tellen mee tot het laatste verversen.'))
+        if rows:
+            st.dataframe(translated_table(rows), hide_index=True, use_container_width=True)
+        else:
+            st.info(tr('Je hebt nog geen shiften in deze periode. Gebruik In- en uitklokken om een shift te starten.'))
+        if entries:
+            with st.expander(tr('Mijn correcties en goedkeuringen')):
+                selected = st.selectbox(tr('Mijn shift bekijken'), [e['id'] for e in entries], format_func=translated_formatter(lambda i: next((e['start'].astimezone(tz).strftime('%d-%m-%Y %H:%M') for e in entries if e['id'] == i))))
+                history = run(lambda: api.shift_history(token, branch_id, selected))
+                if history:
+                    st.dataframe(translated_table(history), hide_index=True, use_container_width=True)
+                else:
+                    st.caption(tr('Nog geen correcties of goedkeuringen voor deze shift.'))
+        if st.button(tr('Shiften verversen')):
+            st.rerun()
 
-with tabs[-2]:
-    from workforce.ui_planning import show_planning
-    show_planning(api, token, branch_id, b['admin'], tz, zone, run)
-with tabs[-1]:
-    from workforce.ui_planning import show_alerts
-    show_alerts(api, token, branch_id, b['admin'], run)
+
+if b['admin'] and page == 'Werkuren':
+    team = run(lambda: api.entries(token, branch_id, team=True))
+    if team is None:
+        st.stop()
+    st.subheader(tr('Nu aan het werk'))
+    active = [e for e in team if not e['end']]
+    st.metric(tr('Ingeklokte medewerkers'), tr(len(active)))
+    if active:
+        st.dataframe(translated_table([{'Medewerker': e['name'], 'Sinds': e['start'].astimezone(tz)} for e in active]), hide_index=True, use_container_width=True)
+    period = st.selectbox(tr('Periode'), ["Dag", "Week", "Maand"], format_func=tr)
+    day = st.date_input(tr('Datum'), value=datetime.now(tz).date())
+    begin, end = period_bounds(day, period, zone)
+    snapshot = now()
+    for label, selected in [("Goedgekeurde uren", [e for e in team if e['review_status'] == 'approved']), ("Wacht op controle", [e for e in team if e['end'] is not None and e['review_status'] != 'approved']), ("Lopende uren (voorlopig)", [e for e in team if e['end'] is None])]:
+        totals = hours(selected, begin, end, snapshot)
+        st.metric(tr(label), tr('{v0:.2f} uur', v0=sum((r['Uren'] for r in totals))))
+        if totals:
+            st.dataframe(translated_table(totals), hide_index=True, use_container_width=True)
+    st.caption(tr('Alleen goedgekeurde uren zijn gecontroleerd. Ongecontroleerde en lopende uren staan apart. Periodes worden berekend in de ingestelde tijdzone.'))
+
+if b['admin'] and page == 'Shiften controleren':
+    team = run(lambda: api.entries(token, branch_id, team=True))
+    if team is None:
+        st.stop()
+    from workforce.ui_review import show_reviews
+    show_reviews(api, token, branch_id, team, me, tz, run)
+
+if b['admin'] and page == 'Medewerkers & rechten':
+    st.subheader(tr('Medewerkers & bevoegdheden'))
+    members = run(lambda: api.members(token, branch_id))
+    st.dataframe(translated_table(members or []), hide_index=True, use_container_width=True)
+    with st.form(f"find_{branch_id}"):
+        email = st.text_input(tr('Selecteer een bestaande gebruiker via exact e-mailadres'))
+        find = st.form_submit_button(tr('Gebruiker zoeken'))
+    if find:
+        result = run(lambda: api.lookup_user(token, branch_id, email))
+        st.session_state[f"target_{branch_id}"] = result
+        if not result:
+            st.info(tr('Geen gebruiker gevonden. Laat de medewerker eerst een persoonlijk account registreren.'))
+    target = st.session_state.get(f"target_{branch_id}")
+    if target:
+        st.write(tr('Geselecteerd: {v0} ({v1})', v0=target['name'], v1=target['email']))
+        with st.form(f"role_{branch_id}"):
+            roles = {"Medewerker": "employee", "Toegang intrekken": None}
+            if b['owner']:
+                roles["Vestigingsadmin"] = "admin"
+            role = st.selectbox(tr('Bevoegdheid'), list(roles), format_func=tr)
+            if st.form_submit_button(tr('Bevoegdheid opslaan')):
+                try:
+                    api.set_role(token, branch_id, target['id'], roles[role])
+                    st.session_state['notice'] = "Bevoegdheid bijgewerkt."
+                    st.rerun()
+                except ValueError as exc:
+                    st.error(tr(str(exc)))
+                except SQLAlchemyError:
+                    st.error(tr('Database niet beschikbaar.'))
+    st.caption(tr('Alleen organisatie-eigenaars en platformbeheerders kunnen vestigingsadmins aanwijzen of hun rechten intrekken.'))
+
+if b['admin'] and page == 'Auditlog':
+    st.dataframe(translated_table(run(lambda: api.audit(token, branch_id)) or []), hide_index=True, use_container_width=True)
+
+
+if not b['admin'] or page == 'Planning':
+    from contextlib import nullcontext
+    with tabs[-2] if not b['admin'] else nullcontext():
+        from workforce.ui_planning import show_planning
+        show_planning(api, token, branch_id, b['admin'], tz, zone, run)
+if not b['admin'] or page == 'Meldingen':
+    from contextlib import nullcontext
+    with tabs[-1] if not b['admin'] else nullcontext():
+        from workforce.ui_planning import show_alerts
+        show_alerts(api, token, branch_id, b['admin'], run)

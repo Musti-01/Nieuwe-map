@@ -29,7 +29,7 @@ def show_planning(api,token,branch_id,admin,tz,zone,run):
     members=run(lambda: api.members(token,branch_id)) or []
     members=[m for m in members if m['role']!='revoked' and m['active']]
     if not members:
-        st.info(tr('Koppel eerst een actieve medewerker via Team & rechten.'))
+        st.info(tr('Koppel eerst een actieve medewerker via Medewerkers & rechten.'))
         return
     with st.expander(tr('Shift toevoegen of wijzigen')):
         editable=[p for p in plans if p['status']=='scheduled' and p['entry_id'] is None]
