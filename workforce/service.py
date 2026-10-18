@@ -264,7 +264,43 @@ class Service:
         with self.sessions.begin() as s:
             u = self._actor(s, token)
             self._access(s, u, branch_id, admin=True)
-            return [{"tijd": a.created_at, "actor": a.actor_id, "actie": a.action, "detail": a.detail} for a in s.scalars(select(Audit).where(Audit.branch_id == branch_id).order_by(Audit.id.desc()).limit(100))]
+            result = []
+            for a, actor_name in s.execute(select(Audit, User.name).join(User, User.id == Audit.actor_id).where(Audit.branch_id == branch_id).order_by(Audit.id.desc()).limit(100)):
+                row = {"tijd": a.created_at, "actor": a.actor_id, "actor_name": actor_name,
+                       "actie": a.action, "detail": a.detail, "subject": "", "reason": ""}
+                fields = dict(re.findall(r"(?:^|; )([a-z]+)=([^;]*)", a.detail))
+                entry = None
+                if fields.get('entry', '').isdigit():
+                    entry = s.scalar(select(WorkEntry).where(WorkEntry.id == int(fields['entry']), WorkEntry.branch_id == branch_id))
+                plan = None
+                if fields.get('plan', '').isdigit():
+                    plan = s.scalar(select(ShiftPlan).where(ShiftPlan.id == int(fields['plan']), ShiftPlan.branch_id == branch_id))
+                target_id = entry.user_id if entry else plan.user_id if plan else None
+                if a.action == 'membership.changed' and fields.get('user', '').isdigit():
+                    target_id = int(fields['user'])
+                    row['role'] = fields.get('role')
+                if target_id:
+                    person = s.get(User, target_id)
+                    row['subject'] = person.name if person else ''
+                elif a.action == 'account.invited':
+                    row['subject'] = fields.get('email', '')
+                elif a.action.startswith(('branch.', 'approval.')):
+                    row['subject'] = s.get(Branch, branch_id).name
+                elif a.action == 'invitation.accepted':
+                    row['subject'] = actor_name
+                if entry and fields.get('review', '').isdigit():
+                    review = s.scalar(select(ShiftReview).where(ShiftReview.id == int(fields['review']), ShiftReview.entry_id == entry.id))
+                    if review:
+                        row.update(reason=review.reason, old_start=review.old_start, old_end=review.old_end,
+                                   new_start=review.new_start, new_end=review.new_end)
+                elif a.action == 'plan.cancelled':
+                    row['reason'] = a.detail.partition('; reason=')[2]
+                if a.action.startswith('approval.'):
+                    transition = re.search(r'; (pending|approved|blocked|rejected)->(pending|approved|blocked|rejected);', a.detail)
+                    if transition:
+                        row['previous_status'], row['status'] = transition.groups()
+                result.append(row)
+            return result
 
     def _audit(self, s, u, branch_id, action, detail):
         s.add(Audit(actor_id=u.id, branch_id=branch_id, action=action, detail=detail, created_at=now()))

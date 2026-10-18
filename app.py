@@ -324,7 +324,8 @@ if b['admin'] and page == 'Medewerkers & rechten':
     st.caption(tr('Alleen organisatie-eigenaars en platformbeheerders kunnen vestigingsadmins aanwijzen of hun rechten intrekken.'))
 
 if b['admin'] and page == 'Auditlog':
-    st.dataframe(translated_table(run(lambda: api.audit(token, branch_id)) or []), hide_index=True, use_container_width=True)
+    from workforce.ui_audit import show_audit
+    show_audit(api, token, branch_id, tz, run)
 
 
 if not b['admin'] or page == 'Planning':

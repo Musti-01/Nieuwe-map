@@ -2004,16 +2004,16 @@
     "es": "Turno finalizado pendiente de revisión."
   },
   "Ingeklokt": {
-    "fr": "Entrée",
+    "fr": "Arrivée pointée",
     "en": "Clocked in",
     "de": "Eingestempelt",
-    "es": "Entrada fichada"
+    "es": "Entrada registrada"
   },
   "Uitgeklokt": {
-    "fr": "Sortie",
+    "fr": "Départ pointé",
     "en": "Clocked out",
     "de": "Ausgestempelt",
-    "es": "Salida fichada"
+    "es": "Salida registrada"
   },
   "Status": {
     "fr": "Statut",
@@ -2596,5 +2596,191 @@
     "en": "First link an active employee via Employees & permissions.",
     "de": "Verknüpfe zuerst aktive Mitarbeitende unter Mitarbeitende & Rechte.",
     "es": "Primero vincula un empleado activo en Empleados y permisos."
+  },
+  "Vestiging goedgekeurd": {
+    "fr": "Établissement approuvé",
+    "en": "Branch approved",
+    "de": "Standort genehmigt",
+    "es": "Establecimiento aprobado"
+  },
+  "Vestiging geweigerd": {
+    "fr": "Établissement refusé",
+    "en": "Branch rejected",
+    "de": "Standort abgelehnt",
+    "es": "Establecimiento rechazado"
+  },
+  "Vestiging geblokkeerd": {
+    "fr": "Établissement bloqué",
+    "en": "Branch blocked",
+    "de": "Standort gesperrt",
+    "es": "Establecimiento bloqueado"
+  },
+  "Vestiging opnieuw geactiveerd": {
+    "fr": "Établissement réactivé",
+    "en": "Branch reactivated",
+    "de": "Standort reaktiviert",
+    "es": "Establecimiento reactivado"
+  },
+  "Vestiging aangevraagd": {
+    "fr": "Établissement demandé",
+    "en": "Branch requested",
+    "de": "Standort beantragt",
+    "es": "Establecimiento solicitado"
+  },
+  "Vestiging verwijderd": {
+    "fr": "Établissement supprimé",
+    "en": "Branch removed",
+    "de": "Standort entfernt",
+    "es": "Establecimiento eliminado"
+  },
+  "Vestiging hersteld": {
+    "fr": "Établissement restauré",
+    "en": "Branch restored",
+    "de": "Standort wiederhergestellt",
+    "es": "Establecimiento restaurado"
+  },
+  "Rechten gewijzigd": {
+    "fr": "Droits modifiés",
+    "en": "Permissions changed",
+    "de": "Rechte geändert",
+    "es": "Permisos modificados"
+  },
+  "Shift afgesloten door blokkering": {
+    "fr": "Service clôturé suite au blocage",
+    "en": "Shift closed due to blocking",
+    "de": "Schicht durch Sperrung beendet",
+    "es": "Turno cerrado por bloqueo"
+  },
+  "Shift afgesloten door verwijdering van vestiging": {
+    "fr": "Service clôturé suite à la suppression de l’établissement",
+    "en": "Shift closed due to branch removal",
+    "de": "Schicht durch Standortentfernung beendet",
+    "es": "Turno cerrado por eliminación del establecimiento"
+  },
+  "Shift afgesloten door deactivering van account": {
+    "fr": "Service clôturé suite à la désactivation du compte",
+    "en": "Shift closed due to account deactivation",
+    "de": "Schicht durch Kontodeaktivierung beendet",
+    "es": "Turno cerrado por desactivación de cuenta"
+  },
+  "Werkuren gecorrigeerd": {
+    "fr": "Heures corrigées",
+    "en": "Working hours corrected",
+    "de": "Arbeitsstunden korrigiert",
+    "es": "Horas corregidas"
+  },
+  "Werkuren goedgekeurd": {
+    "fr": "Heures approuvées",
+    "en": "Working hours approved",
+    "de": "Arbeitsstunden genehmigt",
+    "es": "Horas aprobadas"
+  },
+  "Medewerker uitgenodigd": {
+    "fr": "Employé invité",
+    "en": "Employee invited",
+    "de": "Mitarbeitende eingeladen",
+    "es": "Empleado invitado"
+  },
+  "Uitnodiging geaccepteerd": {
+    "fr": "Invitation acceptée",
+    "en": "Invitation accepted",
+    "de": "Einladung angenommen",
+    "es": "Invitación aceptada"
+  },
+  "Planning opgeslagen": {
+    "fr": "Planning enregistré",
+    "en": "Schedule saved",
+    "de": "Planung gespeichert",
+    "es": "Planificación guardada"
+  },
+  "Geplande shift geannuleerd": {
+    "fr": "Service prévu annulé",
+    "en": "Scheduled shift cancelled",
+    "de": "Geplante Schicht storniert",
+    "es": "Turno planificado cancelado"
+  },
+  "Toegang ingetrokken": {
+    "fr": "Accès retiré",
+    "en": "Access revoked",
+    "de": "Zugang entzogen",
+    "es": "Acceso revocado"
+  },
+  "Overige wijziging": {
+    "fr": "Autre modification",
+    "en": "Other change",
+    "de": "Sonstige Änderung",
+    "es": "Otro cambio"
+  },
+  "Van {v0} naar {v1}": {
+    "fr": "De {v0} à {v1}",
+    "en": "From {v0} to {v1}",
+    "de": "Von {v0} zu {v1}",
+    "es": "De {v0} a {v1}"
+  },
+  "Datum en tijd": {
+    "fr": "Date et heure",
+    "en": "Date and time",
+    "de": "Datum und Uhrzeit",
+    "es": "Fecha y hora"
+  },
+  "Uitgevoerd door": {
+    "fr": "Effectué par",
+    "en": "Performed by",
+    "de": "Ausgeführt von",
+    "es": "Realizado por"
+  },
+  "Gebeurtenis": {
+    "fr": "Événement",
+    "en": "Event",
+    "de": "Ereignis",
+    "es": "Evento"
+  },
+  "Betreft": {
+    "fr": "Concerne",
+    "en": "Regarding",
+    "de": "Betrifft",
+    "es": "Relacionado con"
+  },
+  "Wijzigingsgeschiedenis": {
+    "fr": "Historique des modifications",
+    "en": "Change history",
+    "de": "Änderungsverlauf",
+    "es": "Historial de cambios"
+  },
+  "Hier zie je wie iets heeft gewijzigd en wanneer. Dit overzicht wordt automatisch bijgehouden.": {
+    "fr": "Consultez qui a modifié quoi et quand. Cet historique est enregistré automatiquement.",
+    "en": "See who changed something and when. This history is recorded automatically.",
+    "de": "Hier siehst du, wer etwas wann geändert hat. Dieser Verlauf wird automatisch geführt.",
+    "es": "Consulta quién cambió algo y cuándo. Este historial se registra automáticamente."
+  },
+  "De laatste 100 gebeurtenissen, met de meest recente bovenaan. Tijdzone: {v0}.": {
+    "fr": "Les 100 derniers événements, du plus récent au plus ancien. Fuseau horaire : {v0}.",
+    "en": "The latest 100 events, newest first. Time zone: {v0}.",
+    "de": "Die letzten 100 Ereignisse, neueste zuerst. Zeitzone: {v0}.",
+    "es": "Los últimos 100 eventos, más recientes primero. Zona horaria: {v0}."
+  },
+  "Er zijn nog geen wijzigingen geregistreerd.": {
+    "fr": "Aucune modification enregistrée.",
+    "en": "No changes have been recorded yet.",
+    "de": "Noch keine Änderungen erfasst.",
+    "es": "Todavía no hay cambios registrados."
+  },
+  "Technische gegevens (voor ondersteuning)": {
+    "fr": "Données techniques (assistance)",
+    "en": "Technical data (for support)",
+    "de": "Technische Daten (für Support)",
+    "es": "Datos técnicos (para soporte)"
+  },
+  "De oorspronkelijke registratie blijft bewaard voor controle en ondersteuning.": {
+    "fr": "L’enregistrement original est conservé pour vérification et assistance.",
+    "en": "The original record is retained for review and support.",
+    "de": "Der ursprüngliche Eintrag bleibt für Kontrolle und Support erhalten.",
+    "es": "El registro original se conserva para revisión y soporte."
+  },
+  "Toelichting": {
+    "fr": "Explication",
+    "en": "Explanation",
+    "de": "Erläuterung",
+    "es": "Explicación"
   }
 }

@@ -242,3 +242,16 @@ Het overzicht toont actieve teamleden, ingeklokte medewerkers en nog te controle
 De zijbalk houdt de navigatie zichtbaar. De gekozen pagina wordt per vestiging onthouden.
 Voor beheerders die ook een vestigingslidmaatschap hebben, staat eigen tijdregistratie apart onder **Mijn werktijd**.
 Inklokken is nooit nodig om beheerfuncties te gebruiken. Medewerkers behouden hun eigen inklokscherm, shiften, planning en meldingen; de bestaande servercontroles blijven gelden.
+
+## Leesbaar auditlog
+
+**Vestigingsbeheer → Auditlog** toont automatisch de laatste 100 gebeurtenissen,
+met de meest recente bovenaan. Het overzicht bevat **Datum en tijd**, **Uitgevoerd door**,
+**Gebeurtenis**, **Betreft** en **Toelichting**. Tijden gebruiken `APP_TIMEZONE`
+(standaard Europe/Brussels), inclusief zomer- en wintertijd.
+Goedkeuringen tonen de statuswijziging; rechtenwijzigingen tonen de toegekende rol.
+Bij uurcorrecties blijven de oorspronkelijke en gewijzigde tijden en de reden zichtbaar.
+Namen en vrije redenen worden niet vertaald; de interface en gebeurtenislabels ondersteunen alle vijf talen.
+De ruwe gebeurteniscodes, gebruikersnummers en oorspronkelijke details staan apart onder
+**Technische gegevens (voor ondersteuning)**. De opgeslagen auditgegevens worden niet gewijzigd.
+Toegang blijft beperkt tot bevoegde beheerders van de betreffende vestiging.
