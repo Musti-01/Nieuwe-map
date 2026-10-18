@@ -278,3 +278,12 @@ Een ontbrekende planning moet de beheerder eerst toevoegen via **Planning**.
 ## PDF-gebruikershandleiding
 
 [Download de Nederlandstalige handleiding](docs/ShiftFlow-handleiding.pdf). De bewerkbare bron staat in [docs/handleiding.html](docs/handleiding.html). De handleiding beschrijft rollen, registratie, medewerkers, planning, klokregels, uurcontrole, auditlog en platformbeheer en vermeldt de bijbehorende applicatieversie.
+
+## Praktischer dagelijks gebruik
+
+- Het beheeroverzicht toont de planning van vandaag, inclusief doorlopende nachtdiensten, met onderscheid tussen later starten, kunnen inklokken, nog niet ingeklokt, aan het werk en afgesloten. Geannuleerde shiften tellen niet mee. Niet geregistreerd betekent uitsluitend dat geen tijdregistratie is gekoppeld; het bewijst geen afwezigheid.
+- Namen van momenteel ingeklokte medewerkers en de eerste drie meldingen staan direct op het overzicht. **Shift bekijken en controleren** opent de juiste registratie en status in **Shiften controleren**. Dezelfde snelkoppeling staat bij meldingen. De bestaande bevoegdheden en bescherming tegen eigen goedkeuring blijven gelden.
+- De medewerker ziet de volgende ingeplande shift en het exacte lokale tijdstip waarop inklokken mogelijk wordt. Bij een lopende registratie staat duidelijk sinds wanneer die actief is en hoe je uitklokt. Gebruik de bestaande verversknoppen om tijdsafhankelijke informatie opnieuw te berekenen; er zijn geen automatische pushupdates.
+- **Medewerkers toevoegen → Bestaande medewerker koppelen** brengt je direct bij het zoeken op e-mailadres en rechtenbeheer.
+- Het planningsformulier staat meteen open en een nieuwe shift gebruikt de datum die je in het planningsoverzicht hebt geselecteerd. Controleer de begin- en eindtijden vóór opslaan.
+- Het inklokvenster blijft strikt vanaf tien minuten vóór de start op de lokale begindag. De berekening gebruikt werkelijke verstreken minuten, ook tijdens de overgang van zomer- naar wintertijd.

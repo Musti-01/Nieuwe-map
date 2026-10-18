@@ -31,11 +31,11 @@ def show_planning(api,token,branch_id,admin,tz,zone,run):
     if not members:
         st.info(tr('Koppel eerst een actieve medewerker via Medewerkers & rechten.'))
         return
-    with st.expander(tr('Shift toevoegen of wijzigen')):
+    with st.expander(tr('Shift toevoegen of wijzigen'), expanded=True):
         editable=[p for p in plans if p['status']=='scheduled' and p['entry_id'] is None]
         selected=st.selectbox(tr('Geplande shift bewerken'),[None]+[p['id'] for p in editable],format_func=translated_formatter(lambda i: tr('Nieuwe shift') if i is None else next((tr('{v0} · {v1:%d-%m-%Y %H:%M}', v0=p['name'], v1=p['start'].astimezone(tz)) for p in editable if p['id'] == i))))
         old=next((p for p in editable if p['id']==selected),None)
-        start=old['start'].astimezone(tz) if old else datetime.now(tz)+timedelta(days=1)
+        start=old['start'].astimezone(tz) if old else datetime.combine(day, datetime.now(tz).time().replace(second=0, microsecond=0), tzinfo=tz)
         stop=old['end'].astimezone(tz) if old else start+timedelta(hours=4)
         ids=[m['id'] for m in members]
         if old and old['user_id'] not in ids:
@@ -72,6 +72,9 @@ def show_alerts(api,token,branch_id,admin,run):
                 st.warning(tr('{v0}: {v1}', v0=a['medewerker'], v1=tr(a['melding'])))
             else:
                 st.info(tr('{v0}: {v1}', v0=a['medewerker'], v1=tr(a['melding'])))
+            if admin:
+                from workforce.ui_navigation import open_shift_review
+                st.button(tr('Shift bekijken en controleren'), key=f"alert_review_{a['shift']}", on_click=open_shift_review, args=(branch_id, a['shift']))
     elif alerts is not None:
         st.success(tr('Geen openstaande meldingen.'))
     st.write(tr('Vergeten uitklokken: meer dan 15 minuten na de gekoppelde geplande eindtijd, of meer dan 12 uur ingeklokt zonder zo’n afwijking. Controleer de werkelijke tijden voordat je uren goedkeurt.'))

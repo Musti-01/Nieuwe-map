@@ -456,10 +456,10 @@
     "es": "En curso"
   },
   "Afgesloten": {
-    "fr": "Terminé",
+    "fr": "Clôturé",
     "en": "Closed",
-    "de": "Abgeschlossen",
-    "es": "Finalizado"
+    "de": "Beendet",
+    "es": "Cerrado"
   },
   "Goedgekeurd": {
     "fr": "Approuvé",
@@ -2812,5 +2812,131 @@
     "en": "Refresh available shifts",
     "de": "Verfügbare Schichten aktualisieren",
     "es": "Actualizar turnos disponibles"
+  },
+  "Je bent ingeklokt sinds {v0}.": {
+    "fr": "Vous êtes pointé depuis {v0}.",
+    "en": "You have been clocked in since {v0}.",
+    "de": "Du bist seit {v0} eingestempelt.",
+    "es": "Has fichado la entrada a las {v0}."
+  },
+  "Klaar met werken? Klik op Uitklokken. Je uren wachten daarna op controle.": {
+    "fr": "Vous avez terminé ? Cliquez sur Pointer le départ. Vos heures seront ensuite à vérifier.",
+    "en": "Finished working? Click Clock out. Your hours will then await review.",
+    "de": "Fertig mit der Arbeit? Klicke auf Ausstempeln. Deine Stunden warten danach auf Prüfung.",
+    "es": "¿Has terminado? Pulsa Registrar salida. Tus horas quedarán pendientes de revisión."
+  },
+  "Je kunt nu inklokken voor je ingeplande shift.": {
+    "fr": "Vous pouvez maintenant pointer pour votre service prévu.",
+    "en": "You can now clock in for your scheduled shift.",
+    "de": "Du kannst jetzt für deine geplante Schicht einstempeln.",
+    "es": "Ya puedes fichar para tu turno planificado."
+  },
+  "Volgende shift: {v0} tot {v1}.": {
+    "fr": "Prochain service : de {v0} à {v1}.",
+    "en": "Next shift: {v0} to {v1}.",
+    "de": "Nächste Schicht: {v0} bis {v1}.",
+    "es": "Próximo turno: de {v0} a {v1}."
+  },
+  "Inklokken mogelijk vanaf {v0}.": {
+    "fr": "Pointage possible à partir de {v0}.",
+    "en": "Clock-in available from {v0}.",
+    "de": "Einstempeln möglich ab {v0}.",
+    "es": "Puedes fichar a partir de {v0}."
+  },
+  "Bestaande medewerker koppelen": {
+    "fr": "Associer un employé existant",
+    "en": "Link existing employee",
+    "de": "Vorhandene Mitarbeitende verknüpfen",
+    "es": "Vincular empleado existente"
+  },
+  "Vandaag in je vestiging": {
+    "fr": "Aujourd’hui dans votre établissement",
+    "en": "Today at your branch",
+    "de": "Heute an deinem Standort",
+    "es": "Hoy en tu establecimiento"
+  },
+  "Planning voor {v0}. Ook nachtdiensten die vandaag doorlopen staan hieronder.": {
+    "fr": "Planning du {v0}. Les services de nuit qui se poursuivent aujourd’hui figurent aussi ci-dessous.",
+    "en": "Schedule for {v0}. Overnight shifts continuing today are also listed below.",
+    "de": "Planung für {v0}. Nachtschichten, die heute weiterlaufen, stehen ebenfalls unten.",
+    "es": "Planificación del {v0}. También se incluyen turnos nocturnos que continúan hoy."
+  },
+  "Gepland begin": {
+    "fr": "Début prévu",
+    "en": "Scheduled start",
+    "de": "Geplanter Beginn",
+    "es": "Inicio previsto"
+  },
+  "Gepland einde": {
+    "fr": "Fin prévue",
+    "en": "Scheduled end",
+    "de": "Geplantes Ende",
+    "es": "Fin previsto"
+  },
+  "Aan het werk": {
+    "fr": "Au travail",
+    "en": "Working",
+    "de": "Bei der Arbeit",
+    "es": "Trabajando"
+  },
+  "Niet geregistreerd": {
+    "fr": "Non enregistré",
+    "en": "Not recorded",
+    "de": "Nicht erfasst",
+    "es": "Sin registrar"
+  },
+  "Nog niet ingeklokt": {
+    "fr": "Pas encore pointé",
+    "en": "Not clocked in yet",
+    "de": "Noch nicht eingestempelt",
+    "es": "Sin fichar todavía"
+  },
+  "Kan nu inklokken": {
+    "fr": "Peut pointer maintenant",
+    "en": "Can clock in now",
+    "de": "Kann jetzt einstempeln",
+    "es": "Puede fichar ahora"
+  },
+  "Start later": {
+    "fr": "Commence plus tard",
+    "en": "Starts later",
+    "de": "Beginnt später",
+    "es": "Empieza más tarde"
+  },
+  "Vandaag is nog niemand ingepland. Open Planning om een shift toe te voegen.": {
+    "fr": "Personne n’est prévu aujourd’hui. Ouvrez Planning pour ajouter un service.",
+    "en": "Nobody is scheduled today. Open Planning to add a shift.",
+    "de": "Heute ist noch niemand eingeplant. Öffne Planung, um eine Schicht hinzuzufügen.",
+    "es": "No hay nadie planificado hoy. Abre Planificación para añadir un turno."
+  },
+  "Dit vraagt aandacht": {
+    "fr": "À traiter",
+    "en": "Needs attention",
+    "de": "Das erfordert Aufmerksamkeit",
+    "es": "Requiere atención"
+  },
+  "Shift bekijken en controleren": {
+    "fr": "Consulter et vérifier le service",
+    "en": "View and review shift",
+    "de": "Schicht ansehen und prüfen",
+    "es": "Ver y revisar turno"
+  },
+  "Bekijk alle meldingen via Meldingen.": {
+    "fr": "Consultez toutes les alertes dans Alertes.",
+    "en": "View all alerts under Alerts.",
+    "de": "Alle Meldungen findest du unter Meldungen.",
+    "es": "Consulta todas las alertas en Alertas."
+  },
+  "Overzicht verversen": {
+    "fr": "Actualiser l’aperçu",
+    "en": "Refresh overview",
+    "de": "Übersicht aktualisieren",
+    "es": "Actualizar resumen"
+  },
+  "Deze shift is niet meer beschikbaar in deze vestiging.": {
+    "fr": "Ce service n’est plus disponible dans cet établissement.",
+    "en": "This shift is no longer available at this branch.",
+    "de": "Diese Schicht ist an diesem Standort nicht mehr verfügbar.",
+    "es": "Este turno ya no está disponible en este establecimiento."
   }
 }

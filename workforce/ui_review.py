@@ -6,12 +6,24 @@ import streamlit as st
 def show_reviews(api, token, branch_id, team, me, tz, run):
     st.subheader(tr('Shiften controleren'))
     st.write(tr('Controleer de werkelijk gewerkte tijden voordat je uren goedkeurt. Bij een vergeten uitklok kun je de shift hier afsluiten met de juiste eindtijd en een reden.'))
-    status = st.selectbox(tr('Welke shiften controleren?'), ['Wacht op controle', 'Bezig', 'Goedgekeurd'], format_func=tr)
+    status_key = f'review_status_{branch_id}'
+    entry_key = f'review_entry_{branch_id}'
+    focus = st.session_state.pop(f'focus_review_{branch_id}', None)
+    if focus is not None:
+        target = next((e for e in team if e['id'] == focus), None)
+        if target:
+            st.session_state[status_key] = 'Bezig' if target['end'] is None else 'Goedgekeurd' if target['review_status'] == 'approved' else 'Wacht op controle'
+            st.session_state[entry_key] = target['id']
+        else:
+            st.info(tr('Deze shift is niet meer beschikbaar in deze vestiging.'))
+    status = st.selectbox(tr('Welke shiften controleren?'), ['Wacht op controle', 'Bezig', 'Goedgekeurd'], key=status_key, format_func=tr)
     eligible = [e for e in team if (e['end'] is None and status == 'Bezig') or (e['end'] is not None and ('Goedgekeurd' if e['review_status'] == 'approved' else 'Wacht op controle') == status)]
     if not eligible:
         st.info(tr('Geen shiften met deze status.'))
         return
-    selected = st.selectbox(tr('Shift selecteren'), [e['id'] for e in eligible], format_func=translated_formatter(lambda i: next((tr('{v0} · {v1:%d-%m-%Y %H:%M} → {v2}', v0=e['name'], v1=e['start'].astimezone(tz), v2=e['end'].astimezone(tz).strftime('%d-%m-%Y %H:%M') if e['end'] else tr('Nog bezig')) for e in eligible if e['id'] == i))))
+    if st.session_state.get(entry_key) not in [e['id'] for e in eligible]:
+        st.session_state.pop(entry_key, None)
+    selected = st.selectbox(tr('Shift selecteren'), [e['id'] for e in eligible], format_func=translated_formatter(lambda i: next((tr('{v0} · {v1:%d-%m-%Y %H:%M} → {v2}', v0=e['name'], v1=e['start'].astimezone(tz), v2=e['end'].astimezone(tz).strftime('%d-%m-%Y %H:%M') if e['end'] else tr('Nog bezig')) for e in eligible if e['id'] == i))), key=entry_key)
     entry = next(e for e in eligible if e['id'] == selected)
     if entry['user_id'] == me['id']:
         st.info(tr('Je mag je eigen shift niet corrigeren of goedkeuren. Vraag een andere bevoegde beheerder.'))

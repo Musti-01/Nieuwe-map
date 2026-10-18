@@ -7,7 +7,6 @@ from sqlalchemy.exc import SQLAlchemyError
 from workforce.db import make_engine, sessions
 from workforce.service import Service, Denied, now
 from workforce.reports import period_bounds, hours
-from workforce.clock_policy import clock_in_allowed
 from workforce.ui_accounts import account_links, password_settings, invitations, clear_signin
 
 set_language(st.session_state.get("language", "nl"))
@@ -195,11 +194,13 @@ except Exception:
 
 if b['admin'] and page == 'Overzicht':
     from workforce.ui_manager import show_manager_home
-    show_manager_home(api, token, branch_id, page_key, run)
+    show_manager_home(api, token, branch_id, page_key, run, tz)
 if b['admin'] and page == 'Medewerkers toevoegen':
     st.subheader(tr('Medewerkers toevoegen'))
     st.write(tr('Nodig een nieuwe medewerker uit via e-mail. Heeft de medewerker al een account? Koppel die via Medewerkers & rechten.'))
     invitations(api, token, branch_id, run, expanded=True)
+    from workforce.ui_navigation import open_branch_page
+    st.button(tr('Bestaande medewerker koppelen'), on_click=open_branch_page, args=(branch_id, 'Medewerkers & rechten'))
 
 if not b['admin'] or page == 'Mijn werktijd':
     if b['admin']:
@@ -211,17 +212,14 @@ if not b['admin'] or page == 'Mijn werktijd':
             st.stop()
         my_plans = run(lambda: api.plans(token, branch_id)) or []
         snapshot = now()
-        choices = [p for p in my_plans if p['status']=='scheduled' and p['entry_id'] is None and clock_in_allowed(p['start'], p['end'], snapshot, tz)]
-        st.caption(tr('Je kunt alleen op de begindag van je ingeplande shift inklokken, vanaf 10 minuten voor de start.'))
+        active = next((e for e in entries if not e['end']), None)
+        from workforce.ui_clock import show_clock_availability
+        choices = show_clock_availability(my_plans, active, snapshot, tz)
         plan_id = None
         if choices:
             plan_id = st.selectbox(tr('Inklokken voor'), [p['id'] for p in choices], format_func=translated_formatter(lambda i: next((tr('{v0:%d-%m %H:%M} – {v1:%H:%M}', v0=p['start'].astimezone(tz), v1=p['end'].astimezone(tz)) for p in choices if p['id'] == i))))
-        else:
-            st.info(tr('Er is nu geen ingeplande shift waarvoor je kunt inklokken. Bekijk je planning of vraag je beheerder.'))
         if st.button(tr('Inklokmogelijkheden verversen')):
             st.rerun()
-        active = next((e for e in entries if not e['end']), None)
-        st.write((tr('🟢 Je bent ingeklokt') if active else tr('Je bent momenteel uitgeklokt')))
         if b['member']:
             a, c = st.columns(2)
             with a:
