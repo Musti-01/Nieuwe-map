@@ -194,7 +194,7 @@ Laat deze vlag weg zolang de worker niet werkt. SMTP-credentials horen alleen bi
 
 **Planning** toont een dag-, week- of maandoverzicht. Medewerkers zien uitsluitend hun eigen diensten. Beheerders zien en beheren het team van hun vestiging, kunnen nieuwe diensten maken, bestaande diensten wijzigen of met een reden annuleren. Een dienst met gekoppelde tijdregistratie kan niet meer verplaatst of geannuleerd worden. Overlappende planning voor dezelfde medewerker wordt over alle vestigingen heen geweigerd, ook bij gelijktijdige aanvragen. Dit controleert geplande diensten, geen wettelijke arbeids- of rusttijden.
 
-Bij **In- en uitklokken → Inklokken voor** kan een medewerker expliciet de geplande shift kiezen. Alleen diens eigen, actieve planning in de gekozen vestiging is toegestaan. Eén geplande shift kan aan één registratie gekoppeld worden; opnieuw inklokken voor dezelfde planning wordt geweigerd. Zonder geplande shift inklokken blijft beschikbaar. Het koppelen stelt geen verplichte starttijd in en stopt de klok niet automatisch. Het planningsoverzicht vergelijkt gekoppelde geregistreerde uren met geplande uren. Die geregistreerde uren kunnen nog op controle wachten; planning vervangt geen shiftgoedkeuring.
+Bij **In- en uitklokken → Inklokken voor** kan een medewerker expliciet de geplande shift kiezen. Alleen diens eigen, actieve planning in de gekozen vestiging is toegestaan. Eén geplande shift kan aan één registratie gekoppeld worden; opnieuw inklokken voor dezelfde planning wordt geweigerd. Een planning is verplicht: inklokken kan alleen op de lokale begindag, vanaf 10 minuten voor de start en vóór de geplande eindtijd. De klok stopt niet automatisch. Het planningsoverzicht vergelijkt gekoppelde geregistreerde uren met geplande uren. Die geregistreerde uren kunnen nog op controle wachten; planning vervangt geen shiftgoedkeuring.
 
 ### Meldingen bij vergeten uitklokken
 
@@ -255,3 +255,22 @@ Namen en vrije redenen worden niet vertaald; de interface en gebeurtenislabels o
 De ruwe gebeurteniscodes, gebruikersnummers en oorspronkelijke details staan apart onder
 **Technische gegevens (voor ondersteuning)**. De opgeslagen auditgegevens worden niet gewijzigd.
 Toegang blijft beperkt tot bevoegde beheerders van de betreffende vestiging.
+
+## Inklokken volgens de planning
+
+Inklokken vereist een **eigen, actieve ingeplande shift** in de geselecteerde vestiging.
+Het kan op de lokale begindag van die shift, vanaf exact **10 minuten vóór de begintijd**
+tot vóór de geplande eindtijd. Voor een shift om 16:00 is dat vanaf 15:50.
+Bij een start om 00:05 opent het inklokken pas om 00:00, omdat de vorige dag niet is toegestaan.
+Na middernacht alsnog inklokken voor een shift die gisteren begon is niet toegestaan.
+De tijdzone is `APP_TIMEZONE` (standaard Europe/Brussels); de server bepaalt de tijd.
+
+De inklokkeuze toont alleen beschikbare shiften; **Zonder geplande shift** vervalt.
+Klik **Inklokmogelijkheden verversen** als het tijdvenster net is geopend.
+De server controleert dezelfde regels opnieuw, ook bij een verouderde pagina of directe API-aanroep.
+Geannuleerde, reeds gebruikte en andermans shiften zijn uitgesloten. Er is geen beheerdersuitzondering
+voor eigen tijdregistratie. Dubbele actieve sessies blijven geblokkeerd.
+
+**Uitklokken blijft mogelijk zolang je een actieve sessie hebt**, ook na de eindtijd of na middernacht.
+Bestaande registraties zonder planning blijven zichtbaar en kunnen worden uitgeklokt of gecontroleerd.
+Een ontbrekende planning moet de beheerder eerst toevoegen via **Planning**.

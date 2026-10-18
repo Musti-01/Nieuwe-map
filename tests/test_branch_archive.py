@@ -1,3 +1,4 @@
+from clock_helpers import planned_clock_in
 import pytest
 from sqlalchemy import select
 from workforce.models import Branch, WorkEntry, Audit
@@ -5,7 +6,7 @@ from workforce.service import Denied
 
 
 def test_remove_branch_revokes_access_and_preserves_history(api, team):
-    api.clock_in(team['wt'], team['branch'])
+    planned_clock_in(api, team['wt'], team['branch'])
     assert api.archive_branch(team['pt'], team['branch'])
     assert api.branches(team['wt']) == []
     assert api.branches(team['ot']) == []
@@ -24,7 +25,7 @@ def test_remove_branch_revokes_access_and_preserves_history(api, team):
         api.decide(team['pt'],'branch',team['branch'],'block','test')
     api.archive_branch(team['pt'],team['branch'],restore=True)
     assert api.branches(team['wt'])[0]['id']==team['branch']
-    api.clock_in(team['wt'],team['branch'])
+    planned_clock_in(api, team['wt'],team['branch'])
 
 
 @pytest.mark.parametrize('token_key',['ot','wt','xt'])

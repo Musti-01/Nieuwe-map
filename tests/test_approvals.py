@@ -1,3 +1,4 @@
+from clock_helpers import planned_clock_in
 from concurrent.futures import ThreadPoolExecutor
 import pytest
 from sqlalchemy import select
@@ -45,7 +46,7 @@ def test_both_approvals_required_then_operational(api, application):
     with pytest.raises(Denied):
         api.clock_in(a['ot'], a['branch'])
     api.decide(a['pt'], 'branch', a['branch'], 'approve')
-    assert api.clock_in(a['ot'], a['branch'])
+    assert planned_clock_in(api, a['ot'], a['branch'])
     assert api.clock_out(a['ot'], a['branch'])
     api.set_role(a['ot'], a['branch'], a['owner'], 'admin')
 
@@ -116,7 +117,7 @@ def test_block_and_reactivate_organization_and_branch(api, team):
         with pytest.raises(Denied):
             api.members(team['ot'], team['branch'])
         api.decide(team['pt'], kind, target, 'reactivate')
-        assert api.clock_in(team['wt'], team['branch'])
+        assert planned_clock_in(api, team['wt'], team['branch'])
         api.clock_out(team['wt'], team['branch'])
     assert len(api.decisions(team['pt'])) == 8
 
@@ -151,11 +152,11 @@ def test_decision_validation_and_race(api, application):
 
 
 def test_block_closes_active_entries_and_preserves_history(api, team):
-    api.clock_in(team['wt'], team['branch'])
+    planned_clock_in(api, team['wt'], team['branch'])
     api.decide(team['pt'], 'organization', api.organizations(team['ot'])[0]['id'], 'block', 'Temporarily closed')
     with pytest.raises(Denied):
         api.clock_out(team['wt'], team['branch'])
     api.decide(team['pt'], 'organization', api.organizations(team['ot'])[0]['id'], 'reactivate')
     assert api.entries(team['wt'], team['branch'])[0]['end'] is not None
     assert any(r['actie'] == 'clock.closed_by_block' for r in api.audit(team['ot'], team['branch']))
-    assert api.clock_in(team['wt'], team['branch'])
+    assert planned_clock_in(api, team['wt'], team['branch'])

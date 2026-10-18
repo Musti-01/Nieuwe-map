@@ -7,6 +7,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from workforce.db import make_engine, sessions
 from workforce.service import Service, Denied, now
 from workforce.reports import period_bounds, hours
+from workforce.clock_policy import clock_in_allowed
 from workforce.ui_accounts import account_links, password_settings, invitations, clear_signin
 
 set_language(st.session_state.get("language", "nl"))
@@ -209,14 +210,22 @@ if not b['admin'] or page == 'Mijn werktijd':
         if entries is None:
             st.stop()
         my_plans = run(lambda: api.plans(token, branch_id)) or []
-        choices = [p for p in my_plans if p['status']=='scheduled' and p['entry_id'] is None]
-        plan_id = st.selectbox(tr('Inklokken voor'), [None]+[p['id'] for p in choices], format_func=translated_formatter(lambda i: tr('Zonder geplande shift') if i is None else next((tr('{v0:%d-%m %H:%M} – {v1:%H:%M}', v0=p['start'].astimezone(tz), v1=p['end'].astimezone(tz)) for p in choices if p['id'] == i))))
+        snapshot = now()
+        choices = [p for p in my_plans if p['status']=='scheduled' and p['entry_id'] is None and clock_in_allowed(p['start'], p['end'], snapshot, tz)]
+        st.caption(tr('Je kunt alleen op de begindag van je ingeplande shift inklokken, vanaf 10 minuten voor de start.'))
+        plan_id = None
+        if choices:
+            plan_id = st.selectbox(tr('Inklokken voor'), [p['id'] for p in choices], format_func=translated_formatter(lambda i: next((tr('{v0:%d-%m %H:%M} – {v1:%H:%M}', v0=p['start'].astimezone(tz), v1=p['end'].astimezone(tz)) for p in choices if p['id'] == i))))
+        else:
+            st.info(tr('Er is nu geen ingeplande shift waarvoor je kunt inklokken. Bekijk je planning of vraag je beheerder.'))
+        if st.button(tr('Inklokmogelijkheden verversen')):
+            st.rerun()
         active = next((e for e in entries if not e['end']), None)
         st.write((tr('🟢 Je bent ingeklokt') if active else tr('Je bent momenteel uitgeklokt')))
         if b['member']:
             a, c = st.columns(2)
             with a:
-                if st.button(tr('Inklokken'), type="primary", disabled=active is not None, use_container_width=True):
+                if st.button(tr('Inklokken'), type="primary", disabled=active is not None or plan_id is None, use_container_width=True):
                     if run(lambda: api.clock_in(token, branch_id, plan_id), "Je bent ingeklokt."):
                         st.rerun()
             with c:

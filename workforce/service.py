@@ -5,6 +5,8 @@ import hashlib
 import re
 import secrets
 from datetime import datetime, timedelta, timezone
+from zoneinfo import ZoneInfo
+from workforce.clock_policy import clock_in_allowed
 from argon2 import PasswordHasher
 from argon2.exceptions import VerificationError, InvalidHashError
 from sqlalchemy import select, or_, text, delete
@@ -224,13 +226,20 @@ class Service:
                 m = s.get(Membership, (branch_id, u.id))
                 if not m or m.role == "revoked":
                     raise Denied("Je bent geen medewerker van deze vestiging.")
-                if plan_id is not None:
-                    plan = s.get(ShiftPlan, plan_id)
-                    if not plan or plan.branch_id != branch_id or plan.user_id != u.id or plan.status != 'scheduled':
-                        raise Denied("Geen toegang tot deze geplande shift.")
-                    if s.scalar(select(WorkEntry.id).where(WorkEntry.plan_id == plan_id)):
-                        raise ValueError("Deze geplande shift heeft al een tijdregistratie.")
-                e = WorkEntry(branch_id=branch_id, user_id=u.id, started_at=now(), plan_id=plan_id)
+                if s.scalar(select(WorkEntry.id).where(WorkEntry.user_id == u.id, WorkEntry.ended_at.is_(None))):
+                    raise ValueError("Je hebt al een actieve inkloksessie.")
+                if plan_id is None:
+                    raise ValueError("Kies een ingeplande shift om in te klokken.")
+                plan = s.scalar(select(ShiftPlan).where(ShiftPlan.id == plan_id).with_for_update())
+                if not plan or plan.branch_id != branch_id or plan.user_id != u.id or plan.status != 'scheduled':
+                    raise Denied("Geen toegang tot deze geplande shift.")
+                if s.scalar(select(WorkEntry.id).where(WorkEntry.plan_id == plan_id)):
+                    raise ValueError("Deze geplande shift heeft al een tijdregistratie.")
+                current = now()
+                tz = ZoneInfo(os.getenv('APP_TIMEZONE', 'Europe/Brussels'))
+                if not clock_in_allowed(plan.starts_at, plan.ends_at, current, tz):
+                    raise ValueError("Inklokken kan alleen op de begindag van je shift, vanaf 10 minuten voor de start en vóór de geplande eindtijd.")
+                e = WorkEntry(branch_id=branch_id, user_id=u.id, started_at=current, plan_id=plan_id)
                 s.add(e)
                 s.flush()
                 self._audit(s, u, branch_id, "clock.in", f"entry={e.id}")

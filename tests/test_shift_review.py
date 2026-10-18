@@ -1,3 +1,4 @@
+from clock_helpers import planned_clock_in
 from datetime import timedelta
 from concurrent.futures import ThreadPoolExecutor
 import pytest
@@ -6,7 +7,7 @@ from workforce.models import WorkEntry
 
 
 def closed(api, team):
-    eid = api.clock_in(team['wt'], team['branch'])
+    eid = planned_clock_in(api, team['wt'], team['branch'])
     with api.sessions.begin() as s:
         s.get(WorkEntry,eid).started_at = now()-timedelta(hours=2)
     api.clock_out(team['wt'],team['branch'])
@@ -57,7 +58,7 @@ def test_no_self_approval_or_correction(api,team):
 
 
 def test_active_cannot_be_approved_but_admin_can_close_with_reason(api,team):
-    eid=api.clock_in(team['wt'],team['branch'])
+    eid=planned_clock_in(api, team['wt'],team['branch'])
     e=api.entries(team['wt'],team['branch'])[0]
     with pytest.raises(ValueError,match='lopende'):
         api.review_shift(team['ot'],team['branch'],eid,e['version'],'approve')
@@ -65,7 +66,7 @@ def test_active_cannot_be_approved_but_admin_can_close_with_reason(api,team):
     with pytest.raises(ValueError):
         api.clock_out(team['wt'],team['branch'])
     assert api.entries(team['wt'],team['branch'])[0]['review_status']=='pending'
-    assert api.clock_in(team['wt'],team['branch'])
+    assert planned_clock_in(api, team['wt'],team['branch'])
 
 
 def test_validate_reason_timezones_future_and_overlap(api,team):
@@ -77,7 +78,7 @@ def test_validate_reason_timezones_future_and_overlap(api,team):
     for reason,start,end in [('',e['start'],e['end']),('test',e['start'].replace(tzinfo=None),e['end']),('test',e['start'],now()+timedelta(hours=1)),('test',e['end'],e['start'])]:
         with pytest.raises(ValueError):
             api.review_shift(*args,reason,start,end)
-    second=api.clock_in(team['wt'],team['branch'])
+    second=planned_clock_in(api, team['wt'],team['branch'])
     with api.sessions.begin() as s:
         s.get(WorkEntry,second).started_at=e['end']+timedelta(seconds=1)
     api.clock_out(team['wt'],team['branch'])

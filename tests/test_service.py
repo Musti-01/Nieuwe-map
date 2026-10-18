@@ -1,3 +1,4 @@
+from clock_helpers import planned_clock_in
 from concurrent.futures import ThreadPoolExecutor
 from datetime import timedelta
 import pytest
@@ -97,7 +98,7 @@ def test_admin_can_assign_employee_but_not_admin(api, team):
 
 
 def test_clock_lifecycle_and_history_isolation(api, team):
-    entry = api.clock_in(team['wt'], team['branch'])
+    entry = planned_clock_in(api, team['wt'], team['branch'])
     with api.sessions.begin() as s:
         s.execute(update(WorkEntry).where(WorkEntry.id == entry).values(started_at=now()-timedelta(hours=2)))
     assert api.entries(team['ot'], team['branch']) == []
@@ -115,20 +116,20 @@ def test_clock_lifecycle_and_history_isolation(api, team):
 
 def test_global_active_session_uniqueness(api, team):
     api.set_role(team['xt'], team['other_branch'], team['worker'], 'employee')
-    api.clock_in(team['wt'], team['branch'])
+    planned_clock_in(api, team['wt'], team['branch'])
     with pytest.raises(ValueError, match='actieve'):
         api.clock_in(team['wt'], team['other_branch'])
     with pytest.raises(ValueError):
         api.set_role(team['ot'], team['branch'], team['worker'], None)
     api.clock_out(team['wt'], team['branch'])
-    assert api.clock_in(team['wt'], team['other_branch'])
+    assert planned_clock_in(api, team['wt'], team['other_branch'])
 
 
 def test_concurrent_clock_in_one_winner(api, team):
     api.set_role(team['xt'], team['other_branch'], team['worker'], 'employee')
     def clock(branch):
         try:
-            api.clock_in(team['wt'], branch)
+            planned_clock_in(api, team['wt'], branch)
             return True
         except ValueError:
             return False

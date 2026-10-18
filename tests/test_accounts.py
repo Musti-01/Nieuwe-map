@@ -1,3 +1,4 @@
+from clock_helpers import planned_clock_in
 from datetime import timedelta
 from urllib.parse import parse_qs, urlsplit
 import re
@@ -85,7 +86,7 @@ def test_change_password_requires_current_and_revokes_all_sessions(api,team):
 
 
 def test_account_deactivation_enforces_access_and_closes_shift(api,team):
-    api.clock_in(team['wt'],team['branch'])
+    planned_clock_in(api, team['wt'],team['branch'])
     with pytest.raises(Denied):
         api.set_account_active(team['ot'],team['worker'],False,'Left')
     assert api.set_account_active(team['pt'],team['worker'],False,'Left')

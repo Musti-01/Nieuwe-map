@@ -1,3 +1,4 @@
+from clock_helpers import planned_clock_in
 import streamlit as st
 from streamlit.testing.v1 import AppTest
 
@@ -27,12 +28,12 @@ def test_platform_navigation_and_owner_only_delegation(api, team, engine, monkey
 
 
 def test_employee_shift_history_after_clock_out(api, team, engine, monkeypatch):
-    api.clock_in(team['wt'], team['branch'])
+    planned_clock_in(api, team['wt'], team['branch'])
     api.clock_out(team['wt'], team['branch'])
     app = app_for(team['wt'], engine, monkeypatch)
     assert not app.exception
     assert [tab.label for tab in app.tabs] == ['In- en uitklokken', 'Mijn shiften', 'Planning', 'Meldingen']
-    assert len(app.dataframe) == 1
+    assert app.dataframe
     assert app.dataframe[0].value.iloc[0]['Status'] == 'Wacht op controle'
     assert all(r.label != 'Platformonderdeel' for r in app.radio)
     next(b for b in app.button if b.label == 'Shiften verversen').click().run()
@@ -49,7 +50,7 @@ def test_branch_admin_still_has_dashboard_team_and_audit(api, team, engine, monk
 
 
 def test_admin_approves_shift_from_review_tab(api, team, engine, monkeypatch):
-    api.clock_in(team['wt'], team['branch'])
+    planned_clock_in(api, team['wt'], team['branch'])
     api.clock_out(team['wt'], team['branch'])
     app = app_for(team['ot'], engine, monkeypatch)
     assert not app.exception

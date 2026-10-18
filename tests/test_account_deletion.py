@@ -1,3 +1,4 @@
+from clock_helpers import planned_clock_in
 import pytest
 from sqlalchemy import select
 from workforce.models import User,Membership,AuthSession,Audit
@@ -17,7 +18,7 @@ def test_unused_account_deleted_with_sessions_and_links(api,team):
 
 
 def test_history_prevents_deletion_but_keeps_deactivation(api,team):
-    api.clock_in(team['wt'],team['branch'])
+    planned_clock_in(api, team['wt'],team['branch'])
     api.clock_out(team['wt'],team['branch'])
     row=next(u for u in api.accounts(team['pt']) if u['id']==team['worker'])
     assert row['can_manage'] and not row['can_delete']
@@ -60,9 +61,12 @@ def test_pending_invitation_blocks_deletion_and_keeps_link_valid(api,team,monkey
 
 def test_clock_in_vs_deletion_never_discards_a_work_entry(api,team):
     from concurrent.futures import ThreadPoolExecutor
+    from datetime import timedelta
+    from workforce.service import now
+    plan=api.save_plan(team['ot'],team['branch'],team['worker'],now(),now()+timedelta(hours=1))
     def clock():
         try:
-            return bool(api.clock_in(team['wt'],team['branch']))
+            return bool(api.clock_in(team['wt'],team['branch'],plan))
         except (Denied,ValueError):
             return False
     def remove():

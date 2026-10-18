@@ -2782,5 +2782,35 @@
     "en": "Explanation",
     "de": "Erläuterung",
     "es": "Explicación"
+  },
+  "Kies een ingeplande shift om in te klokken.": {
+    "fr": "Choisissez un service prévu pour pointer.",
+    "en": "Choose a scheduled shift to clock in.",
+    "de": "Wähle eine geplante Schicht zum Einstempeln.",
+    "es": "Elige un turno planificado para fichar."
+  },
+  "Inklokken kan alleen op de begindag van je shift, vanaf 10 minuten voor de start en vóór de geplande eindtijd.": {
+    "fr": "Vous pouvez pointer uniquement le jour de début du service, à partir de 10 minutes avant le début et avant la fin prévue.",
+    "en": "You can only clock in on the day your shift starts, from 10 minutes before the start and before its scheduled end.",
+    "de": "Du kannst nur am Starttag deiner Schicht einstempeln, ab 10 Minuten vor Beginn und vor dem geplanten Ende.",
+    "es": "Solo puedes fichar el día de inicio del turno, desde 10 minutos antes del inicio y antes de la hora de fin prevista."
+  },
+  "Je kunt alleen op de begindag van je ingeplande shift inklokken, vanaf 10 minuten voor de start.": {
+    "fr": "Vous pouvez pointer uniquement le jour de début de votre service prévu, à partir de 10 minutes avant le début.",
+    "en": "You can only clock in on the day your scheduled shift starts, from 10 minutes before the start.",
+    "de": "Du kannst nur am Starttag deiner geplanten Schicht einstempeln, ab 10 Minuten vor Beginn.",
+    "es": "Solo puedes fichar el día de inicio de tu turno planificado, desde 10 minutos antes del inicio."
+  },
+  "Er is nu geen ingeplande shift waarvoor je kunt inklokken. Bekijk je planning of vraag je beheerder.": {
+    "fr": "Aucun service prévu ne permet de pointer maintenant. Consultez votre planning ou contactez votre responsable.",
+    "en": "There is no scheduled shift you can clock in for now. Check your schedule or ask your manager.",
+    "de": "Derzeit ist keine geplante Schicht zum Einstempeln verfügbar. Prüfe deine Planung oder frage deine Verwaltung.",
+    "es": "Ahora no hay ningún turno planificado para el que puedas fichar. Consulta tu planificación o pregunta a tu responsable."
+  },
+  "Inklokmogelijkheden verversen": {
+    "fr": "Actualiser les possibilités de pointage",
+    "en": "Refresh available shifts",
+    "de": "Verfügbare Schichten aktualisieren",
+    "es": "Actualizar turnos disponibles"
   }
 }

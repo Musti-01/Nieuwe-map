@@ -1,3 +1,4 @@
+from clock_helpers import planned_clock_in
 from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
 import pytest
@@ -7,7 +8,7 @@ from workforce.service import Denied
 
 
 def test_audit_names_subjects_and_original_evidence(api,team):
-    api.clock_in(team['wt'],team['branch'])
+    planned_clock_in(api, team['wt'],team['branch'])
     events=api.audit(team['ot'],team['branch'])
     clock=next(e for e in events if e['actie']=='clock.in')
     assert clock['actor_name']=='Worker'
@@ -54,7 +55,7 @@ def test_manager_audit_screen(api,team,engine,monkeypatch):
 
 def test_correction_history_shows_reason_and_original_times(api,team):
     from datetime import timedelta
-    api.clock_in(team['wt'],team['branch'])
+    planned_clock_in(api, team['wt'],team['branch'])
     api.clock_out(team['wt'],team['branch'])
     entry=api.entries(team['wt'],team['branch'])[0]
     start=entry['start']-timedelta(minutes=10)

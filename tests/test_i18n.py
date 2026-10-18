@@ -1,3 +1,4 @@
+from clock_helpers import planned_clock_in
 import ast
 import string
 from pathlib import Path
@@ -81,7 +82,7 @@ def test_language_preference_is_per_account_and_authorized(api,team):
 def test_employee_shift_screen_and_preference_restore(api,team,engine,monkeypatch,language):
     monkeypatch.setenv('DATABASE_URL',engine.url.render_as_string(hide_password=False))
     monkeypatch.delenv('AUTO_MIGRATE',raising=False)
-    api.clock_in(team['wt'],team['branch']);api.clock_out(team['wt'],team['branch'])
+    planned_clock_in(api, team['wt'],team['branch']);api.clock_out(team['wt'],team['branch'])
     api.set_language(team['wt'],language)
     st.cache_resource.clear()
     app=AppTest.from_file('app.py',default_timeout=10)

@@ -1,3 +1,4 @@
+from clock_helpers import planned_clock_in
 from datetime import timedelta
 from concurrent.futures import ThreadPoolExecutor
 import pytest
@@ -6,7 +7,7 @@ from workforce.service import now, Denied
 
 
 def test_plan_lifecycle_permissions_and_actual_link(api,team):
-    start=now()-timedelta(minutes=10);end=now()+timedelta(hours=2)
+    start=now();end=now()+timedelta(hours=2)
     with pytest.raises(Denied):
         api.save_plan(team['wt'],team['branch'],team['worker'],start,end)
     plan=api.save_plan(team['ot'],team['branch'],team['worker'],start,end,'Delivery')
@@ -16,7 +17,7 @@ def test_plan_lifecycle_permissions_and_actual_link(api,team):
         api.plans(team['wt'],team['branch'],True)
     with pytest.raises(Denied):
         api.plans(team['xt'],team['branch'])
-    api.clock_in(team['wt'],team['branch'],plan)
+    planned_clock_in(api, team['wt'],team['branch'],plan)
     assert api.plans(team['ot'],team['branch'],True)[0]['entry_id']
     with pytest.raises(ValueError):
         api.cancel_plan(team['ot'],team['branch'],plan,1,'Changed')
@@ -52,19 +53,21 @@ def test_cross_branch_plan_overlap_serialized(api,team):
         assert sum(pool.map(save,[(team['ot'],team['branch']),(team['xt'],team['other_branch'])]))==1
 
 
-def test_alerts_for_overdue_and_unplanned_long_shift(api,team):
-    eid=api.clock_in(team['wt'],team['branch'])
+def test_alerts_for_overdue_and_unplanned_long_shift(api,team,monkeypatch):
+    # Historical unplanned registrations remain supported for clock-out/alerts.
     with api.sessions.begin() as s:
-        s.get(WorkEntry,eid).started_at=now()-timedelta(hours=13)
+        entry=WorkEntry(branch_id=team['branch'],user_id=team['worker'],started_at=now()-timedelta(hours=13),review_status='pending',version=1)
+        s.add(entry)
+        s.flush()
+        eid=entry.id
     assert api.alerts(team['wt'],team['branch'])[0]['type']=='uitklokken'
     api.clock_out(team['wt'],team['branch'])
     assert api.alerts(team['wt'],team['branch'])==[]
     assert api.alerts(team['ot'],team['branch'],True)[0]['type']=='controle'
-    start=now()-timedelta(hours=1);end=now()+timedelta(minutes=30)
+    start=now();end=now()+timedelta(minutes=30)
     plan=api.save_plan(team['ot'],team['branch'],team['worker'],start,end)
-    api.clock_in(team['wt'],team['branch'],plan)
-    with api.sessions.begin() as s:
-        s.get(ShiftPlan,plan).ends_at=now()-timedelta(minutes=20)
+    planned_clock_in(api, team['wt'],team['branch'],plan)
+    monkeypatch.setattr('workforce.service.now',lambda:end+timedelta(minutes=20))
     assert any(a['type']=='uitklokken' for a in api.alerts(team['wt'],team['branch']))
 
 
