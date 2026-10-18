@@ -339,7 +339,13 @@ class Service:
         with self.sessions.begin() as s:
             self._platform(s, token)
             result = []
-            for org, responsible in s.execute(select(Organization, User).join(User, User.id == Organization.owner_id).order_by(Organization.id)):
+            # Hide the parent row too when every branch has been archived.
+            # Keep genuine organization-only requests visible for older data.
+            active_orgs = select(Branch.organization_id).where(Branch.archived_at.is_(None))
+            all_orgs = select(Branch.organization_id)
+            organizations = select(Organization, User).join(User, User.id == Organization.owner_id).where(
+                or_(Organization.id.in_(active_orgs), Organization.id.not_in(all_orgs)))
+            for org, responsible in s.execute(organizations.order_by(Organization.id)):
                 for entity in [org, *s.scalars(select(Branch).where(Branch.organization_id == org.id, Branch.archived_at.is_(None)).order_by(Branch.id))]:
                     result.append({"kind": "organization" if entity is org else "branch", "id": entity.id, "organization_id": org.id, "bedrijf": org.name, "vestiging": "—" if entity is org else entity.name, "adres": entity.address, "verantwoordelijke": responsible.name, "email": responsible.email, "telefoon": org.contact_phone, "status": entity.status, "aangevraagd": entity.submitted_at, "beoordelaar": entity.reviewed_by, "beoordeeld": entity.reviewed_at})
             return result

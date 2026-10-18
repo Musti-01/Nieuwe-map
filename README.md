@@ -287,3 +287,13 @@ Een ontbrekende planning moet de beheerder eerst toevoegen via **Planning**.
 - **Medewerkers toevoegen → Bestaande medewerker koppelen** brengt je direct bij het zoeken op e-mailadres en rechtenbeheer.
 - Het planningsformulier staat meteen open en een nieuwe shift gebruikt de datum die je in het planningsoverzicht hebt geselecteerd. Controleer de begin- en eindtijden vóór opslaan.
 - Het inklokvenster blijft strikt vanaf tien minuten vóór de start op de lokale begindag. De berekening gebruikt werkelijke verstreken minuten, ook tijdens de overgang van zomer- naar wintertijd.
+
+### Opgeruimde aanvragen na vestigingsverwijdering
+
+Verwijderde vestigingen staan niet meer bij **Aanvragen**, ook niet bij status **Alle**
+of in **Aanvraag beoordelen**. Als de laatste vestiging van een organisatie wordt verwijderd,
+verdwijnt ook de organisatieregel uit dat overzicht en uit de bijbehorende aantallen.
+Organisaties met nog minstens één niet-verwijderde vestiging blijven zichtbaar.
+De organisatie, accounts, uren en besluitgeschiedenis worden bewaard. De eigenaar kan
+nog een nieuwe vestiging aanvragen; de organisatie wordt dan weer zichtbaar bij de aanvragen.
+Het herstellen van een verwijderde vestiging brengt de organisatie eveneens terug.

@@ -60,3 +60,42 @@ def test_platform_remove_requires_single_confirmation(api,team,engine,monkeypatc
     app.button(key=f"confirm_branch_{team['branch']}").click().run()
     assert not app.exception
     assert api.branches(team['wt'])==[]
+
+
+def test_last_branch_removal_hides_parent_request_but_restoration_recovers_it(api,team):
+    org=api.organizations(team['ot'])[0]['id']
+    decisions=api.decisions(team['pt'])
+    api.archive_branch(team['pt'],team['branch'])
+    assert not any(r['organization_id']==org for r in api.applications(team['pt']))
+    assert any(r['id']==org for r in api.organizations(team['ot']))
+    assert api.decisions(team['pt'])==decisions
+    assert any(r['id']==team['branch'] for r in api.platform_branches(team['pt'],archived=True))
+    api.archive_branch(team['pt'],team['branch'],restore=True)
+    rows=[r for r in api.applications(team['pt']) if r['organization_id']==org]
+    assert {(r['kind'],r['id']) for r in rows}=={('organization',org),('branch',team['branch'])}
+
+
+def test_remaining_branch_keeps_organization_visible_and_new_request_reappears(api,team):
+    org=api.organizations(team['ot'])[0]['id']
+    extra=api.add_branch(team['ot'],org,'Extra','Voorbeeldstraat 2')
+    api.archive_branch(team['pt'],team['branch'])
+    rows=[r for r in api.applications(team['pt']) if r['organization_id']==org]
+    assert {(r['kind'],r['id']) for r in rows}=={('organization',org),('branch',extra)}
+    assert next(r for r in rows if r['kind']=='branch')['status']=='pending'
+    api.archive_branch(team['pt'],extra)
+    assert not any(r['organization_id']==org for r in api.applications(team['pt']))
+    fresh=api.add_branch(team['ot'],org,'Nieuwe aanvraag','Voorbeeldstraat 3')
+    rows=[r for r in api.applications(team['pt']) if r['organization_id']==org]
+    assert {(r['kind'],r['id']) for r in rows}=={('organization',org),('branch',fresh)}
+
+
+def test_deleted_organization_is_absent_from_application_table_and_selector(api,team,engine,monkeypatch):
+    from test_ui import app_for
+    api.archive_branch(team['pt'],team['branch'])
+    app=app_for(team['pt'],engine,monkeypatch)
+    app.radio(key='platform_page').set_value('Aanvragen').run()
+    assert not app.exception
+    assert 'Org A' not in list(app.dataframe[0].value['Bedrijf'])
+    selector=next(s for s in app.selectbox if s.label=='Aanvraag beoordelen')
+    assert all('Org A' not in option for option in selector.options)
+    assert 'Org B' in list(app.dataframe[0].value['Bedrijf'])
