@@ -274,3 +274,7 @@ voor eigen tijdregistratie. Dubbele actieve sessies blijven geblokkeerd.
 **Uitklokken blijft mogelijk zolang je een actieve sessie hebt**, ook na de eindtijd of na middernacht.
 Bestaande registraties zonder planning blijven zichtbaar en kunnen worden uitgeklokt of gecontroleerd.
 Een ontbrekende planning moet de beheerder eerst toevoegen via **Planning**.
+
+## PDF-gebruikershandleiding
+
+[Download de Nederlandstalige handleiding](docs/ShiftFlow-handleiding.pdf). De bewerkbare bron staat in [docs/handleiding.html](docs/handleiding.html). De handleiding beschrijft rollen, registratie, medewerkers, planning, klokregels, uurcontrole, auditlog en platformbeheer en vermeldt de bijbehorende applicatieversie.
