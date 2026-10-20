@@ -3,6 +3,8 @@ import streamlit as st
 from workforce.i18n import tr
 
 ACTIONS = {
+    'sick_note.uploaded': 'Ziektebrief ingediend',
+    'sick_note.downloaded': 'Ziektebrief opgehaald',
     'approval.approve': 'Vestiging goedgekeurd',
     'approval.reject': 'Vestiging geweigerd',
     'approval.block': 'Vestiging geblokkeerd',

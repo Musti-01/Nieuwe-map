@@ -81,10 +81,42 @@ def invitations(api, token, branch_id, run, expanded=False):
 
 
 def account_management(api, token, run):
-    st.write(tr('Zoek de juiste persoon en klik op Beheren. Deactiveren stopt toegang en bewaart uren. Alleen een ongebruikt account kan definitief verwijderd worden.'))
     accounts = run(lambda: api.accounts(token))
     if accounts is None:
         return
+    archived = st.toggle(tr('Verwijderde vestigingen tonen'), key='account_archived_branches')
+    branches = run(lambda: api.platform_branches(token, archived=archived))
+    if branches is None:
+        return
+    scope = st.session_state.get('account_branch_id')
+    selected_branch = next((b for b in branches if b['id'] == scope), None)
+    if scope != 'unassigned' and selected_branch is None:
+        scope = None
+        st.session_state.pop('account_branch_id', None)
+        st.session_state.pop('managed_account_id', None)
+
+    def select_branch(branch_id):
+        st.session_state['account_branch_id'] = branch_id
+        st.session_state.pop('managed_account_id', None)
+        st.session_state.pop('account_search', None)
+        st.session_state.pop('account_filter', None)
+
+    if scope is None:
+        st.write(tr('Klik op een vestiging om de gebruikers te bekijken.'))
+        for branch in branches:
+            count = sum(branch['id'] in u['branch_ids'] for u in accounts)
+            st.button(f"{branch['organization']} · {branch['name']} ({count})",
+                      key=f"account_branch_{branch['id']}", on_click=select_branch,
+                      args=(branch['id'],), use_container_width=True)
+        count = sum(not u['branch_ids'] for u in accounts)
+        st.button(tr('Zonder vestiging') + f' ({count})', key='account_branch_unassigned',
+                  on_click=select_branch, args=('unassigned',), use_container_width=True)
+        return
+
+    st.button(tr('Terug naar vestigingen'), on_click=select_branch, args=(None,))
+    st.subheader(tr('Zonder vestiging') if scope == 'unassigned' else selected_branch['organization'] + ' · ' + selected_branch['name'])
+    st.write(tr('Zoek de juiste persoon en klik op Beheren. Deactiveren stopt toegang en bewaart uren. Alleen een ongebruikt account kan definitief verwijderd worden.'))
+    accounts = [u for u in accounts if not u['branch_ids']] if scope == 'unassigned' else [u for u in accounts if scope in u['branch_ids']]
     def clear_selection():
         st.session_state.pop('managed_account_id', None)
     search = st.text_input(tr('Zoek op naam of e-mailadres'), placeholder=tr('Bijvoorbeeld: test123'), key='account_search', on_change=clear_selection).strip().casefold()
@@ -108,7 +140,7 @@ def account_management(api, token, run):
             if action.button((tr('Beheren') if user['can_manage'] else tr('Bekijken')), key=f"manage_user_{user['id']}", use_container_width=True):
                 st.session_state['managed_account_id'] = user['id']
     uid = st.session_state.get('managed_account_id')
-    target = next((u for u in accounts if u['id'] == uid), None)
+    target = next((u for u in visible if u['id'] == uid), None)
     if target is None:
         st.info(tr('Kies hierboven eerst de persoon die je wilt beheren.'))
         return

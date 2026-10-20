@@ -19,7 +19,7 @@ h1,h2,h3 {color:#006491;} [data-testid=stMetric] {background:#F1F5FA;padding:1re
 </style>""", unsafe_allow_html=True)
 
 @st.cache_resource
-def backend_engine(schema_revision="0006"):
+def backend_engine(schema_revision="0007"):
     engine = make_engine()
     if os.getenv('AUTO_MIGRATE') == '1':
         from workforce.hosting import migrate
@@ -174,7 +174,7 @@ if b['status'] != 'approved' or b['organization_status'] != 'approved':
     st.stop()
 st.caption(tr('{v0} · {v1}', v0=b['organization'], v1=tr('Organisatie-eigenaar' if b['owner'] else 'Vestigingsadmin' if b['admin'] else 'Medewerker')))
 if b['admin']:
-    pages = ['Overzicht', 'Medewerkers toevoegen', 'Medewerkers & rechten', 'Planning', 'Werkuren', 'Shiften controleren', 'Meldingen', 'Auditlog']
+    pages = ['Overzicht', 'Medewerkers toevoegen', 'Medewerkers & rechten', 'Planning', 'Werkuren', 'Shiften controleren', 'Meldingen', 'Ziektebriefjes', 'Auditlog']
     if b['member']:
         pages.append('Mijn werktijd')
     page_key = f"branch_page_{branch_id}"
@@ -184,7 +184,7 @@ if b['admin']:
         page = st.radio(tr('Vestigingsbeheer'), pages, key=page_key, format_func=tr)
 else:
     page = None
-    tabs = st.tabs([tr('In- en uitklokken'), tr('Mijn shiften'), tr('Planning'), tr('Meldingen')])
+    tabs = st.tabs([tr('In- en uitklokken'), tr('Mijn shiften'), tr('Planning'), tr('Meldingen'), tr('Ziektebriefjes')])
 zone = os.getenv('APP_TIMEZONE', 'Europe/Brussels')
 try:
     tz = ZoneInfo(zone)
@@ -337,11 +337,17 @@ if b['admin'] and page == 'Auditlog':
 
 if not b['admin'] or page == 'Planning':
     from contextlib import nullcontext
-    with tabs[-2] if not b['admin'] else nullcontext():
+    with tabs[2] if not b['admin'] else nullcontext():
         from workforce.ui_planning import show_planning
         show_planning(api, token, branch_id, b['admin'], tz, zone, run)
 if not b['admin'] or page == 'Meldingen':
     from contextlib import nullcontext
-    with tabs[-1] if not b['admin'] else nullcontext():
+    with tabs[3] if not b['admin'] else nullcontext():
         from workforce.ui_planning import show_alerts
         show_alerts(api, token, branch_id, b['admin'], run)
+
+if not b['admin'] or page == 'Ziektebriefjes':
+    from contextlib import nullcontext
+    from workforce.ui_sick_notes import show_sick_notes
+    with tabs[4] if not b['admin'] else nullcontext():
+        show_sick_notes(api, token, branch_id, b['admin'], b['member'], tz, run)

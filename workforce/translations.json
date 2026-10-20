@@ -2938,5 +2938,101 @@
     "en": "This shift is no longer available at this branch.",
     "de": "Diese Schicht ist an diesem Standort nicht mehr verfügbar.",
     "es": "Este turno ya no está disponible en este establecimiento."
+  },
+  "Ziektebriefjes": {
+    "fr": "Certificats médicaux",
+    "en": "Medical certificates",
+    "de": "Ärztliche Atteste",
+    "es": "Certificados médicos"
+  },
+  "Een ziektebrief is zichtbaar voor jou en de bevoegde beheerders van deze vestiging.": {
+    "fr": "Un certificat médical est visible par vous et les responsables autorisés de cet établissement.",
+    "en": "A medical certificate is visible to you and the authorized managers of this branch.",
+    "de": "Ein Attest ist für dich und die berechtigten Verwalter dieser Filiale sichtbar.",
+    "es": "Un certificado es visible para ti y los administradores autorizados de este establecimiento."
+  },
+  "Ziektebrief uploaden (PDF, PNG of JPG, maximaal 5 MB)": {
+    "fr": "Importer un certificat médical (PDF, PNG ou JPG, maximum 5 Mo)",
+    "en": "Upload a medical certificate (PDF, PNG or JPG, maximum 5 MB)",
+    "de": "Attest hochladen (PDF, PNG oder JPG, maximal 5 MB)",
+    "es": "Subir certificado médico (PDF, PNG o JPG, máximo 5 MB)"
+  },
+  "Ziektebrief indienen": {
+    "fr": "Envoyer le certificat médical",
+    "en": "Submit medical certificate",
+    "de": "Attest einreichen",
+    "es": "Enviar certificado médico"
+  },
+  "Ziektebrief opgeslagen.": {
+    "fr": "Certificat médical enregistré.",
+    "en": "Medical certificate saved.",
+    "de": "Attest gespeichert.",
+    "es": "Certificado médico guardado."
+  },
+  "Er zijn nog geen ziektebriefjes ingediend.": {
+    "fr": "Aucun certificat médical envoyé pour le moment.",
+    "en": "No medical certificates have been submitted yet.",
+    "de": "Es wurden noch keine Atteste eingereicht.",
+    "es": "Todavía no se han enviado certificados médicos."
+  },
+  "Bestand ophalen": {
+    "fr": "Récupérer le fichier",
+    "en": "Retrieve file",
+    "de": "Datei abrufen",
+    "es": "Obtener archivo"
+  },
+  "Ziektebrief downloaden": {
+    "fr": "Télécharger le certificat médical",
+    "en": "Download medical certificate",
+    "de": "Attest herunterladen",
+    "es": "Descargar certificado médico"
+  },
+  "Alleen gekoppelde medewerkers kunnen een ziektebrief uploaden.": {
+    "fr": "Seuls les employés rattachés peuvent importer un certificat médical.",
+    "en": "Only assigned employees can upload a medical certificate.",
+    "de": "Nur zugeordnete Mitarbeiter können ein Attest hochladen.",
+    "es": "Solo los empleados asignados pueden subir un certificado médico."
+  },
+  "Geen toegang tot deze ziektebrief.": {
+    "fr": "Accès refusé à ce certificat médical.",
+    "en": "No access to this medical certificate.",
+    "de": "Kein Zugriff auf dieses Attest.",
+    "es": "Sin acceso a este certificado médico."
+  },
+  "Upload een geldig PDF-, PNG- of JPG-bestand van maximaal 5 MB.": {
+    "fr": "Importez un fichier PDF, PNG ou JPG valide de 5 Mo maximum.",
+    "en": "Upload a valid PDF, PNG or JPG file no larger than 5 MB.",
+    "de": "Lade eine gültige PDF-, PNG- oder JPG-Datei mit maximal 5 MB hoch.",
+    "es": "Sube un archivo PDF, PNG o JPG válido de 5 MB como máximo."
+  },
+  "Ziektebrief ingediend": {
+    "fr": "Certificat médical envoyé",
+    "en": "Medical certificate submitted",
+    "de": "Attest eingereicht",
+    "es": "Certificado médico enviado"
+  },
+  "Ziektebrief opgehaald": {
+    "fr": "Certificat médical récupéré",
+    "en": "Medical certificate retrieved",
+    "de": "Attest abgerufen",
+    "es": "Certificado médico obtenido"
+  },
+  "Klik op een vestiging om de gebruikers te bekijken.": {
+    "fr": "Cliquez sur un établissement pour voir ses utilisateurs.",
+    "en": "Click a branch to view its users.",
+    "de": "Klicke auf eine Filiale, um ihre Benutzer zu sehen.",
+    "es": "Haz clic en un establecimiento para ver sus usuarios."
+  },
+  "Zonder vestiging": {
+    "fr": "Sans établissement",
+    "en": "Without a branch",
+    "de": "Ohne Filiale",
+    "es": "Sin establecimiento"
+  },
+  "Terug naar vestigingen": {
+    "fr": "Retour aux établissements",
+    "en": "Back to branches",
+    "de": "Zurück zu den Filialen",
+    "es": "Volver a los establecimientos"
   }
 }

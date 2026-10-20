@@ -45,6 +45,37 @@ Registreer eerst jouw persoonlijke platformaccount (organisatiecheckbox uit) en 
 
 De procedure promoveert een bestaand account tot platformeigenaar en platformbeheerder. Een PostgreSQL advisory lock maakt bootstrap eenmalig, ook bij gelijktijdige uitvoering. Zodra er een platformbeheerder bestaat, is bootstrap gesloten. De procedure is niet bereikbaar via de webinterface. Er bestaat geen standaardaccount, bootstrapwachtwoord of publieke adminregistratie. Database-/shelltoegang is een beheersbevoegdheid. Herstel bij verlies van dat account is bewust geen openbare functie van deze MVP.
 
+## Gebruikers per vestiging
+
+In **Platformdashboard → Gebruikers** kies je eerst een vestiging. Daarna zie je
+alleen de gebruikers met een huidige koppeling of eigenaarschap voor die vestiging.
+Een gebruiker met meerdere vestigingen verschijnt bij iedere gekoppelde vestiging;
+accounts zonder koppeling staan onder **Zonder vestiging**. Via **Terug naar
+vestigingen** kies je een andere vestiging. De schakelaar **Verwijderde vestigingen
+tonen** maakt ook de gebruikers van gearchiveerde vestigingen bereikbaar.
+Accountdeactivering blijft een actie voor het volledige account, dus voor alle
+vestigingen; het formulier vermeldt dit expliciet.
+
+## Ziektebriefjes uploaden
+
+Medewerkers openen **Ziektebriefjes** in hun vestiging en dienen een PDF-, PNG- of
+JPG-bestand van maximaal 5 MB in. Ze zien alleen hun eigen uploads. Gekoppelde
+beheerders kunnen ook hun eigen ziektebrief indienen. In **Vestigingsbeheer →
+Ziektebriefjes** zien bevoegde vestigingsadmins, organisatie-eigenaars en
+platformbeheerders de briefjes van die vestiging. Kies **Bestand ophalen** en
+daarna **Ziektebrief downloaden**. Iedere ophaalactie controleert de actuele
+sessie en rechten; uploaden en ophalen worden zonder bestandsinhoud of bestandsnaam
+in het auditlog geregistreerd.
+
+Migratie `0007` bewaart de documenten in PostgreSQL, samen met de medewerker,
+vestiging en uploadtijd. Voer vóór de appstart `alembic upgrade head` uit
+(automatisch via `scripts/start.sh` en op Community Cloud). Databasebackups
+bevatten dus ook deze documenten. Er staan geen documenten in de Git-checkout.
+De formaatcontrole controleert bestandssignaturen
+en verifieert afbeeldingen; dit is geen virusscan of volledige PDF-validatie.
+De documenten worden als download aangeboden, niet in de app weergegeven.
+Er is nog geen automatische bewaartermijn of verwijderfunctie voor briefjes.
+
 ## Tests en migraties
 
 Tests wissen tabellen in de opgegeven testdatabase. Gebruik uitsluitend een afzonderlijke, wegwerpbare database waarvan de naam op `_test` eindigt, nooit een klanten- of productiedatabase.

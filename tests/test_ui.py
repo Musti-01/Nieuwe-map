@@ -32,7 +32,7 @@ def test_employee_shift_history_after_clock_out(api, team, engine, monkeypatch):
     api.clock_out(team['wt'], team['branch'])
     app = app_for(team['wt'], engine, monkeypatch)
     assert not app.exception
-    assert [tab.label for tab in app.tabs] == ['In- en uitklokken', 'Mijn shiften', 'Planning', 'Meldingen']
+    assert [tab.label for tab in app.tabs] == ['In- en uitklokken', 'Mijn shiften', 'Planning', 'Meldingen', 'Ziektebriefjes']
     assert app.dataframe
     assert app.dataframe[0].value.iloc[0]['Status'] == 'Wacht op controle'
     assert all(r.label != 'Platformonderdeel' for r in app.radio)
@@ -63,6 +63,7 @@ def test_admin_approves_shift_from_review_tab(api, team, engine, monkeypatch):
 def test_owner_deactivates_employee_from_user_page(api,team,engine,monkeypatch):
     app=app_for(team['pt'],engine,monkeypatch)
     app.radio(key='platform_page').set_value('Gebruikers').run()
+    app.button(key=f"account_branch_{team['branch']}").click().run()
     assert not app.exception
     app.button(key=f"manage_user_{team['worker']}").click().run()
     next(i for i in app.text_input if i.label=='Reden voor accountwijziging').set_value('Contract ended')
@@ -105,13 +106,18 @@ def test_invitation_creates_new_personal_account_through_ui(api,team,engine,monk
 def test_user_cards_search_and_protected_account_explained_before_action(api,team,engine,monkeypatch):
     app=app_for(team['pt'],engine,monkeypatch)
     app.radio(key='platform_page').set_value('Gebruikers').run()
+    app.button(key=f"account_branch_{team['branch']}").click().run()
     assert not any(b.label=='Account deactiveren' for b in app.button)
     assert not any(s.label=='Account beheren' for s in app.selectbox)
     root=api.identity(team['pt'])['id']
+    next(b for b in app.button if b.label=='Terug naar vestigingen').click().run()
+    app.button(key='account_branch_unassigned').click().run()
     app.button(key=f'manage_user_{root}').click().run()
     assert not app.exception
     assert any('eigen account' in i.value for i in app.info)
     assert not any(b.label=='Account deactiveren' for b in app.button)
+    next(b for b in app.button if b.label=='Terug naar vestigingen').click().run()
+    app.button(key=f"account_branch_{team['branch']}").click().run()
     next(i for i in app.text_input if i.label=='Zoek op naam of e-mailadres').set_value('worker@example.test').run()
     assert not app.exception
     assert app.button(key=f"manage_user_{team['worker']}")
@@ -121,6 +127,7 @@ def test_user_cards_search_and_protected_account_explained_before_action(api,tea
 def test_unused_account_delete_requires_explicit_confirmation(api,team,engine,monkeypatch):
     app=app_for(team['pt'],engine,monkeypatch)
     app.radio(key='platform_page').set_value('Gebruikers').run()
+    app.button(key=f"account_branch_{team['branch']}").click().run()
     app.button(key=f"manage_user_{team['worker']}").click().run()
     next(b for b in app.button if b.label=='Account definitief verwijderen').click().run()
     assert not app.exception

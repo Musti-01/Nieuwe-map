@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 from sqlalchemy import (String, ForeignKey, DateTime, Boolean, Integer, Index,
-                        CheckConstraint, ForeignKeyConstraint, text)
+                        CheckConstraint, ForeignKeyConstraint, LargeBinary, text)
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 class Base(DeclarativeBase):
@@ -53,6 +53,21 @@ class Membership(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), primary_key=True)
     role: Mapped[str] = mapped_column(String(20))
     __table_args__ = (CheckConstraint("role IN ('admin', 'employee', 'revoked')", name="valid_role"),)
+
+class SickNote(Base):
+    __tablename__ = "sick_notes"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    branch_id: Mapped[int] = mapped_column(Integer, index=True)
+    user_id: Mapped[int] = mapped_column(Integer, index=True)
+    filename: Mapped[str] = mapped_column(String(120))
+    media_type: Mapped[str] = mapped_column(String(40))
+    content: Mapped[bytes] = mapped_column(LargeBinary)
+    uploaded_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    __table_args__ = (
+        ForeignKeyConstraint(["branch_id", "user_id"], ["memberships.branch_id", "memberships.user_id"]),
+        CheckConstraint("octet_length(content) BETWEEN 1 AND 5242880", name="sick_note_size"),
+        CheckConstraint("media_type IN ('application/pdf', 'image/png', 'image/jpeg')", name="sick_note_type"),
+    )
 
 class WorkEntry(Base):
     __tablename__ = "work_entries"

@@ -12,7 +12,7 @@ from argon2.exceptions import VerificationError, InvalidHashError
 from sqlalchemy import select, or_, text, delete
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.dialects.postgresql import insert
-from workforce.models import User, Organization, Branch, Membership, WorkEntry, AuthSession, LoginLimit, Audit, ApprovalDecision, Notification, ShiftReview, AccountToken, ShiftPlan
+from workforce.models import User, Organization, Branch, Membership, WorkEntry, AuthSession, LoginLimit, Audit, ApprovalDecision, Notification, ShiftReview, AccountToken, ShiftPlan, SickNote
 
 hasher = PasswordHasher()
 DUMMY_HASH = hasher.hash(secrets.token_urlsafe(32))
@@ -114,6 +114,45 @@ class Service:
         with self.sessions.begin() as s:
             u = self._actor(s, token)
             return {"id": u.id, "name": u.name, "email": u.email, "platform_admin": u.platform_admin, "platform_owner": u.platform_owner, "language": u.language}
+
+    def upload_sick_note(self, token, branch_id, filename, content):
+        from workforce.sick_notes import validate_note
+        with self.sessions.begin() as s:
+            u = self._actor(s, token)
+            self._access(s, u, branch_id, lock=True)
+            membership = s.get(Membership, (branch_id, u.id), populate_existing=True)
+            if not membership or membership.role == 'revoked':
+                raise Denied('Alleen gekoppelde medewerkers kunnen een ziektebrief uploaden.')
+            filename, media_type = validate_note(filename, content)
+            note = SickNote(branch_id=branch_id, user_id=u.id, filename=filename,
+                            media_type=media_type, content=content, uploaded_at=now())
+            s.add(note)
+            s.flush()
+            self._audit(s, u, branch_id, 'sick_note.uploaded', f'note={note.id}; user={u.id}')
+            return note.id
+
+    def sick_notes(self, token, branch_id, team=False):
+        with self.sessions.begin() as s:
+            u = self._actor(s, token)
+            self._access(s, u, branch_id, admin=team)
+            # Select metadata only: listing must not load attachment contents.
+            q = select(SickNote.id, SickNote.user_id, User.name, SickNote.filename,
+                       SickNote.uploaded_at).join(User, User.id == SickNote.user_id).where(SickNote.branch_id == branch_id)
+            if not team:
+                q = q.where(SickNote.user_id == u.id)
+            return [dict(row._mapping) for row in s.execute(q.order_by(SickNote.uploaded_at.desc(), SickNote.id.desc()))]
+
+    def download_sick_note(self, token, branch_id, note_id):
+        with self.sessions.begin() as s:
+            u = self._actor(s, token)
+            self._access(s, u, branch_id, lock=True)
+            note = s.scalar(select(SickNote).where(SickNote.id == note_id, SickNote.branch_id == branch_id))
+            if note is None:
+                raise Denied('Geen toegang tot deze ziektebrief.')
+            if note.user_id != u.id:
+                self._access(s, u, branch_id, admin=True)
+            self._audit(s, u, branch_id, 'sick_note.downloaded', f'note={note.id}; user={note.user_id}')
+            return {'filename': note.filename, 'media_type': note.media_type, 'content': note.content}
 
     def logout(self, token):
         with self.sessions.begin() as s:
@@ -637,6 +676,7 @@ class Service:
         elif owner and target.is_active:
             blocked = 'Dit account is eigenaar van een organisatie. Blokkeer de organisatie via Aanvragen; eigendomsoverdracht is nog niet beschikbaar.'
         references = [
+            select(SickNote.id).where(SickNote.user_id == target.id),
             select(WorkEntry.id).where(or_(WorkEntry.user_id == target.id, WorkEntry.reviewed_by == target.id)),
             select(ShiftPlan.id).where(or_(ShiftPlan.user_id == target.id, ShiftPlan.created_by == target.id)),
             select(Audit.id).where(Audit.actor_id == target.id),
@@ -656,7 +696,13 @@ class Service:
     def accounts(self, token):
         with self.sessions.begin() as s:
             actor = self._platform(s, token)
+            affiliations = {}
+            for uid, bid in s.execute(select(Membership.user_id, Membership.branch_id).where(Membership.role != 'revoked')):
+                affiliations.setdefault(uid, set()).add(bid)
+            for uid, bid in s.execute(select(Organization.owner_id, Branch.id).join(Branch, Branch.organization_id == Organization.id)):
+                affiliations.setdefault(uid, set()).add(bid)
             return [{'id': u.id, 'naam': u.name, 'email': u.email, 'actief': u.is_active,
+                     'branch_ids': sorted(affiliations.get(u.id, set())),
                      'platformbeheerder': u.platform_admin, 'platformeigenaar': u.platform_owner,
                      **self._account_actions(s, actor, u)} for u in s.scalars(select(User).order_by(User.name, User.id))]
 
