@@ -18,7 +18,7 @@ def prepare_release(root):
     with lock:
         files = [root / name for name in ('cloud_app.py', 'cloud_bootstrap.py', 'app.py')]
         for directory in ('workforce', 'migrations'):
-            files.extend(p for p in (root / directory).rglob('*') if p.suffix in ('.py', '.json'))
+            files.extend(p for p in (root / directory).rglob('*') if p.suffix in ('.py', '.json', '.css'))
         digest = hashlib.sha256()
         for path in sorted(files):
             digest.update(str(path.relative_to(root)).encode())

@@ -11,6 +11,17 @@ def show_manager_home(api, token, branch_id, page_key, run, tz):
     st.subheader(tr('Jouw vestiging beheren'))
     st.write(tr('Wat wil je doen? Kies hieronder een actie.'))
 
+    entries = run(lambda: api.entries(token, branch_id, team=True))
+    members = run(lambda: api.members(token, branch_id))
+    if entries is None or members is None:
+        return
+    with st.container(key='sf_metrics_manager'):
+        a, b, c = st.columns(3)
+        a.metric(tr('Actieve teamleden'), sum(m['active'] and m['role'] != 'revoked' for m in members))
+        b.metric(tr('Nu aan het werk'), sum(e['end'] is None for e in entries))
+        c.metric(tr('Shiften te controleren'), sum(e['end'] is not None and e['review_status'] != 'approved' for e in entries))
+
+
     def navigate(target):
         st.session_state[page_key] = target
 
@@ -22,20 +33,14 @@ def show_manager_home(api, token, branch_id, page_key, run, tz):
         ('Shiften controleren', 'Controleer, corrigeer en keur geregistreerde uren goed.'),
         ('Meldingen', 'Bekijk vergeten uitklokacties en openstaande controles.'),
     ]
-    for offset in range(0, len(actions), 2):
-        for col, (target, explanation) in zip(st.columns(2), actions[offset:offset+2]):
-            with col.container(border=True):
-                st.button(tr(target), key=f'manager_open_{target}', on_click=navigate,
-                          args=(target,), use_container_width=True, type='primary')
-                st.caption(tr(explanation))
-    entries = run(lambda: api.entries(token, branch_id, team=True))
-    members = run(lambda: api.members(token, branch_id))
-    if entries is None or members is None:
-        return
-    a, b, c = st.columns(3)
-    a.metric(tr('Actieve teamleden'), sum(m['active'] and m['role'] != 'revoked' for m in members))
-    b.metric(tr('Nu aan het werk'), sum(e['end'] is None for e in entries))
-    c.metric(tr('Shiften te controleren'), sum(e['end'] is not None and e['review_status'] != 'approved' for e in entries))
+    icons = ['person_add', 'calendar_month', 'group', 'schedule', 'fact_check', 'notifications']
+    with st.container(key='sf_manager_actions'):
+        for offset in range(0, len(actions), 2):
+            for i, (col, (target, explanation)) in enumerate(zip(st.columns(2), actions[offset:offset+2])):
+                with col.container(border=True, key=f'sf_card_manager_{offset+i}'):
+                    st.button(tr(target), key=f'manager_open_{target}', on_click=navigate,
+                              args=(target,), use_container_width=True, icon=f':material/{icons[offset+i]}:')
+                    st.caption(tr(explanation))
 
     plans = run(lambda: api.plans(token, branch_id, team=True))
     if plans is None:

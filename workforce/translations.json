@@ -3346,5 +3346,59 @@
     "en": "Medical certificate deleted",
     "de": "Attest gelöscht",
     "es": "Certificado médico eliminado"
+  },
+  "Je team. Je planning. Eén overzicht.": {
+    "fr": "Votre équipe. Votre planning. Une seule vue.",
+    "en": "Your team. Your schedule. One overview.",
+    "de": "Dein Team. Deine Planung. Ein Überblick.",
+    "es": "Tu equipo. Tu planificación. Una sola vista."
+  },
+  "Van de eerste geplande shift tot de laatste gewerkte minuut. Alles voor je vestiging op één plek.": {
+    "fr": "Du premier service planifié à la dernière minute travaillée. Tout pour votre établissement au même endroit.",
+    "en": "From the first scheduled shift to the last minute worked. Everything for your branch in one place.",
+    "de": "Von der ersten geplanten Schicht bis zur letzten Arbeitsminute. Alles für deine Filiale an einem Ort.",
+    "es": "Desde el primer turno planificado hasta el último minuto trabajado. Todo para tu establecimiento en un solo lugar."
+  },
+  "Gebruikers: {v0}": {
+    "fr": "Utilisateurs : {v0}",
+    "en": "Users: {v0}",
+    "de": "Benutzer: {v0}",
+    "es": "Usuarios: {v0}"
+  },
+  "Beoordeel aanvragen en beheer goedkeuringen.": {
+    "fr": "Examinez les demandes et gérez les approbations.",
+    "en": "Review requests and manage approvals.",
+    "de": "Prüfe Anträge und verwalte Genehmigungen.",
+    "es": "Revisa solicitudes y gestiona aprobaciones."
+  },
+  "Bekijk gebruikers per vestiging en beheer hun toegang.": {
+    "fr": "Consultez les utilisateurs par établissement et gérez leur accès.",
+    "en": "View users by branch and manage their access.",
+    "de": "Zeige Benutzer nach Filiale an und verwalte ihren Zugang.",
+    "es": "Consulta los usuarios por establecimiento y gestiona su acceso."
+  },
+  "Vind een vestiging, verwijder of herstel haar toegang.": {
+    "fr": "Trouvez un établissement, supprimez ou rétablissez son accès.",
+    "en": "Find a branch, remove or restore its access.",
+    "de": "Finde eine Filiale und entferne oder stelle ihren Zugang wieder her.",
+    "es": "Busca un establecimiento y elimina o restablece su acceso."
+  },
+  "Bekijk wie een besluit nam en wanneer.": {
+    "fr": "Consultez qui a pris une décision et quand.",
+    "en": "See who made a decision and when.",
+    "de": "Sieh nach, wer wann eine Entscheidung getroffen hat.",
+    "es": "Consulta quién tomó una decisión y cuándo."
+  },
+  "Controleer back-ups, e-mailverzending en foutmeldingen.": {
+    "fr": "Vérifiez les sauvegardes, les envois d'e-mails et les erreurs.",
+    "en": "Check backups, email delivery and errors.",
+    "de": "Prüfe Sicherungen, E-Mail-Versand und Fehlermeldungen.",
+    "es": "Revisa las copias de seguridad, los envíos de correo y los errores."
+  },
+  "Wijs vertrouwde beheerders aan of trek hun rechten in.": {
+    "fr": "Désignez des administrateurs de confiance ou révoquez leurs droits.",
+    "en": "Assign trusted administrators or revoke their permissions.",
+    "de": "Ernenne vertrauenswürdige Verwalter oder entziehe ihre Rechte.",
+    "es": "Asigna administradores de confianza o revoca sus permisos."
   }
 }

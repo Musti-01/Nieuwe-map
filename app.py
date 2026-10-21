@@ -12,11 +12,8 @@ from workforce.ui_accounts import account_links, password_settings, invitations,
 set_language(st.session_state.get("language", "nl"))
 
 st.set_page_config(page_title=tr("ShiftFlow · Personeel & tijd"), page_icon="⏱", layout="wide")
-st.markdown("""<style>
-.block-container {max-width:1200px;padding-top:2rem;}
-h1,h2,h3 {color:#006491;} [data-testid=stMetric] {background:#F1F5FA;padding:1rem;border-radius:12px;border-top:3px solid #E31837;}
-[data-testid=stSidebar] {border-right:1px solid #DDE5EF;}
-</style>""", unsafe_allow_html=True)
+from workforce.ui_design import apply_design, brand, welcome
+apply_design()
 
 @st.cache_resource
 def backend_engine(schema_revision="0008"):
@@ -85,61 +82,65 @@ def language_changed():
         except (ValueError, SQLAlchemyError):
             st.session_state['language_save_error'] = True
 
-with st.columns([3, 1])[1]:
+with st.sidebar:
+    brand(sidebar=True)
     st.selectbox('Taal / Language', list(LANGUAGES), format_func=lambda code: LANGUAGES[code], key='language', on_change=language_changed)
 set_language(st.session_state['language'])
 st.set_page_config(page_title=tr('ShiftFlow · Personeel & tijd'))
 if st.session_state.pop('language_save_error', False):
     st.warning(tr('Je taalkeuze kon niet worden opgeslagen. Probeer opnieuw.'))
 
-st.title(tr('ShiftFlow'))
-st.caption(tr('Personeel & tijd · Eén platform voor al jouw vestigingen'))
+brand()
 if 'notice' in st.session_state:
     st.success(tr(st.session_state.pop('notice')))
 
 account_links(api, token, run)
 
 if not token:
-    login_tab, signup_tab = st.tabs([tr('Inloggen'), tr('Registreren')])
-    with login_tab:
-        st.subheader(tr('Welkom terug'))
-        with st.form("login"):
-            email = st.text_input(tr('E-mailadres'))
-            password = st.text_input(tr('Wachtwoord'), type="password")
-            if st.form_submit_button(tr('Inloggen'), type="primary"):
-                result = run(lambda: api.login(email, password))
-                if result:
-                    st.session_state['token'] = result
-                    st.rerun()
-        with st.expander(tr('Wachtwoord vergeten?')):
-            st.caption(tr('Een herstellink wordt alleen per e-mail verzonden wanneer de platformeigenaar e-mailverzending heeft ingesteld.'))
-            with st.form("request_reset"):
-                reset_email=st.text_input(tr('E-mailadres voor wachtwoordherstel'))
-                if st.form_submit_button(tr('Herstellink aanvragen')):
-                    if run(lambda: api.request_password_reset(reset_email)):
-                        st.success(tr('Als dit een actief account is, staat een herstellink klaar voor verzending. Controleer je e-mail.'))
-    with signup_tab:
-        st.subheader(tr('Start met jouw team'))
-        is_owner = st.checkbox(tr('Ik registreer een organisatie met een eerste vestiging'), value=True)
-        with st.form("signup", clear_on_submit=True):
-            name = st.text_input(tr('Volledige naam'))
-            email = st.text_input(tr('E-mailadres'), key="signup_email")
-            password = st.text_input(tr('Wachtwoord (minimaal 12 tekens)'), type="password")
-            confirm = st.text_input(tr('Herhaal wachtwoord'), type="password")
-            if is_owner:
-                address = st.text_input(tr('Vestigingsadres (straat, nummer, postcode en plaats)'))
-                phone = st.text_input(tr('Contacttelefoon'))
-                org = st.text_input(tr('Organisatienaam / franchisenemer'))
-                chain = st.text_input(tr('Restaurantketen'))
-                branch = st.text_input(tr('Naam eerste vestiging'))
-            st.caption(tr('Medewerkers registreren een persoonlijk account. Een bevoegde beheerder koppelt hen daarna aan een vestiging.'))
-            if st.form_submit_button(tr('Account aanmaken'), type="primary"):
-                if password != confirm:
-                    st.error(tr('De wachtwoorden komen niet overeen.'))
-                else:
-                    result = run(lambda: api.register(email, name, password, org if is_owner else None, chain if is_owner else None, branch if is_owner else None, address if is_owner else None, phone if is_owner else None, language=st.session_state["language"]), "Account aangemaakt. Je kunt nu inloggen; organisaties en vestigingen wachten eerst op goedkeuring.")
+    introduction, authentication = st.columns([.9, 1.1], gap="large")
+    with introduction:
+        welcome()
+    with authentication.container(key="sf_auth_panel"):
+        login_tab, signup_tab = st.tabs([tr('Inloggen'), tr('Registreren')])
+        with login_tab:
+            st.subheader(tr('Welkom terug'))
+            with st.form("login"):
+                email = st.text_input(tr('E-mailadres'))
+                password = st.text_input(tr('Wachtwoord'), type="password")
+                if st.form_submit_button(tr('Inloggen'), type="primary", use_container_width=True):
+                    result = run(lambda: api.login(email, password))
                     if result:
+                        st.session_state['token'] = result
                         st.rerun()
+            with st.expander(tr('Wachtwoord vergeten?')):
+                st.caption(tr('Een herstellink wordt alleen per e-mail verzonden wanneer de platformeigenaar e-mailverzending heeft ingesteld.'))
+                with st.form("request_reset"):
+                    reset_email=st.text_input(tr('E-mailadres voor wachtwoordherstel'))
+                    if st.form_submit_button(tr('Herstellink aanvragen')):
+                        if run(lambda: api.request_password_reset(reset_email)):
+                            st.success(tr('Als dit een actief account is, staat een herstellink klaar voor verzending. Controleer je e-mail.'))
+        with signup_tab:
+            st.subheader(tr('Start met jouw team'))
+            is_owner = st.checkbox(tr('Ik registreer een organisatie met een eerste vestiging'), value=True)
+            with st.form("signup", clear_on_submit=True):
+                name = st.text_input(tr('Volledige naam'))
+                email = st.text_input(tr('E-mailadres'), key="signup_email")
+                password = st.text_input(tr('Wachtwoord (minimaal 12 tekens)'), type="password")
+                confirm = st.text_input(tr('Herhaal wachtwoord'), type="password")
+                if is_owner:
+                    address = st.text_input(tr('Vestigingsadres (straat, nummer, postcode en plaats)'))
+                    phone = st.text_input(tr('Contacttelefoon'))
+                    org = st.text_input(tr('Organisatienaam / franchisenemer'))
+                    chain = st.text_input(tr('Restaurantketen'))
+                    branch = st.text_input(tr('Naam eerste vestiging'))
+                st.caption(tr('Medewerkers registreren een persoonlijk account. Een bevoegde beheerder koppelt hen daarna aan een vestiging.'))
+                if st.form_submit_button(tr('Account aanmaken'), type="primary", use_container_width=True):
+                    if password != confirm:
+                        st.error(tr('De wachtwoorden komen niet overeen.'))
+                    else:
+                        result = run(lambda: api.register(email, name, password, org if is_owner else None, chain if is_owner else None, branch if is_owner else None, address if is_owner else None, phone if is_owner else None, language=st.session_state["language"]), "Account aangemaakt. Je kunt nu inloggen; organisaties en vestigingen wachten eerst op goedkeuring.")
+                        if result:
+                            st.rerun()
     st.stop()
 
 with st.sidebar:

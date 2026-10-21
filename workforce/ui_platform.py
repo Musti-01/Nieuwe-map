@@ -18,26 +18,30 @@ def show_platform(api, token, me, run):
         st.stop()
     if page == "Overzicht":
         st.write(tr('Beheer hier de toegang van organisaties en vestigingen tot ShiftFlow.'))
-        a, b, c = st.columns(3)
-        a.metric(tr('Aanvragen die op jouw besluit wachten'), tr(sum((r['status'] == 'pending' for r in applications))))
-        b.metric(tr('Organisaties'), tr(sum((r['kind'] == 'organization' for r in applications))))
-        c.metric(tr('Vestigingen'), tr(sum((r['kind'] == 'branch' for r in applications))))
+        with st.container(key='sf_metrics_platform'):
+            a, b, c = st.columns(3)
+            a.metric(tr('In afwachting'), tr(sum((r['status'] == 'pending' for r in applications))))
+            b.metric(tr('Organisaties'), tr(sum((r['kind'] == 'organization' for r in applications))))
+            c.metric(tr('Vestigingen'), tr(sum((r['kind'] == 'branch' for r in applications))))
         st.markdown(tr('### Wat kun je hier doen?'))
         def navigate(target):
             st.session_state['platform_page'] = target
-        st.markdown(tr('**Aanvragen beoordelen** — bekijk bedrijfs- en contactgegevens. Keur eerst een organisatie en daarna iedere vestiging goed, of weiger met een reden.'))
-        st.button(tr('Naar aanvragen en blokkeringen'), on_click=navigate, args=("Aanvragen",), type="primary")
-        st.markdown(tr('**Toegang blokkeren of herstellen** — kies bij Aanvragen een goedgekeurde of geblokkeerde organisatie/vestiging. Blokkeren sluit actieve shiften af; heractiveren bewaart de eerdere gegevens.'))
-        st.markdown(tr('**Besluiten controleren** — bekijk wie een besluit nam, wanneer en met welke reden.'))
-        st.button(tr('Bekijk besluitgeschiedenis'), on_click=navigate, args=("Besluitgeschiedenis",))
+        actions = [
+            ('Aanvragen', 'Naar aanvragen en blokkeringen', 'Beoordeel aanvragen en beheer goedkeuringen.', 'fact_check'),
+            ('Gebruikers', 'Beheer gebruikersaccounts', 'Bekijk gebruikers per vestiging en beheer hun toegang.', 'group'),
+            ('Vestigingen beheren', 'Vestigingen beheren', 'Vind een vestiging, verwijder of herstel haar toegang.', 'storefront'),
+            ('Besluitgeschiedenis', 'Bekijk besluitgeschiedenis', 'Bekijk wie een besluit nam en wanneer.', 'history'),
+            ('Systeemstatus', 'Systeemstatus', 'Controleer back-ups, e-mailverzending en foutmeldingen.', 'monitor_heart'),
+        ]
         if me['platform_owner']:
-            st.markdown(tr('**Platformbeheerders machtigen** — geef een bestaand account platformrechten of trek die in. Alleen jij als platformeigenaar kunt dit doen.'))
-            st.button(tr('Beheer platformbeheerders'), on_click=navigate, args=("Platformbeheerders",))
-        st.markdown(tr('**Vestigingen, medewerkers en uren beheren** — kies links bij Werkruimte voor **Vestigingen**. Selecteer daar een vestiging voor het team, rollen, uren en auditlog. Bij **Shiften controleren** kun je tijden met een reden corrigeren en uren goedkeuren; je eigen shifts moeten door een andere beheerder worden gecontroleerd.'))
-        st.button(tr('Vestigingen beheren'), on_click=navigate, args=('Vestigingen beheren',))
-        st.markdown(tr('**Accounts beheren** — bekijk gebruikers en deactiveer of heractiveer accounts. Historische gegevens blijven bewaard.'))
-        st.button(tr('Beheer gebruikersaccounts'), on_click=navigate, args=("Gebruikers",))
-        st.info(tr('Open een vestiging voor het beheeroverzicht: Medewerkers toevoegen voor uitnodigingen, Medewerkers & rechten voor rollen en Planning voor diensten.'))
+            actions.append(('Platformbeheerders', 'Beheer platformbeheerders', 'Wijs vertrouwde beheerders aan of trek hun rechten in.', 'admin_panel_settings'))
+        with st.container(key='sf_platform_actions'):
+            for offset in range(0, len(actions), 2):
+                for col, (target, label, description, icon) in zip(st.columns(2), actions[offset:offset+2]):
+                    with col.container(border=True, key=f'sf_card_platform_{target}'):
+                        st.button(tr(label), on_click=navigate, args=(target,), use_container_width=True,
+                                  icon=f':material/{icon}:')
+                        st.caption(tr(description))
         st.caption(tr('E-mails bij besluiten worden in een wachtrij gezet. Echte verzending vereist een geconfigureerde mailworker.'))
     elif page == "Aanvragen":
         st.write(tr('Keur eerst de organisatie goed, daarna haar vestigingen. Gebruik de statusfilter om ook blokkeringen te beheren.'))

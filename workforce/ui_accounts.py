@@ -103,14 +103,20 @@ def account_management(api, token, run):
 
     if scope is None:
         st.write(tr('Klik op een vestiging om de gebruikers te bekijken.'))
-        for branch in branches:
-            count = sum(branch['id'] in u['branch_ids'] for u in accounts)
-            st.button(f"{branch['organization']} · {branch['name']} ({count})",
-                      key=f"account_branch_{branch['id']}", on_click=select_branch,
-                      args=(branch['id'],), use_container_width=True)
+        with st.container(key='sf_branch_cards'):
+            for offset in range(0, len(branches), 2):
+                for col, branch in zip(st.columns(2), branches[offset:offset+2]):
+                    count = sum(branch['id'] in u['branch_ids'] for u in accounts)
+                    with col.container(border=True, key=f"sf_card_branch_{branch['id']}"):
+                        st.caption(branch['organization'])
+                        st.subheader(branch['name'])
+                        st.caption(tr('Gebruikers: {v0}', v0=count))
+                        st.button(tr('Gebruikers'), key=f"account_branch_{branch['id']}",
+                                  on_click=select_branch, args=(branch['id'],),
+                                  icon=':material/arrow_forward:', use_container_width=True)
         count = sum(not u['branch_ids'] for u in accounts)
         st.button(tr('Zonder vestiging') + f' ({count})', key='account_branch_unassigned',
-                  on_click=select_branch, args=('unassigned',), use_container_width=True)
+                  on_click=select_branch, args=('unassigned',), icon=':material/person_off:', use_container_width=True)
         return
 
     st.button(tr('Terug naar vestigingen'), on_click=select_branch, args=(None,))
@@ -125,7 +131,7 @@ def account_management(api, token, run):
     if not visible:
         st.info(tr('Geen accounts gevonden. Pas je zoekopdracht of filter aan.'))
     for user in visible:
-        with st.container(border=True):
+        with st.container(border=True, key=f"sf_card_user_{user['id']}"):
             person, state, action = st.columns([3, 1, 1])
             with person:
                 st.text(user['naam'])
@@ -136,7 +142,8 @@ def account_management(api, token, run):
                     st.caption(tr('Platformbeheerder'))
                 if not user['can_manage']:
                     st.caption(tr(user['manage_reason']))
-            state.write((tr('Actief') if user['actief'] else tr('Inactief')))
+            with state:
+                st.badge(tr('Actief') if user['actief'] else tr('Inactief'), color='green' if user['actief'] else 'gray')
             if action.button((tr('Beheren') if user['can_manage'] else tr('Bekijken')), key=f"manage_user_{user['id']}", use_container_width=True):
                 st.session_state['managed_account_id'] = user['id']
     uid = st.session_state.get('managed_account_id')
