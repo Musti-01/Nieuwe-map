@@ -10,6 +10,8 @@ from sqlalchemy import select, or_
 from workforce.models import Notification
 from workforce.service import now
 
+_worker_stops = []
+
 
 def mail_configured():
     return bool(os.getenv('MAIL_FROM') and (os.getenv('RESEND_API_KEY') or all(os.getenv(k) for k in ('SMTP_HOST', 'SMTP_USER', 'SMTP_PASSWORD'))))
@@ -71,6 +73,7 @@ def start_worker(session_factory):
     if os.getenv('EMAIL_DELIVERY_ENABLED') != '1' or not mail_configured():
         return None
     stop = threading.Event()
+    _worker_stops.append(stop)
 
     def work():
         from workforce.operations import report_error, maintenance

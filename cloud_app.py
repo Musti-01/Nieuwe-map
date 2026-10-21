@@ -3,6 +3,7 @@ import os
 import runpy
 from pathlib import Path
 import streamlit as st
+from cloud_bootstrap import prepare_release, startup_error
 
 try:
     for key in ('DATABASE_URL', 'APP_TIMEZONE', 'APP_BASE_URL', 'EMAIL_DELIVERY_ENABLED',
@@ -14,11 +15,9 @@ except FileNotFoundError:
     pass  # Local development can use an ignored .env instead.
 os.environ['AUTO_MIGRATE'] = '1'
 try:
+    prepare_release(Path(__file__).parent)
     runpy.run_path(str(Path(__file__).with_name('app.py')), run_name='__main__')
 except Exception as exc:
-    from workforce.db import make_engine, sessions
-    from workforce.operations import report_error
-    from workforce.i18n import tr
-    reference = report_error(sessions(make_engine()), exc)
-    st.error(tr('Er ging iets mis. Probeer opnieuw of geef deze foutcode door: {v0}', v0=reference))
+    reference = startup_error(exc)
+    st.error(f'De app kon niet starten. Probeer opnieuw of geef deze foutcode door: {reference}')
     st.stop()
