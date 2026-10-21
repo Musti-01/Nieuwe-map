@@ -14,16 +14,29 @@ def show_planning(api,token,branch_id,admin,tz,zone,run):
     period=st.selectbox(tr('Planningperiode'),['Dag','Week','Maand'],index=1, format_func=tr)
     begin,end=period_bounds(day,period,zone)
     visible=[p for p in plans if p['start']<end and p['end']>begin]
+    absences = run(lambda: api.absences(token, branch_id, team=admin)) or []
+    active_absences = [a for a in absences if a['status'] == 'approved']
     rows=[]
     for p in visible:
         planned=(p['end']-p['start']).total_seconds()/3600
         actual=(p['actual_end']-p['actual_start']).total_seconds()/3600 if p['actual_end'] else None
         rows.append({'Medewerker':p['name'],'Begin':p['start'].astimezone(tz),'Einde':p['end'].astimezone(tz),'Status':'Geannuleerd' if p['status']=='cancelled' else 'Gepland','Geplande uren':round(planned,2),'Geregistreerde uren':round(actual,2) if actual is not None else None,'Verschil (uur)':round(actual-planned,2) if actual is not None else None,'Opmerking':p['note']})
+        conflicts = [a for a in active_absences if a['user_id'] == p['user_id'] and
+                     a['start'] <= (p['end']-timedelta(microseconds=1)).astimezone(tz).date() and a['end'] >= p['start'].astimezone(tz).date()]
+        rows[-1]['Afwezigheid'] = ' · '.join(tr('Ziekte' if a['kind'] == 'sick' else 'Verlof') for a in conflicts)
     if rows:
         st.dataframe(translated_table(rows),hide_index=True,use_container_width=True)
     else:
         st.info(tr('Nog geen shiften gepland in deze periode.'))
     st.caption(tr('Geregistreerde uren kunnen nog op controle wachten. Goedkeuring gebeurt via Shiften controleren; planning keurt geen uren automatisch goed.'))
+    from workforce.ui_absences import KINDS, STATUSES
+    period_absences = [a for a in absences if a['start'] < end.astimezone(tz).date() and a['end'] >= begin.astimezone(tz).date() and a['status'] in ('pending', 'approved')]
+    if period_absences:
+        st.subheader(tr('Afwezigheden in deze periode'))
+        st.dataframe([{tr('Medewerker'): a['name'], tr('Soort afwezigheid'): tr(KINDS[a['kind']]),
+                       tr('Begin'): a['start'], tr('Einde'): a['end'], tr('Status'): tr(STATUSES[a['status']])}
+                      for a in period_absences], hide_index=True, use_container_width=True)
+        st.caption(tr('Bestaande shiften blijven staan. Controleer conflicten; goedgekeurde afwezigheid blokkeert nieuwe planning en inklokken.'))
     if not admin:
         return
     members=run(lambda: api.members(token,branch_id)) or []

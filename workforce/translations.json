@@ -3034,5 +3034,317 @@
     "en": "Back to branches",
     "de": "Zurück zu den Filialen",
     "es": "Volver a los establecimientos"
+  },
+  "Afwezigheden": {
+    "fr": "Absences",
+    "en": "Absences",
+    "de": "Abwesenheiten",
+    "es": "Ausencias"
+  },
+  "Afwezigheden in deze periode": {
+    "fr": "Absences sur cette période",
+    "en": "Absences in this period",
+    "de": "Abwesenheiten in diesem Zeitraum",
+    "es": "Ausencias en este período"
+  },
+  "Afwezigheid indienen": {
+    "fr": "Déclarer une absence",
+    "en": "Submit absence",
+    "de": "Abwesenheit melden",
+    "es": "Enviar ausencia"
+  },
+  "Alleen gekoppelde medewerkers kunnen een afwezigheid melden.": {
+    "fr": "Seuls les employés rattachés peuvent déclarer une absence.",
+    "en": "Only assigned employees can report an absence.",
+    "de": "Nur zugeordnete Mitarbeiter können eine Abwesenheit melden.",
+    "es": "Solo los empleados asignados pueden comunicar una ausencia."
+  },
+  "Alleen platformbeheerders hebben toegang tot ziektebriefjes.": {
+    "fr": "Seuls les administrateurs de plateforme ont accès aux certificats médicaux.",
+    "en": "Only platform administrators have access to medical certificates.",
+    "de": "Nur Plattformadministratoren haben Zugriff auf Atteste.",
+    "es": "Solo los administradores de plataforma tienen acceso a los certificados médicos."
+  },
+  "Alleen platformbeheerders kunnen ziektebriefjes downloaden en verwijderen.": {
+    "fr": "Seuls les administrateurs de plateforme peuvent télécharger et supprimer les certificats médicaux.",
+    "en": "Only platform administrators can download and delete medical certificates.",
+    "de": "Nur Plattformadministratoren können Atteste herunterladen und löschen.",
+    "es": "Solo los administradores de plataforma pueden descargar y eliminar certificados médicos."
+  },
+  "Bestaande shiften blijven staan. Controleer conflicten; goedgekeurde afwezigheid blokkeert nieuwe planning en inklokken.": {
+    "fr": "Les services existants sont conservés. Vérifiez les conflits ; une absence approuvée bloque toute nouvelle planification et le pointage.",
+    "en": "Existing shifts remain. Check conflicts; approved absence blocks new scheduling and clock-in.",
+    "de": "Bestehende Schichten bleiben erhalten. Prüfe Konflikte; genehmigte Abwesenheit verhindert neue Planung und Einstempeln.",
+    "es": "Los turnos existentes se conservan. Revisa los conflictos; una ausencia aprobada impide nuevas planificaciones y fichar."
+  },
+  "Bewaring: {v0} dagen na de laatste ziektedag of upload, afhankelijk van wat later is.": {
+    "fr": "Conservation : {v0} jours après le dernier jour de maladie ou le dépôt, selon la date la plus tardive.",
+    "en": "Retention: {v0} days after the last sick day or upload, whichever is later.",
+    "de": "Aufbewahrung: {v0} Tage nach dem letzten Krankheitstag oder dem Upload, je nachdem, was später ist.",
+    "es": "Conservación: {v0} días después del último día de enfermedad o la subida, lo que sea posterior."
+  },
+  "Categorie": {
+    "fr": "Catégorie",
+    "en": "Category",
+    "de": "Kategorie",
+    "es": "Categoría"
+  },
+  "De afwezigheid is gewijzigd; ververs het overzicht.": {
+    "fr": "L'absence a changé ; actualisez la liste.",
+    "en": "The absence has changed; refresh the list.",
+    "de": "Die Abwesenheit wurde geändert; aktualisiere die Übersicht.",
+    "es": "La ausencia ha cambiado; actualiza la lista."
+  },
+  "De laatste back-up is ouder dan 26 uur. Controleer de geplande taak.": {
+    "fr": "La dernière sauvegarde date de plus de 26 heures. Vérifiez la tâche planifiée.",
+    "en": "The last backup is over 26 hours old. Check the scheduled task.",
+    "de": "Die letzte Sicherung ist älter als 26 Stunden. Prüfe den geplanten Auftrag.",
+    "es": "La última copia tiene más de 26 horas. Revisa la tarea programada."
+  },
+  "Deze medewerker is afwezig in deze periode. Pas de afwezigheid of planning aan.": {
+    "fr": "Cet employé est absent sur cette période. Modifiez l'absence ou le planning.",
+    "en": "This employee is absent during this period. Adjust the absence or schedule.",
+    "de": "Dieser Mitarbeiter ist in diesem Zeitraum abwesend. Passe Abwesenheit oder Planung an.",
+    "es": "Este empleado está ausente en este período. Ajusta la ausencia o la planificación."
+  },
+  "Deze ziektebrief definitief verwijderen": {
+    "fr": "Supprimer définitivement ce certificat médical",
+    "en": "Permanently delete this medical certificate",
+    "de": "Dieses Attest endgültig löschen",
+    "es": "Eliminar definitivamente este certificado médico"
+  },
+  "Dit overzicht bewijst geen herstelbaarheid. Test herstel regelmatig op een aparte database.": {
+    "fr": "Ce tableau ne prouve pas la possibilité de restauration. Testez régulièrement sur une base séparée.",
+    "en": "This overview does not prove recoverability. Regularly test restoration on a separate database.",
+    "de": "Diese Übersicht belegt keine Wiederherstellbarkeit. Teste die Wiederherstellung regelmäßig in einer separaten Datenbank.",
+    "es": "Este resumen no demuestra la recuperación. Prueba regularmente la restauración en una base separada."
+  },
+  "E-maildienst ingesteld. Controleer de afleveringen en fouten hieronder.": {
+    "fr": "Service e-mail configuré. Vérifiez les envois et erreurs ci-dessous.",
+    "en": "Email service configured. Check deliveries and errors below.",
+    "de": "E-Mail-Dienst eingerichtet. Prüfe Zustellungen und Fehler unten.",
+    "es": "Servicio de correo configurado. Revisa las entregas y errores a continuación."
+  },
+  "E-maildienst nog niet ingesteld. Wachtwoordherstel is nog niet actief.": {
+    "fr": "Service e-mail non configuré. La récupération du mot de passe n'est pas encore active.",
+    "en": "Email service not configured. Password recovery is not active yet.",
+    "de": "E-Mail-Dienst noch nicht eingerichtet. Passwortwiederherstellung ist noch nicht aktiv.",
+    "es": "Servicio de correo sin configurar. La recuperación de contraseña aún no está activa."
+  },
+  "Eerste afwezigheidsdag": {
+    "fr": "Premier jour d'absence",
+    "en": "First day of absence",
+    "de": "Erster Abwesenheitstag",
+    "es": "Primer día de ausencia"
+  },
+  "Eerste ziektedag (nieuwe melding)": {
+    "fr": "Premier jour de maladie (nouvelle déclaration)",
+    "en": "First sick day (new report)",
+    "de": "Erster Krankheitstag (neue Meldung)",
+    "es": "Primer día de enfermedad (nuevo aviso)"
+  },
+  "Er bestaat al een afwezigheid voor deze periode.": {
+    "fr": "Une absence existe déjà sur cette période.",
+    "en": "An absence already exists for this period.",
+    "de": "Für diesen Zeitraum besteht bereits eine Abwesenheit.",
+    "es": "Ya existe una ausencia para este período."
+  },
+  "Er ging iets mis. Probeer opnieuw of geef deze foutcode door: {v0}": {
+    "fr": "Une erreur est survenue. Réessayez ou communiquez ce code : {v0}",
+    "en": "Something went wrong. Try again or report this error code: {v0}",
+    "de": "Etwas ist schiefgelaufen. Versuche es erneut oder melde diesen Fehlercode: {v0}",
+    "es": "Se ha producido un error. Inténtalo de nuevo o comunica este código: {v0}"
+  },
+  "Er is nog geen geslaagde back-up geregistreerd.": {
+    "fr": "Aucune sauvegarde réussie n'est encore enregistrée.",
+    "en": "No successful backup has been recorded yet.",
+    "de": "Es wurde noch keine erfolgreiche Sicherung registriert.",
+    "es": "Todavía no se ha registrado ninguna copia correcta."
+  },
+  "Er zijn geen afwezigheden.": {
+    "fr": "Aucune absence.",
+    "en": "There are no absences.",
+    "de": "Es gibt keine Abwesenheiten.",
+    "es": "No hay ausencias."
+  },
+  "Foutcode": {
+    "fr": "Code d'erreur",
+    "en": "Error code",
+    "de": "Fehlercode",
+    "es": "Código de error"
+  },
+  "Geen toegang tot deze afwezigheid.": {
+    "fr": "Accès refusé à cette absence.",
+    "en": "No access to this absence.",
+    "de": "Kein Zugriff auf diese Abwesenheit.",
+    "es": "Sin acceso a esta ausencia."
+  },
+  "Je bent afwezig gemeld en kunt nu niet inklokken.": {
+    "fr": "Vous êtes déclaré absent et ne pouvez pas pointer actuellement.",
+    "en": "You are marked absent and cannot clock in now.",
+    "de": "Du bist als abwesend gemeldet und kannst jetzt nicht einstempeln.",
+    "es": "Figuras como ausente y no puedes fichar ahora."
+  },
+  "Je kunt je eigen verlof niet goedkeuren of wijzigen.": {
+    "fr": "Vous ne pouvez pas approuver ou modifier votre propre congé.",
+    "en": "You cannot approve or change your own leave.",
+    "de": "Du kannst deinen eigenen Urlaub nicht genehmigen oder ändern.",
+    "es": "No puedes aprobar o modificar tus propias vacaciones."
+  },
+  "Kies goedkeuren, weigeren of annuleren.": {
+    "fr": "Choisissez approuver, refuser ou annuler.",
+    "en": "Choose approve, reject or cancel.",
+    "de": "Wähle genehmigen, ablehnen oder stornieren.",
+    "es": "Elige aprobar, rechazar o cancelar."
+  },
+  "Kies ziekte of verlof en een geldige periode van maximaal één jaar.": {
+    "fr": "Choisissez maladie ou congé et une période valide d'un an maximum.",
+    "en": "Choose sickness or leave and a valid period of up to one year.",
+    "de": "Wähle Krankheit oder Urlaub und einen gültigen Zeitraum von höchstens einem Jahr.",
+    "es": "Elige enfermedad o vacaciones y un período válido de hasta un año."
+  },
+  "Koppel aan ziekmelding": {
+    "fr": "Associer à une déclaration de maladie",
+    "en": "Link to sickness report",
+    "de": "Mit Krankmeldung verknüpfen",
+    "es": "Vincular al aviso de enfermedad"
+  },
+  "Laatste afwezigheidsdag": {
+    "fr": "Dernier jour d'absence",
+    "en": "Last day of absence",
+    "de": "Letzter Abwesenheitstag",
+    "es": "Último día de ausencia"
+  },
+  "Laatste back-up: {v0}": {
+    "fr": "Dernière sauvegarde : {v0}",
+    "en": "Last backup: {v0}",
+    "de": "Letzte Sicherung: {v0}",
+    "es": "Última copia: {v0}"
+  },
+  "Laatste ziektedag (nieuwe melding)": {
+    "fr": "Dernier jour de maladie (nouvelle déclaration)",
+    "en": "Last sick day (new report)",
+    "de": "Letzter Krankheitstag (neue Meldung)",
+    "es": "Último día de enfermedad (nuevo aviso)"
+  },
+  "Nieuwe ziekmelding": {
+    "fr": "Nouvelle déclaration de maladie",
+    "en": "New sickness report",
+    "de": "Neue Krankmeldung",
+    "es": "Nuevo aviso de enfermedad"
+  },
+  "Soort afwezigheid": {
+    "fr": "Type d'absence",
+    "en": "Absence type",
+    "de": "Abwesenheitsart",
+    "es": "Tipo de ausencia"
+  },
+  "Status verversen": {
+    "fr": "Actualiser l'état",
+    "en": "Refresh status",
+    "de": "Status aktualisieren",
+    "es": "Actualizar estado"
+  },
+  "Systeemstatus": {
+    "fr": "État du système",
+    "en": "System status",
+    "de": "Systemstatus",
+    "es": "Estado del sistema"
+  },
+  "Tijd": {
+    "fr": "Heure",
+    "en": "Time",
+    "de": "Zeit",
+    "es": "Hora"
+  },
+  "Wordt verwijderd na {v0}.": {
+    "fr": "Sera supprimé après le {v0}.",
+    "en": "Will be deleted after {v0}.",
+    "de": "Wird nach dem {v0} gelöscht.",
+    "es": "Se eliminará después del {v0}."
+  },
+  "Ziekte wordt direct gemeld. Verlof wacht op goedkeuring van een beheerder. Vermeld geen medische details.": {
+    "fr": "La maladie est déclarée immédiatement. Le congé attend l'approbation d'un responsable. N'indiquez aucun détail médical.",
+    "en": "Sickness is reported immediately. Leave awaits manager approval. Do not include medical details.",
+    "de": "Krankheit wird sofort gemeldet. Urlaub wartet auf die Genehmigung eines Verwalters. Gib keine medizinischen Details an.",
+    "es": "La enfermedad se comunica inmediatamente. Las vacaciones requieren aprobación de un administrador. No incluyas detalles médicos."
+  },
+  "Ziektebrief verwijderen": {
+    "fr": "Supprimer le certificat médical",
+    "en": "Delete medical certificate",
+    "de": "Attest löschen",
+    "es": "Eliminar certificado médico"
+  },
+  "Afwezigheid opgeslagen.": {
+    "fr": "Absence enregistrée.",
+    "en": "Absence saved.",
+    "de": "Abwesenheit gespeichert.",
+    "es": "Ausencia guardada."
+  },
+  "Afwezigheid bijgewerkt.": {
+    "fr": "Absence mise à jour.",
+    "en": "Absence updated.",
+    "de": "Abwesenheit aktualisiert.",
+    "es": "Ausencia actualizada."
+  },
+  "Ziektebrief verwijderd.": {
+    "fr": "Certificat médical supprimé.",
+    "en": "Medical certificate deleted.",
+    "de": "Attest gelöscht.",
+    "es": "Certificado médico eliminado."
+  },
+  "Afwezigheid": {
+    "fr": "Absence",
+    "en": "Absence",
+    "de": "Abwesenheit",
+    "es": "Ausencia"
+  },
+  "Afwezig": {
+    "fr": "Absent",
+    "en": "Absent",
+    "de": "Abwesend",
+    "es": "Ausente"
+  },
+  "Ziekte": {
+    "fr": "Maladie",
+    "en": "Sickness",
+    "de": "Krankheit",
+    "es": "Enfermedad"
+  },
+  "Verlof": {
+    "fr": "Congé",
+    "en": "Leave",
+    "de": "Urlaub",
+    "es": "Vacaciones"
+  },
+  "Afwezigheid gemeld": {
+    "fr": "Absence déclarée",
+    "en": "Absence reported",
+    "de": "Abwesenheit gemeldet",
+    "es": "Ausencia comunicada"
+  },
+  "Afwezigheid goedgekeurd": {
+    "fr": "Absence approuvée",
+    "en": "Absence approved",
+    "de": "Abwesenheit genehmigt",
+    "es": "Ausencia aprobada"
+  },
+  "Afwezigheid geweigerd": {
+    "fr": "Absence refusée",
+    "en": "Absence rejected",
+    "de": "Abwesenheit abgelehnt",
+    "es": "Ausencia rechazada"
+  },
+  "Afwezigheid geannuleerd": {
+    "fr": "Absence annulée",
+    "en": "Absence cancelled",
+    "de": "Abwesenheit storniert",
+    "es": "Ausencia cancelada"
+  },
+  "Ziektebrief verwijderd": {
+    "fr": "Certificat médical supprimé",
+    "en": "Medical certificate deleted",
+    "de": "Attest gelöscht",
+    "es": "Certificado médico eliminado"
   }
 }

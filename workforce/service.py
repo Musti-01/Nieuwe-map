@@ -4,7 +4,7 @@ from urllib.parse import urlsplit, urlencode
 import hashlib
 import re
 import secrets
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, time, timedelta, timezone
 from zoneinfo import ZoneInfo
 from workforce.clock_policy import clock_in_allowed
 from argon2 import PasswordHasher
@@ -12,7 +12,7 @@ from argon2.exceptions import VerificationError, InvalidHashError
 from sqlalchemy import select, or_, text, delete
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.dialects.postgresql import insert
-from workforce.models import User, Organization, Branch, Membership, WorkEntry, AuthSession, LoginLimit, Audit, ApprovalDecision, Notification, ShiftReview, AccountToken, ShiftPlan, SickNote
+from workforce.models import User, Organization, Branch, Membership, WorkEntry, AuthSession, LoginLimit, Audit, ApprovalDecision, Notification, ShiftReview, AccountToken, ShiftPlan, SickNote, Absence, SystemEvent
 
 hasher = PasswordHasher()
 DUMMY_HASH = hasher.hash(secrets.token_urlsafe(32))
@@ -115,8 +115,69 @@ class Service:
             u = self._actor(s, token)
             return {"id": u.id, "name": u.name, "email": u.email, "platform_admin": u.platform_admin, "platform_owner": u.platform_owner, "language": u.language}
 
-    def upload_sick_note(self, token, branch_id, filename, content):
-        from workforce.sick_notes import validate_note
+    def _new_absence(self, s, actor, branch_id, kind, start, end):
+        if kind not in ('sick', 'leave') or type(start) is not date or type(end) is not date or end < start or (end-start).days > 366:
+            raise ValueError('Kies ziekte of verlof en een geldige periode van maximaal één jaar.')
+        membership = s.get(Membership, (branch_id, actor.id), populate_existing=True)
+        if not membership or membership.role == 'revoked':
+            raise Denied('Alleen gekoppelde medewerkers kunnen een afwezigheid melden.')
+        if s.scalar(select(Absence.id).where(Absence.branch_id == branch_id, Absence.user_id == actor.id,
+                    Absence.status.in_(('pending', 'approved')), Absence.starts_on <= end, Absence.ends_on >= start)):
+            raise ValueError('Er bestaat al een afwezigheid voor deze periode.')
+        absence = Absence(branch_id=branch_id, user_id=actor.id, kind=kind, starts_on=start, ends_on=end,
+                          status='approved' if kind == 'sick' else 'pending', created_at=now())
+        s.add(absence)
+        s.flush()
+        self._audit(s, actor, branch_id, 'absence.created', f'absence={absence.id}')
+        return absence
+
+    def request_absence(self, token, branch_id, kind, start, end):
+        with self.sessions.begin() as s:
+            actor = self._actor(s, token)
+            self._access(s, actor, branch_id, lock=True)
+            return self._new_absence(s, actor, branch_id, kind, start, end).id
+
+    def absences(self, token, branch_id, team=False):
+        with self.sessions.begin() as s:
+            actor = self._actor(s, token)
+            self._access(s, actor, branch_id, admin=team)
+            q = select(Absence, User.name).join(User, User.id == Absence.user_id).where(Absence.branch_id == branch_id)
+            if not team:
+                q = q.where(Absence.user_id == actor.id)
+            return [dict(id=a.id, user_id=a.user_id, name=name, kind=a.kind, start=a.starts_on,
+                         end=a.ends_on, status=a.status) for a, name in s.execute(q.order_by(Absence.starts_on.desc(), Absence.id.desc()))]
+
+    def review_absence(self, token, branch_id, absence_id, action):
+        if action not in ('approve', 'reject', 'cancel'):
+            raise ValueError('Kies goedkeuren, weigeren of annuleren.')
+        with self.sessions.begin() as s:
+            actor = self._actor(s, token)
+            self._access(s, actor, branch_id, lock=True)
+            absence = s.scalar(select(Absence).where(Absence.id == absence_id, Absence.branch_id == branch_id).with_for_update())
+            if not absence:
+                raise Denied('Geen toegang tot deze afwezigheid.')
+            if action == 'cancel' and absence.user_id == actor.id and absence.status == 'pending':
+                pass
+            else:
+                self._access(s, actor, branch_id, admin=True)
+                if absence.user_id == actor.id and not actor.platform_admin:
+                    raise Denied('Je kunt je eigen verlof niet goedkeuren of wijzigen.')
+            if absence.status not in ('pending', 'approved') or (action != 'cancel' and (absence.status != 'pending' or absence.kind != 'leave')):
+                raise ValueError('De afwezigheid is gewijzigd; ververs het overzicht.')
+            absence.status = {'approve': 'approved', 'reject': 'rejected', 'cancel': 'cancelled'}[action]
+            absence.reviewed_by = actor.id
+            self._audit(s, actor, branch_id, 'absence.' + action, f'absence={absence.id}')
+            return True
+
+    def _absence_conflict(self, s, branch_id, user_id, start, end):
+        tz = ZoneInfo(os.getenv('APP_TIMEZONE', 'Europe/Brussels'))
+        first = start.astimezone(tz).date()
+        last = (end - timedelta(microseconds=1)).astimezone(tz).date()
+        return s.scalar(select(Absence.id).where(Absence.branch_id == branch_id, Absence.user_id == user_id,
+                        Absence.status == 'approved', Absence.starts_on <= last, Absence.ends_on >= first)) is not None
+
+    def upload_sick_note(self, token, branch_id, filename, content, start=None, end=None, absence_id=None):
+        from workforce.sick_notes import validate_note, retention_days
         with self.sessions.begin() as s:
             u = self._actor(s, token)
             self._access(s, u, branch_id, lock=True)
@@ -124,8 +185,21 @@ class Service:
             if not membership or membership.role == 'revoked':
                 raise Denied('Alleen gekoppelde medewerkers kunnen een ziektebrief uploaden.')
             filename, media_type = validate_note(filename, content)
+            absence = None
+            if absence_id is not None:
+                absence = s.scalar(select(Absence).where(Absence.id == absence_id, Absence.branch_id == branch_id,
+                                   Absence.user_id == u.id, Absence.kind == 'sick', Absence.status == 'approved'))
+                if absence is None:
+                    raise Denied('Geen toegang tot deze afwezigheid.')
+            elif start is not None or end is not None:
+                absence = self._new_absence(s, u, branch_id, 'sick', start, end)
+            base = now()
+            if absence:
+                base = max(base, datetime.combine(absence.ends_on + timedelta(days=1), time.min,
+                                                  tzinfo=ZoneInfo(os.getenv('APP_TIMEZONE', 'Europe/Brussels'))))
             note = SickNote(branch_id=branch_id, user_id=u.id, filename=filename,
-                            media_type=media_type, content=content, uploaded_at=now())
+                            media_type=media_type, content=content, uploaded_at=now(),
+                            absence_id=absence.id if absence else None, expires_at=base+timedelta(days=retention_days()))
             s.add(note)
             s.flush()
             self._audit(s, u, branch_id, 'sick_note.uploaded', f'note={note.id}; user={u.id}')
@@ -134,25 +208,45 @@ class Service:
     def sick_notes(self, token, branch_id, team=False):
         with self.sessions.begin() as s:
             u = self._actor(s, token)
-            self._access(s, u, branch_id, admin=team)
-            # Select metadata only: listing must not load attachment contents.
+            self._access(s, u, branch_id)
+            if team and not u.platform_admin:
+                raise Denied('Alleen platformbeheerders hebben toegang tot ziektebriefjes.')
             q = select(SickNote.id, SickNote.user_id, User.name, SickNote.filename,
-                       SickNote.uploaded_at).join(User, User.id == SickNote.user_id).where(SickNote.branch_id == branch_id)
+                       SickNote.uploaded_at, SickNote.expires_at, SickNote.absence_id).join(User, User.id == SickNote.user_id).where(
+                       SickNote.branch_id == branch_id, SickNote.expires_at > now())
             if not team:
                 q = q.where(SickNote.user_id == u.id)
             return [dict(row._mapping) for row in s.execute(q.order_by(SickNote.uploaded_at.desc(), SickNote.id.desc()))]
 
     def download_sick_note(self, token, branch_id, note_id):
         with self.sessions.begin() as s:
-            u = self._actor(s, token)
+            u = self._platform(s, token)
             self._access(s, u, branch_id, lock=True)
-            note = s.scalar(select(SickNote).where(SickNote.id == note_id, SickNote.branch_id == branch_id))
+            note = s.scalar(select(SickNote).where(SickNote.id == note_id, SickNote.branch_id == branch_id, SickNote.expires_at > now()))
             if note is None:
                 raise Denied('Geen toegang tot deze ziektebrief.')
-            if note.user_id != u.id:
-                self._access(s, u, branch_id, admin=True)
             self._audit(s, u, branch_id, 'sick_note.downloaded', f'note={note.id}; user={note.user_id}')
             return {'filename': note.filename, 'media_type': note.media_type, 'content': note.content}
+
+    def delete_sick_note(self, token, branch_id, note_id):
+        with self.sessions.begin() as s:
+            actor = self._platform(s, token)
+            self._access(s, actor, branch_id, lock=True)
+            note = s.scalar(select(SickNote).where(SickNote.id == note_id, SickNote.branch_id == branch_id).with_for_update())
+            if note is None:
+                raise Denied('Geen toegang tot deze ziektebrief.')
+            s.delete(note)
+            self._audit(s, actor, branch_id, 'sick_note.deleted', f'note={note_id}')
+            return True
+
+    def system_status(self, token):
+        from workforce.mail import mail_configured
+        with self.sessions.begin() as s:
+            self._platform(s, token)
+            events = s.scalars(select(SystemEvent).order_by(SystemEvent.occurred_at.desc(), SystemEvent.id.desc()).limit(100))
+            return {'mail_configured': mail_configured() and os.getenv('EMAIL_DELIVERY_ENABLED') == '1',
+                    'last_backup': s.scalar(select(SystemEvent.occurred_at).where(SystemEvent.category == 'backup', SystemEvent.code == 'completed').order_by(SystemEvent.occurred_at.desc()).limit(1)),
+                    'events': [dict(category=e.category, code=e.code, time=e.occurred_at) for e in events]}
 
     def logout(self, token):
         with self.sessions.begin() as s:
@@ -278,6 +372,8 @@ class Service:
                 tz = ZoneInfo(os.getenv('APP_TIMEZONE', 'Europe/Brussels'))
                 if not clock_in_allowed(plan.starts_at, plan.ends_at, current, tz):
                     raise ValueError("Inklokken kan alleen op de begindag van je shift, vanaf 10 minuten voor de start en vóór de geplande eindtijd.")
+                if self._absence_conflict(s, branch_id, u.id, current, current+timedelta(microseconds=1)):
+                    raise ValueError('Je bent afwezig gemeld en kunt nu niet inklokken.')
                 e = WorkEntry(branch_id=branch_id, user_id=u.id, started_at=current, plan_id=plan_id)
                 s.add(e)
                 s.flush()
@@ -572,7 +668,7 @@ class Service:
             raw = secrets.token_urlsafe(32)
             s.add(AccountToken(token_hash=digest(raw),purpose='invite',email=email,branch_id=branch_id,created_by=actor.id,expires_at=now()+timedelta(days=7)))
             url = base + '?' + urlencode({'invite':raw})
-            s.add(Notification(recipient=email,subject='Uitnodiging voor ShiftFlow',body=f'Je bent uitgenodigd als medewerker bij {branch.name}. Open binnen 7 dagen: {url}\nBestaande gebruikers moeten met hun eigen account inloggen.'))
+            s.add(Notification(recipient=email,subject='Uitnodiging voor ShiftFlow',expires_at=now()+timedelta(days=7),body=f'Je bent uitgenodigd als medewerker bij {branch.name}. Open binnen 7 dagen: {url}\nBestaande gebruikers moeten met hun eigen account inloggen.'))
             self._audit(s,actor,branch_id,'account.invited',f'email={email}')
             return url
 
@@ -609,7 +705,8 @@ class Service:
 
     def request_password_reset(self, email):
         email = email_address(email)
-        if os.getenv('EMAIL_DELIVERY_ENABLED') != '1':
+        from workforce.mail import mail_configured
+        if os.getenv('EMAIL_DELIVERY_ENABLED') != '1' or not mail_configured():
             raise ValueError('Wachtwoordherstel per e-mail is nog niet ingesteld. Neem contact op met de platformeigenaar.')
         base = self._public_url()
         with self.sessions.begin() as s:
@@ -628,7 +725,7 @@ class Service:
                 raw=secrets.token_urlsafe(32)
                 s.add(AccountToken(token_hash=digest(raw),purpose='reset',email=email,user_id=account.id,expires_at=now()+timedelta(hours=1)))
                 url=base+'?'+urlencode({'reset':raw})
-                s.add(Notification(recipient=email,subject='ShiftFlow wachtwoord herstellen',body=f'Gebruik binnen een uur deze eenmalige link: {url}\nNiet aangevraagd? Negeer dit bericht.'))
+                s.add(Notification(recipient=email,subject='ShiftFlow wachtwoord herstellen',expires_at=now()+timedelta(hours=1),body=f'Gebruik binnen een uur deze eenmalige link: {url}\nNiet aangevraagd? Negeer dit bericht.'))
             return True
 
     def reset_password(self, raw, password):
@@ -677,6 +774,7 @@ class Service:
             blocked = 'Dit account is eigenaar van een organisatie. Blokkeer de organisatie via Aanvragen; eigendomsoverdracht is nog niet beschikbaar.'
         references = [
             select(SickNote.id).where(SickNote.user_id == target.id),
+            select(Absence.id).where(or_(Absence.user_id == target.id, Absence.reviewed_by == target.id)),
             select(WorkEntry.id).where(or_(WorkEntry.user_id == target.id, WorkEntry.reviewed_by == target.id)),
             select(ShiftPlan.id).where(or_(ShiftPlan.user_id == target.id, ShiftPlan.created_by == target.id)),
             select(Audit.id).where(Audit.actor_id == target.id),
@@ -815,6 +913,8 @@ class Service:
                 overlap=overlap.where(ShiftPlan.id!=plan.id)
             if s.scalar(overlap):
                 raise ValueError('Deze medewerker is op dit tijdstip al ingepland, mogelijk in een andere vestiging.')
+            if self._absence_conflict(s, branch_id, user_id, start, end):
+                raise ValueError('Deze medewerker is afwezig in deze periode. Pas de afwezigheid of planning aan.')
             old=f'{plan.starts_at.isoformat()}..{plan.ends_at.isoformat()}' if plan else 'nieuw'
             if plan:
                 plan.starts_at,plan.ends_at,plan.note=start,end,note

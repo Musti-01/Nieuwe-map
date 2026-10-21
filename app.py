@@ -19,16 +19,26 @@ h1,h2,h3 {color:#006491;} [data-testid=stMetric] {background:#F1F5FA;padding:1re
 </style>""", unsafe_allow_html=True)
 
 @st.cache_resource
-def backend_engine(schema_revision="0007"):
+def backend_engine(schema_revision="0008"):
     engine = make_engine()
     if os.getenv('AUTO_MIGRATE') == '1':
         from workforce.hosting import migrate
         migrate(engine)
+    from workforce.operations import maintenance
+    maintenance(sessions(engine))
     return engine
+
+
+@st.cache_resource
+def mail_worker(_engine, enabled, sender, provider):
+    from workforce.mail import start_worker
+    return start_worker(sessions(_engine))
 
 try:
     # Cache only the engine: service code must refresh with application updates.
     api = Service(sessions(backend_engine()))
+    mail_worker(backend_engine(), os.getenv('EMAIL_DELIVERY_ENABLED'), os.getenv('MAIL_FROM'),
+                'resend' if os.getenv('RESEND_API_KEY') else os.getenv('SMTP_HOST'))
 except (RuntimeError, SQLAlchemyError):
     st.error(tr('Database nog niet geconfigureerd. Stel DATABASE_URL in en voer de migraties uit; zie README.'))
     st.stop()
@@ -41,8 +51,10 @@ def run(action, success=None):
         return value
     except (ValueError, Denied) as exc:
         st.error(tr(str(exc)))
-    except SQLAlchemyError:
-        st.error(tr('Database niet beschikbaar. Neem contact op met de beheerder.'))
+    except Exception as exc:
+        from workforce.operations import report_error
+        reference = report_error(api.sessions, exc)
+        st.error(tr('Er ging iets mis. Probeer opnieuw of geef deze foutcode door: {v0}', v0=reference))
     return None
 
 token = st.session_state.get('token')
@@ -53,7 +65,9 @@ if token:
         clear_signin()
         st.warning(tr('Sessie verlopen. Log opnieuw in.'))
         token = None
-    except SQLAlchemyError:
+    except SQLAlchemyError as exc:
+        from workforce.operations import report_error
+        report_error(api.sessions, exc)
         st.error(tr('Database niet beschikbaar.'))
         st.stop()
 
@@ -174,7 +188,7 @@ if b['status'] != 'approved' or b['organization_status'] != 'approved':
     st.stop()
 st.caption(tr('{v0} · {v1}', v0=b['organization'], v1=tr('Organisatie-eigenaar' if b['owner'] else 'Vestigingsadmin' if b['admin'] else 'Medewerker')))
 if b['admin']:
-    pages = ['Overzicht', 'Medewerkers toevoegen', 'Medewerkers & rechten', 'Planning', 'Werkuren', 'Shiften controleren', 'Meldingen', 'Ziektebriefjes', 'Auditlog']
+    pages = ['Overzicht', 'Medewerkers toevoegen', 'Medewerkers & rechten', 'Planning', 'Afwezigheden', 'Werkuren', 'Shiften controleren', 'Meldingen', 'Ziektebriefjes', 'Auditlog']
     if b['member']:
         pages.append('Mijn werktijd')
     page_key = f"branch_page_{branch_id}"
@@ -184,7 +198,7 @@ if b['admin']:
         page = st.radio(tr('Vestigingsbeheer'), pages, key=page_key, format_func=tr)
 else:
     page = None
-    tabs = st.tabs([tr('In- en uitklokken'), tr('Mijn shiften'), tr('Planning'), tr('Meldingen'), tr('Ziektebriefjes')])
+    tabs = st.tabs([tr('In- en uitklokken'), tr('Mijn shiften'), tr('Planning'), tr('Meldingen'), tr('Ziektebriefjes'), tr('Afwezigheden')])
 zone = os.getenv('APP_TIMEZONE', 'Europe/Brussels')
 try:
     tz = ZoneInfo(zone)
@@ -326,7 +340,9 @@ if b['admin'] and page == 'Medewerkers & rechten':
                     st.rerun()
                 except ValueError as exc:
                     st.error(tr(str(exc)))
-                except SQLAlchemyError:
+                except SQLAlchemyError as exc:
+                    from workforce.operations import report_error
+                    report_error(api.sessions, exc)
                     st.error(tr('Database niet beschikbaar.'))
     st.caption(tr('Alleen organisatie-eigenaars en platformbeheerders kunnen vestigingsadmins aanwijzen of hun rechten intrekken.'))
 
@@ -350,4 +366,10 @@ if not b['admin'] or page == 'Ziektebriefjes':
     from contextlib import nullcontext
     from workforce.ui_sick_notes import show_sick_notes
     with tabs[4] if not b['admin'] else nullcontext():
-        show_sick_notes(api, token, branch_id, b['admin'], b['member'], tz, run)
+        show_sick_notes(api, token, branch_id, me['platform_admin'], b['member'], tz, run)
+
+if not b['admin'] or page == 'Afwezigheden':
+    from contextlib import nullcontext
+    from workforce.ui_absences import show_absences
+    with tabs[5] if not b['admin'] else nullcontext():
+        show_absences(api, token, branch_id, b['admin'], b['member'], tz, run)

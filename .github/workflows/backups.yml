@@ -1,0 +1,48 @@
+name: Encrypted database backup
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '15 1 * * *'
+permissions:
+  contents: read
+concurrency:
+  group: shiftflow-backup
+  cancel-in-progress: false
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      DATABASE_URL: ${{ secrets.BACKUP_DATABASE_URL }}
+      BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Check required configuration
+        run: |
+          test -n "$DATABASE_URL" || { echo "Set BACKUP_DATABASE_URL in repository Actions secrets"; exit 1; }
+          test -n "$BACKUP_PASSPHRASE" || { echo "Set BACKUP_PASSPHRASE in repository Actions secrets"; exit 1; }
+      - run: pip install --require-hashes -r requirements.lock
+      - name: Remove expired medical documents and record maintenance
+        run: python -m workforce.operations
+      - name: Create encrypted backup
+        run: python -m workforce.backup --output-dir /tmp/shiftflow-backups
+      - name: Store encrypted backup for seven days
+        uses: actions/upload-artifact@v4
+        with:
+          name: encrypted-database-backup-${{ github.run_id }}
+          path: /tmp/shiftflow-backups/*.dump.gpg
+          if-no-files-found: error
+          retention-days: 7
+      - name: Record successful storage
+        run: |
+          python - <<'PY'
+          from workforce.db import make_engine, sessions
+          from workforce.operations import record_event
+          record_event(sessions(make_engine()), 'backup', 'completed')
+          PY
+      - name: Remove temporary backup files
+        if: always()
+        run: rm -rf /tmp/shiftflow-backups

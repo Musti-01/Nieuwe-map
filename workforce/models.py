@@ -1,6 +1,6 @@
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from sqlalchemy import (String, ForeignKey, DateTime, Boolean, Integer, Index,
-                        CheckConstraint, ForeignKeyConstraint, LargeBinary, text)
+                        CheckConstraint, ForeignKeyConstraint, LargeBinary, Date, text)
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 class Base(DeclarativeBase):
@@ -54,11 +54,38 @@ class Membership(Base):
     role: Mapped[str] = mapped_column(String(20))
     __table_args__ = (CheckConstraint("role IN ('admin', 'employee', 'revoked')", name="valid_role"),)
 
+class Absence(Base):
+    __tablename__ = "absences"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    branch_id: Mapped[int] = mapped_column(Integer, index=True)
+    user_id: Mapped[int] = mapped_column(Integer, index=True)
+    kind: Mapped[str] = mapped_column(String(10))
+    starts_on: Mapped[date] = mapped_column(Date)
+    ends_on: Mapped[date] = mapped_column(Date)
+    status: Mapped[str] = mapped_column(String(12))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    reviewed_by: Mapped[int | None] = mapped_column(ForeignKey("users.id"))
+    __table_args__ = (
+        ForeignKeyConstraint(["branch_id", "user_id"], ["memberships.branch_id", "memberships.user_id"]),
+        CheckConstraint("ends_on >= starts_on", name="absence_interval"),
+        CheckConstraint("kind IN ('sick', 'leave')", name="absence_kind"),
+        CheckConstraint("status IN ('pending', 'approved', 'rejected', 'cancelled')", name="absence_status"),
+    )
+
+class SystemEvent(Base):
+    __tablename__ = "system_events"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    category: Mapped[str] = mapped_column(String(20))
+    code: Mapped[str] = mapped_column(String(80))
+    occurred_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True)
+
 class SickNote(Base):
     __tablename__ = "sick_notes"
     id: Mapped[int] = mapped_column(primary_key=True)
     branch_id: Mapped[int] = mapped_column(Integer, index=True)
     user_id: Mapped[int] = mapped_column(Integer, index=True)
+    absence_id: Mapped[int | None] = mapped_column(ForeignKey("absences.id"))
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     filename: Mapped[str] = mapped_column(String(120))
     media_type: Mapped[str] = mapped_column(String(40))
     content: Mapped[bytes] = mapped_column(LargeBinary)
@@ -130,6 +157,7 @@ class Notification(Base):
     body: Mapped[str] = mapped_column(String(2000))
     sent_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     attempts: Mapped[int] = mapped_column(Integer, default=0)
+    expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
 class ShiftReview(Base):
     __tablename__ = "shift_reviews"

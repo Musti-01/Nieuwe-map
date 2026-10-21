@@ -5,7 +5,7 @@ from sqlalchemy.exc import SQLAlchemyError
 
 def show_platform(api, token, me, run):
     labels = {"pending": "In afwachting", "approved": "Goedgekeurd", "rejected": "Geweigerd", "blocked": "Geblokkeerd"}
-    pages = ["Overzicht", "Aanvragen", "Besluitgeschiedenis", "Gebruikers", "Vestigingen beheren"]
+    pages = ["Overzicht", "Aanvragen", "Besluitgeschiedenis", "Gebruikers", "Vestigingen beheren", "Systeemstatus"]
     if me['platform_owner']:
         pages.append("Platformbeheerders")
     if st.session_state.get('platform_page') not in pages:
@@ -71,6 +71,9 @@ def show_platform(api, token, me, run):
     elif page == "Vestigingen beheren":
         from workforce.ui_branches import branch_management
         branch_management(api, token, run)
+    elif page == "Systeemstatus":
+        from workforce.ui_operations import show_operations
+        show_operations(api, token, run)
     elif page == "Gebruikers":
         from workforce.ui_accounts import account_management
         account_management(api, token, run)
@@ -88,5 +91,7 @@ def show_platform(api, token, me, run):
                     st.rerun()
                 except ValueError as exc:
                     st.error(tr(str(exc)))
-                except SQLAlchemyError:
+                except SQLAlchemyError as exc:
+                    from workforce.operations import report_error
+                    report_error(api.sessions, exc)
                     st.error(tr('Database niet beschikbaar.'))

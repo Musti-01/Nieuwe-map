@@ -3,6 +3,11 @@ import streamlit as st
 from workforce.i18n import tr
 
 ACTIONS = {
+    'absence.created': 'Afwezigheid gemeld',
+    'absence.approve': 'Afwezigheid goedgekeurd',
+    'absence.reject': 'Afwezigheid geweigerd',
+    'absence.cancel': 'Afwezigheid geannuleerd',
+    'sick_note.deleted': 'Ziektebrief verwijderd',
     'sick_note.uploaded': 'Ziektebrief ingediend',
     'sick_note.downloaded': 'Ziektebrief opgehaald',
     'approval.approve': 'Vestiging goedgekeurd',

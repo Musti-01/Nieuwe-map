@@ -19,11 +19,16 @@ def test_upload_list_and_download(api, team, suffix, format, mime):
     assert len(notes) == 1 and notes[0]['id'] == note_id
     assert notes[0]['filename'] == f'brief.{suffix}'
     assert 'content' not in notes[0]
-    for token in (team['wt'], team['ot'], team['pt']):
+    for token in (team['pt'],):
         assert api.download_sick_note(token, team['branch'], note_id) == {
             'filename': f'brief.{suffix}', 'media_type': mime, 'content': content}
     assert api.sick_notes(team['ot'], team['branch']) == []
-    assert api.sick_notes(team['ot'], team['branch'], team=True)[0]['id'] == note_id
+    with pytest.raises(Denied):
+        api.sick_notes(team['ot'], team['branch'], team=True)
+    assert api.sick_notes(team['pt'], team['branch'], team=True)[0]['id'] == note_id
+    for token in (team['wt'], team['ot']):
+        with pytest.raises(Denied):
+            api.download_sick_note(token, team['branch'], note_id)
     events = api.audit(team['ot'], team['branch'])
     assert any(e['actie'] == 'sick_note.uploaded' for e in events)
     assert any(e['actie'] == 'sick_note.downloaded' for e in events)
@@ -45,9 +50,13 @@ def test_isolation_and_live_access(api, team):
         api.download_sick_note(team['xt'], team['other_branch'], note_id)
     with pytest.raises(Denied):
         api.upload_sick_note(team['xt'], team['branch'], 'brief.pdf', attachment())
-    # Branch admins can read, but lose that access immediately after demotion.
+    # Branch admin rights never grant access to medical files.
     api.set_role(team['ot'], team['branch'], uid, 'admin')
+    with pytest.raises(Denied):
+        api.download_sick_note(colleague, team['branch'], note_id)
+    api.delegate_platform(team['pt'], 'colleague@example.test', True)
     assert api.download_sick_note(colleague, team['branch'], note_id)['content']
+    api.delegate_platform(team['pt'], 'colleague@example.test', False)
     api.set_role(team['ot'], team['branch'], uid, 'employee')
     with pytest.raises(Denied):
         api.download_sick_note(colleague, team['branch'], note_id)
@@ -87,6 +96,10 @@ def test_manager_and_employee_ui(api, team, engine, monkeypatch):
     app = app_for(team['ot'], engine, monkeypatch)
     app.radio(key=f"branch_page_{team['branch']}").set_value('Ziektebriefjes').run()
     assert not app.exception
+    assert not any(str(b.key).startswith('sick_note_fetch_') for b in app.button)
+    app = app_for(team['pt'], engine, monkeypatch)
+    next(r for r in app.radio if r.label == 'Werkruimte').set_value('Vestigingen').run()
+    app.radio(key=f"branch_page_{team['branch']}").set_value('Ziektebriefjes').run()
     app.button(key=f"sick_note_fetch_{team['branch']}_{note_id}").click().run()
     assert not app.exception
     assert len(app.get('download_button')) == 1

@@ -46,6 +46,8 @@ def test_invitation_authority_and_existing_identity(api,team,monkeypatch):
 def test_reset_is_generic_one_use_revokes_sessions_and_clears_lock(api,team,monkeypatch):
     monkeypatch.setenv('APP_BASE_URL','https://shiftflow.example')
     monkeypatch.setenv('EMAIL_DELIVERY_ENABLED','1')
+    monkeypatch.setenv('MAIL_FROM','platform@example.test')
+    monkeypatch.setenv('RESEND_API_KEY','test-key-no-network')
     assert api.request_password_reset('missing@example.test') is True
     assert api.request_password_reset('worker@example.test') is True
     with api.sessions() as s:
@@ -66,6 +68,8 @@ def test_reset_without_mail_and_expired_link(api,team,monkeypatch):
     with pytest.raises(ValueError,match='nog niet ingesteld'):
         api.request_password_reset('worker@example.test')
     monkeypatch.setenv('EMAIL_DELIVERY_ENABLED','1')
+    monkeypatch.setenv('MAIL_FROM','platform@example.test')
+    monkeypatch.setenv('RESEND_API_KEY','test-key-no-network')
     monkeypatch.setenv('APP_BASE_URL','https://shiftflow.example')
     api.request_password_reset('worker@example.test')
     with api.sessions.begin() as s:

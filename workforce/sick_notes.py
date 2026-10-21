@@ -2,10 +2,18 @@
 from io import BytesIO
 from pathlib import PurePosixPath
 import warnings
+import os
 from PIL import Image, UnidentifiedImageError
 
 MAX_SIZE = 5 * 1024 * 1024
 INVALID_FILE = 'Upload een geldig PDF-, PNG- of JPG-bestand van maximaal 5 MB.'
+
+
+def retention_days():
+    days = int(os.getenv('SICK_NOTE_RETENTION_DAYS', '30'))
+    if not 1 <= days <= 365:
+        raise ValueError('SICK_NOTE_RETENTION_DAYS must be between 1 and 365')
+    return days
 
 
 def validate_note(filename, content):

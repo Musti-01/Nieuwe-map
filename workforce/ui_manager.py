@@ -42,6 +42,8 @@ def show_manager_home(api, token, branch_id, page_key, run, tz):
         return
     snapshot = service.now()
     day = snapshot.astimezone(tz).date()
+    absences = run(lambda: api.absences(token, branch_id, team=True)) or []
+    absent = {a['user_id'] for a in absences if a['status'] == 'approved' and a['start'] <= day <= a['end']}
     begin = datetime.combine(day, time.min, tzinfo=tz)
     end = datetime.combine(day + timedelta(days=1), time.min, tzinfo=tz)
     today = [p for p in plans if p['status'] == 'scheduled' and p['start'] < end and p['end'] > begin]
@@ -50,6 +52,7 @@ def show_manager_home(api, token, branch_id, page_key, run, tz):
     rows = []
     for p in today:
         status = ('Afgesloten' if p['actual_end'] else 'Aan het werk' if p['entry_id'] is not None
+                  else 'Afwezig' if p['user_id'] in absent
                   else 'Niet geregistreerd' if p['end'] <= snapshot else 'Nog niet ingeklokt' if p['start'] <= snapshot
                   else 'Kan nu inklokken' if clock_in_allowed(p['start'], p['end'], snapshot, tz) else 'Start later')
         rows.append({tr('Medewerker'): p['name'], tr('Gepland begin'): p['start'].astimezone(tz).strftime('%d-%m %H:%M'),

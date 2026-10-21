@@ -32,7 +32,7 @@ def test_employee_shift_history_after_clock_out(api, team, engine, monkeypatch):
     api.clock_out(team['wt'], team['branch'])
     app = app_for(team['wt'], engine, monkeypatch)
     assert not app.exception
-    assert [tab.label for tab in app.tabs] == ['In- en uitklokken', 'Mijn shiften', 'Planning', 'Meldingen', 'Ziektebriefjes']
+    assert [tab.label for tab in app.tabs] == ['In- en uitklokken', 'Mijn shiften', 'Planning', 'Meldingen', 'Ziektebriefjes', 'Afwezigheden']
     assert app.dataframe
     assert app.dataframe[0].value.iloc[0]['Status'] == 'Wacht op controle'
     assert all(r.label != 'Platformonderdeel' for r in app.radio)

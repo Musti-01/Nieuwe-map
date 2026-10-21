@@ -56,25 +56,31 @@ tonen** maakt ook de gebruikers van gearchiveerde vestigingen bereikbaar.
 Accountdeactivering blijft een actie voor het volledige account, dus voor alle
 vestigingen; het formulier vermeldt dit expliciet.
 
-## Ziektebriefjes uploaden
+## Afwezigheden, wachtwoordherstel en veilig beheer
 
-Medewerkers openen **Ziektebriefjes** in hun vestiging en dienen een PDF-, PNG- of
-JPG-bestand van maximaal 5 MB in. Ze zien alleen hun eigen uploads. Gekoppelde
-beheerders kunnen ook hun eigen ziektebrief indienen. In **Vestigingsbeheer →
-Ziektebriefjes** zien bevoegde vestigingsadmins, organisatie-eigenaars en
-platformbeheerders de briefjes van die vestiging. Kies **Bestand ophalen** en
-daarna **Ziektebrief downloaden**. Iedere ophaalactie controleert de actuele
-sessie en rechten; uploaden en ophalen worden zonder bestandsinhoud of bestandsnaam
-in het auditlog geregistreerd.
+**Afwezigheden** laat medewerkers ziekte melden en verlof aanvragen met datums.
+Beheerders beoordelen verlof en zien afwezigheden en eventuele shiftconflicten in
+**Planning**. Goedgekeurde afwezigheid blokkeert nieuwe overlappende planning en
+inklokken in die vestiging; uitklokken blijft mogelijk.
 
-Migratie `0007` bewaart de documenten in PostgreSQL, samen met de medewerker,
-vestiging en uploadtijd. Voer vóór de appstart `alembic upgrade head` uit
-(automatisch via `scripts/start.sh` en op Community Cloud). Databasebackups
-bevatten dus ook deze documenten. Er staan geen documenten in de Git-checkout.
-De formaatcontrole controleert bestandssignaturen
-en verifieert afbeeldingen; dit is geen virusscan of volledige PDF-validatie.
-De documenten worden als download aangeboden, niet in de app weergegeven.
-Er is nog geen automatische bewaartermijn of verwijderfunctie voor briefjes.
+Bij **Ziektebriefjes** uploadt een medewerker een PDF, PNG of JPG van maximaal
+5 MB, gekoppeld aan een ziekmelding. Alleen **platformbeheerders** mogen medische
+documenten downloaden of verwijderen. Nieuwe documenten worden standaard
+30 dagen na upload of het einde van de ziekteperiode bewaard, afhankelijk van
+welke datum later valt. De termijn is configureerbaar; verlopen documenten zijn
+niet meer opvraagbaar en worden door de opschoning verwijderd.
+
+**Wachtwoord vergeten?** gebruikt eenmalige e-maillinks. Voor Streamlit Community
+Cloud ondersteunt de app Resend via HTTPS en een ingebouwde verzendworker;
+zonder geconfigureerde afzender en API-sleutel blijft herstel uitgeschakeld.
+**Platformdashboard → Systeemstatus** toont operationele gebeurtenissen en de
+laatste geregistreerde back-up. De dagelijkse back-upworkflow maakt versleutelde
+archieven met zeven dagen bewaring, nadat de Actions-secrets zijn ingesteld.
+
+Zie [de instructies voor activering en hersteltests](docs/OPERATIONS.md), inclusief
+Neon-instellingen, bewaartermijnen, veilige sleutelinvoer en beperkingen.
+Migratie `0008` voegt afwezigheden, vervaldatums en operationele registratie toe;
+`cloud_app.py` en `scripts/start.sh` voeren migraties automatisch uit.
 
 ## Tests en migraties
 
@@ -131,7 +137,7 @@ Gebruik een host die een langlopende Python- of Docker-service en WebSockets ond
 
 Streamlit-sessies gebruiken een per-verbinding token in server-side `session_state`; de database bewaart uitsluitend de tokenhash. Browserherladen/opnieuw verbinden kan opnieuw inloggen vereisen. Gebruik één appinstantie of sticky WebSocket-sessies bij schalen. Streamlit heeft geen volwaardige persistente SaaS-authcookie in deze MVP.
 
-Voor commerciële lancering ontbreken onder andere e-mailverificatie, geactiveerde e-mailverzending voor wachtwoordherstel, MFA voor beheerders, operationele registratie-/IP-rate-limiting, monitoring en een privacy-/retentiebeleid. Loginpogingen zijn nu begrensd per e-mailadres (vijf fouten per 15 minuten); dit vervangt geen platformbrede misbruikbescherming. Deze uitbreidingen worden niet zonder volgende opdracht ingebouwd.
+Voor commerciële lancering ontbreken onder andere e-mailverificatie, MFA voor beheerders, operationele registratie-/IP-rate-limiting, monitoring en een privacy-/retentiebeleid. Loginpogingen zijn nu begrensd per e-mailadres (vijf fouten per 15 minuten); dit vervangt geen platformbrede misbruikbescherming. Deze uitbreidingen worden niet zonder volgende opdracht ingebouwd.
 
 ## Architectuur en grenzen
 
@@ -160,19 +166,21 @@ Iedere beslissing bewaart beoordelaar, tijdstip, vorige/nieuwe status en reden i
 
 Migratie `0002` zet ook bestaande organisaties en vestigingen op **In afwachting**, zodat geen omgeving zonder expliciete goedkeuring doorgaat. Eerdere gegevens blijven behouden. Eerder geregistreerde aanvragen kunnen geen adres/telefoon hebben; het dashboard toont dit. Als er precies één eerder gebootstrapte platformbeheerder is, wordt die de platformeigenaar. Bij afwijkende oude data met meerdere platformbeheerders wijst de migratie bewust geen eigenaar aan; dat vereist een gecontroleerde operator-migratie. Nieuwe installaties gebruiken de bootstrap.
 
-### Optionele e-mail
+### E-mailverzending
 
-Ieder besluit maakt atomair een bericht aan in de PostgreSQL-wachtrij `notifications`. Een mailfout draait het besluit niet terug. Er zijn momenteel geen SMTP-credentials geconfigureerd en er zijn **geen echte mails verstuurd**.
+Besluiten, uitnodigingen en herstelverzoeken maken berichten aan in de
+PostgreSQL-wachtrij. Een mailfout draait een besluit niet terug. De app heeft een
+HTTPS-koppeling voor Resend en behoudt SMTP met TLS als alternatief. De ingebouwde
+worker draait zolang de app actief is; een externe geplande worker kan
+`.venv/bin/python -m workforce.mail` uitvoeren. Gelijktijdige workers gebruiken
+`SKIP LOCKED`. De HTTPS-route heeft idempotentiesleutels; bij SMTP kan een crash
+na verzending maar vóór commit alsnog een dubbele mail veroorzaken.
 
-Configureer bij jouw deploymenthost veilig `SMTP_HOST`, `SMTP_PORT` (465 of 587), `SMTP_USER`, `SMTP_PASSWORD` en `MAIL_FROM`. Gebruik een afzender die de mailprovider toestaat, met correct ingestelde SPF/DKIM. Zet credentials nooit in Git of chat. De worker controleert TLS-certificaten: SMTP_SSL op 465 of STARTTLS op 587; onversleutelde SMTP wordt geweigerd.
-
-```bash
-.venv/bin/python -m workforce.mail
-```
-
-Plan dit commando bijvoorbeeld iedere minuut als job op dezelfde deployment met toegang tot PostgreSQL en SMTP. Per uitvoering worden maximaal 20 berichten verwerkt; mislukte berichten blijven in de wachtrij. Alleen tellingen verschijnen in de uitvoer. Gelijktijdige workers gebruiken `SKIP LOCKED`. Bij een crash na verzending maar vóór databasecommit kan een bericht nogmaals verzonden worden (at least once). Monitor mislukte pogingen en beperk retries bij langdurige providerproblemen voordat je dit commercieel gebruikt.
-
-De mailworker is getest met een nagebootste SMTP-client, inclusief TLS en retry. Echte aflevering is pas te valideren na veilige configuratie bij jouw host. Voor de cloud-onboarding zijn de platformbindings voor HTTPS-proxysecrets geen vervanging voor een echte SMTP-login; configureer SMTP bij de uiteindelijke deploymenthost.
+Aflevering vereist een echte geverifieerde afzender en veilig ingestelde
+credentials. De tests gebruiken nagebootste maildiensten en bewijzen geen live
+bezorging. Zie [OPERATIONS.md](docs/OPERATIONS.md) voor de instellingen en een
+bezorgtest. Fouten worden begrensd opnieuw geprobeerd; de systeemstatus toont
+verzendgebeurtenissen zonder berichtinhoud.
 
 ## Duidelijke navigatie en shiftoverzicht
 
@@ -213,13 +221,12 @@ APP_BASE_URL = "https://jouw-eigen-app.streamlit.app"
 
 Dit bevat geen credential. Maak geen link op basis van een onbetrouwbare browserheader. Uitnodigingen kunnen daarna direct handmatig gedeeld worden. Tokens worden in de tokentabel alleen gehasht opgeslagen. De beveiligde notificatiewachtrij bevat de uitgaande links om ze te kunnen mailen; beperk toegang tot de database en log deze berichten nooit.
 
-**Echte e-mailverzending is niet automatisch actief.** Configureer en test eerst de SMTP-worker zoals hierboven beschreven. Deze worker draait op een aparte vertrouwde host of geplande job met dezelfde database. Streamlit Community Cloud voert geen achtergrondcron voor deze app uit. Stel pas nadat de worker aantoonbaar verzendt bij Streamlit in:
-
-```toml
-EMAIL_DELIVERY_ENABLED = "1"
-```
-
-Laat deze vlag weg zolang de worker niet werkt. SMTP-credentials horen alleen bij de verzendworker, niet in gedeelde links, code of chat. Automatische herstelmail is niet live gevalideerd zonder die configuratie. Een ingelogde gebruiker kan het wachtwoord wijzigen zonder SMTP.
+**Echte e-mailverzending is niet automatisch actief.** Configureer een
+geverifieerde afzender en Resend-API-sleutel bij Streamlit Secrets en zet
+`EMAIL_DELIVERY_ENABLED = "1"`. Doorloop daarna een echte hersteltest. De
+achtergrondworker verzendt alleen zolang de app actief is. Geheimen horen nooit
+in Git, gedeelde links of chat. Een ingelogde gebruiker kan het wachtwoord
+wijzigen zonder e-maildienst. Zie [OPERATIONS.md](docs/OPERATIONS.md).
 
 ### Shiftplanning
 
