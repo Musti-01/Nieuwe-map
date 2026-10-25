@@ -16,7 +16,7 @@ from workforce.ui_design import apply_design, brand, welcome
 apply_design()
 
 @st.cache_resource
-def backend_engine(schema_revision="0008"):
+def backend_engine(schema_revision="0009"):
     engine = make_engine()
     if os.getenv('AUTO_MIGRATE') == '1':
         from workforce.hosting import migrate
@@ -190,6 +190,8 @@ if b['status'] != 'approved' or b['organization_status'] != 'approved':
 st.caption(tr('{v0} · {v1}', v0=b['organization'], v1=tr('Organisatie-eigenaar' if b['owner'] else 'Vestigingsadmin' if b['admin'] else 'Medewerker')))
 if b['admin']:
     pages = ['Overzicht', 'Medewerkers toevoegen', 'Medewerkers & rechten', 'Planning', 'Afwezigheden', 'Werkuren', 'Shiften controleren', 'Meldingen', 'Ziektebriefjes', 'Auditlog']
+    if b['owner']:
+        pages.insert(pages.index('Werkuren')+1, 'Lonen')
     if b['member']:
         pages.append('Mijn werktijd')
     page_key = f"branch_page_{branch_id}"
@@ -209,7 +211,7 @@ except Exception:
 
 if b['admin'] and page == 'Overzicht':
     from workforce.ui_manager import show_manager_home
-    show_manager_home(api, token, branch_id, page_key, run, tz)
+    show_manager_home(api, token, branch_id, page_key, run, tz, owner=b['owner'])
 if b['admin'] and page == 'Medewerkers toevoegen':
     st.subheader(tr('Medewerkers toevoegen'))
     st.write(tr('Nodig een nieuwe medewerker uit via e-mail. Heeft de medewerker al een account? Koppel die via Medewerkers & rechten.'))
@@ -313,6 +315,10 @@ if b['admin'] and page == 'Shiften controleren':
         st.stop()
     from workforce.ui_review import show_reviews
     show_reviews(api, token, branch_id, team, me, tz, run)
+
+if b['owner'] and page == 'Lonen':
+    from workforce.ui_payroll import show_payroll
+    show_payroll(api, token, branch_id, tz, run)
 
 if b['admin'] and page == 'Medewerkers & rechten':
     st.subheader(tr('Medewerkers & bevoegdheden'))

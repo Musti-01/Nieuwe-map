@@ -3,6 +3,7 @@ import streamlit as st
 from workforce.i18n import tr
 
 ACTIONS = {
+    'salary.changed': 'Looninstelling gewijzigd',
     'absence.created': 'Afwezigheid gemeld',
     'absence.approve': 'Afwezigheid goedgekeurd',
     'absence.reject': 'Afwezigheid geweigerd',

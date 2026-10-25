@@ -1,6 +1,7 @@
 from datetime import date, datetime, timezone
+from decimal import Decimal
 from sqlalchemy import (String, ForeignKey, DateTime, Boolean, Integer, Index,
-                        CheckConstraint, ForeignKeyConstraint, LargeBinary, Date, text)
+                        CheckConstraint, ForeignKeyConstraint, LargeBinary, Date, Numeric, UniqueConstraint, text)
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 class Base(DeclarativeBase):
@@ -53,6 +54,26 @@ class Membership(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), primary_key=True)
     role: Mapped[str] = mapped_column(String(20))
     __table_args__ = (CheckConstraint("role IN ('admin', 'employee', 'revoked')", name="valid_role"),)
+
+class SalaryRate(Base):
+    __tablename__ = "salary_rates"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    branch_id: Mapped[int] = mapped_column(Integer, index=True)
+    user_id: Mapped[int] = mapped_column(Integer, index=True)
+    kind: Mapped[str] = mapped_column(String(10))
+    basis: Mapped[str] = mapped_column(String(10))
+    amount: Mapped[Decimal] = mapped_column(Numeric(12, 2))
+    effective_from: Mapped[date] = mapped_column(Date)
+    changed_by: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    changed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    __table_args__ = (
+        ForeignKeyConstraint(["branch_id", "user_id"], ["memberships.branch_id", "memberships.user_id"]),
+        UniqueConstraint('branch_id', 'user_id', 'effective_from', name='salary_rate_month'),
+        CheckConstraint("kind IN ('hourly', 'monthly')", name="salary_kind"),
+        CheckConstraint("basis IN ('gross', 'net')", name="salary_basis"),
+        CheckConstraint("amount > 0 AND amount <= 1000000", name="salary_amount"),
+        CheckConstraint("EXTRACT(DAY FROM effective_from) = 1", name="salary_effective_month"),
+    )
 
 class Absence(Base):
     __tablename__ = "absences"

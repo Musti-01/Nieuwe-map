@@ -7,7 +7,7 @@ from workforce.i18n import tr
 from workforce.ui_navigation import open_shift_review
 
 
-def show_manager_home(api, token, branch_id, page_key, run, tz):
+def show_manager_home(api, token, branch_id, page_key, run, tz, owner=False):
     st.subheader(tr('Jouw vestiging beheren'))
     st.write(tr('Wat wil je doen? Kies hieronder een actie.'))
 
@@ -34,6 +34,9 @@ def show_manager_home(api, token, branch_id, page_key, run, tz):
         ('Meldingen', 'Bekijk vergeten uitklokacties en openstaande controles.'),
     ]
     icons = ['person_add', 'calendar_month', 'group', 'schedule', 'fact_check', 'notifications']
+    if owner:
+        actions.append(('Lonen', 'Stel loonafspraken in en bereken het maandloon per medewerker.'))
+        icons.append('payments')
     with st.container(key='sf_manager_actions'):
         for offset in range(0, len(actions), 2):
             for i, (col, (target, explanation)) in enumerate(zip(st.columns(2), actions[offset:offset+2])):

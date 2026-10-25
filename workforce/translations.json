@@ -3400,5 +3400,227 @@
     "en": "Assign trusted administrators or revoke their permissions.",
     "de": "Ernenne vertrauenswürdige Verwalter oder entziehe ihre Rechte.",
     "es": "Asigna administradores de confianza o revoca sus permisos."
+  },
+  "Lonen": {
+    "fr": "Salaires",
+    "en": "Pay",
+    "de": "Löhne",
+    "es": "Salarios"
+  },
+  "Bereken het maandloon per medewerker op basis van de loonafspraak en goedgekeurde uren.": {
+    "fr": "Calculez le salaire mensuel par employé selon l'accord salarial et les heures approuvées.",
+    "en": "Calculate monthly pay per employee using the pay agreement and approved hours.",
+    "de": "Berechne den Monatslohn je Mitarbeiter anhand der Lohnvereinbarung und genehmigter Stunden.",
+    "es": "Calcula el salario mensual de cada empleado según lo acordado y las horas aprobadas."
+  },
+  "Loonmaand": {
+    "fr": "Mois de paie",
+    "en": "Pay month",
+    "de": "Lohnmonat",
+    "es": "Mes de nómina"
+  },
+  "Overzicht voor {v0}.": {
+    "fr": "Aperçu pour {v0}.",
+    "en": "Overview for {v0}.",
+    "de": "Übersicht für {v0}.",
+    "es": "Resumen de {v0}."
+  },
+  "Bruto basisloon": {
+    "fr": "Salaire de base brut",
+    "en": "Gross base pay",
+    "de": "Bruttogrundlohn",
+    "es": "Salario base bruto"
+  },
+  "Netto volgens afspraak": {
+    "fr": "Net selon l'accord",
+    "en": "Net pay as agreed",
+    "de": "Netto laut Vereinbarung",
+    "es": "Neto según lo acordado"
+  },
+  "Loonafspraak": {
+    "fr": "Accord salarial",
+    "en": "Pay agreement",
+    "de": "Lohnvereinbarung",
+    "es": "Acuerdo salarial"
+  },
+  "Basis": {
+    "fr": "Base",
+    "en": "Basis",
+    "de": "Basis",
+    "es": "Base"
+  },
+  "Tarief": {
+    "fr": "Tarif",
+    "en": "Rate",
+    "de": "Satz",
+    "es": "Tarifa"
+  },
+  "Lopende uren": {
+    "fr": "Heures en cours",
+    "en": "Ongoing hours",
+    "de": "Laufende Stunden",
+    "es": "Horas en curso"
+  },
+  "Te betalen volgens afspraak": {
+    "fr": "À payer selon l'accord",
+    "en": "Payable as agreed",
+    "de": "Laut Vereinbarung zu zahlen",
+    "es": "A pagar según lo acordado"
+  },
+  "Uurloon": {
+    "fr": "Salaire horaire",
+    "en": "Hourly pay",
+    "de": "Stundenlohn",
+    "es": "Salario por hora"
+  },
+  "Vast maandloon": {
+    "fr": "Salaire mensuel fixe",
+    "en": "Fixed monthly pay",
+    "de": "Fester Monatslohn",
+    "es": "Salario mensual fijo"
+  },
+  "Bruto": {
+    "fr": "Brut",
+    "en": "Gross",
+    "de": "Brutto",
+    "es": "Bruto"
+  },
+  "Netto afgesproken": {
+    "fr": "Net convenu",
+    "en": "Agreed net",
+    "de": "Netto vereinbart",
+    "es": "Neto acordado"
+  },
+  "Loon nog niet ingesteld": {
+    "fr": "Salaire non configuré",
+    "en": "Pay not configured",
+    "de": "Lohn noch nicht festgelegt",
+    "es": "Salario sin configurar"
+  },
+  "Controleer contract": {
+    "fr": "Vérifiez le contrat",
+    "en": "Check contract",
+    "de": "Vertrag prüfen",
+    "es": "Revisar contrato"
+  },
+  "Uren wachten op controle": {
+    "fr": "Heures en attente de contrôle",
+    "en": "Hours awaiting review",
+    "de": "Stunden warten auf Prüfung",
+    "es": "Horas pendientes de revisión"
+  },
+  "Berekend": {
+    "fr": "Calculé",
+    "en": "Calculated",
+    "de": "Berechnet",
+    "es": "Calculado"
+  },
+  "Voor sommige medewerkers ontbreekt een loonafspraak. Hun loon is niet opgenomen in de totalen.": {
+    "fr": "Certains employés n'ont pas d'accord salarial. Leur salaire est exclu des totaux.",
+    "en": "Some employees have no pay agreement. Their pay is excluded from the totals.",
+    "de": "Für einige Mitarbeiter fehlt eine Lohnvereinbarung. Ihr Lohn ist nicht in den Summen enthalten.",
+    "es": "Algunos empleados no tienen acuerdo salarial. Su salario no está incluido en los totales."
+  },
+  "Lopende en niet-goedgekeurde uren tellen nog niet mee. Controleer deze uren om het loonoverzicht aan te vullen.": {
+    "fr": "Les heures en cours ou non approuvées sont exclues. Vérifiez-les pour compléter le récapitulatif.",
+    "en": "Ongoing and unapproved hours are not included yet. Review them to complete the pay overview.",
+    "de": "Laufende und nicht genehmigte Stunden zählen noch nicht. Prüfe sie, um die Lohnübersicht zu vervollständigen.",
+    "es": "Las horas en curso y sin aprobar aún no se incluyen. Revísalas para completar el resumen salarial."
+  },
+  "Uurloon: goedgekeurde uren × tarief. Vast maandloon: het afgesproken maandbedrag, zonder automatische verrekening van ziekte, verlof of een onvolledige maand.": {
+    "fr": "Salaire horaire : heures approuvées × tarif. Salaire mensuel fixe : montant convenu, sans ajustement automatique pour maladie, congé ou mois incomplet.",
+    "en": "Hourly pay: approved hours × rate. Fixed monthly pay: the agreed monthly amount, without automatic adjustments for sickness, leave or a partial month.",
+    "de": "Stundenlohn: genehmigte Stunden × Satz. Fester Monatslohn: vereinbarter Monatsbetrag, ohne automatische Anpassung für Krankheit, Urlaub oder Teilmonate.",
+    "es": "Salario por hora: horas aprobadas × tarifa. Salario mensual fijo: importe acordado, sin ajustes automáticos por enfermedad, vacaciones o meses incompletos."
+  },
+  "Dit is een loonberekening volgens afspraak. Belastingen, bijdragen, toeslagen en bankoverschrijvingen worden niet automatisch uitgevoerd. Bruto bedragen zijn geen netto uitbetaling.": {
+    "fr": "Ce calcul suit l'accord salarial. Impôts, cotisations, primes et virements ne sont pas automatiques. Les montants bruts ne sont pas des paiements nets.",
+    "en": "This calculation follows the pay agreement. Taxes, contributions, allowances and bank transfers are not automatic. Gross amounts are not net payouts.",
+    "de": "Diese Berechnung folgt der Lohnvereinbarung. Steuern, Beiträge, Zuschläge und Überweisungen erfolgen nicht automatisch. Bruttobeträge sind keine Nettoauszahlung.",
+    "es": "Este cálculo sigue el acuerdo salarial. Los impuestos, cotizaciones, complementos y transferencias no son automáticos. Los importes brutos no son pagos netos."
+  },
+  "Loon per medewerker instellen": {
+    "fr": "Définir le salaire par employé",
+    "en": "Set pay per employee",
+    "de": "Lohn je Mitarbeiter festlegen",
+    "es": "Establecer salario por empleado"
+  },
+  "Medewerker voor looninstelling": {
+    "fr": "Employé pour l'accord salarial",
+    "en": "Employee for pay settings",
+    "de": "Mitarbeiter für Lohneinstellung",
+    "es": "Empleado para configurar salario"
+  },
+  "Bedrag is": {
+    "fr": "Le montant est",
+    "en": "Amount is",
+    "de": "Betrag ist",
+    "es": "El importe es"
+  },
+  "Afgesproken bedrag in euro": {
+    "fr": "Montant convenu en euros",
+    "en": "Agreed amount in euros",
+    "de": "Vereinbarter Betrag in Euro",
+    "es": "Importe acordado en euros"
+  },
+  "De afspraak gaat in op de eerste dag van de geselecteerde loonmaand en blijft gelden tot een nieuwe afspraak.": {
+    "fr": "L'accord prend effet le premier jour du mois choisi jusqu'à un nouvel accord.",
+    "en": "The agreement starts on the first day of the selected pay month and applies until replaced.",
+    "de": "Die Vereinbarung gilt ab dem ersten Tag des gewählten Lohnmonats bis zu einer neuen Vereinbarung.",
+    "es": "El acuerdo entra en vigor el primer día del mes seleccionado y se mantiene hasta un nuevo acuerdo."
+  },
+  "Loonafspraak opslaan": {
+    "fr": "Enregistrer l'accord salarial",
+    "en": "Save pay agreement",
+    "de": "Lohnvereinbarung speichern",
+    "es": "Guardar acuerdo salarial"
+  },
+  "Loonafspraak opgeslagen.": {
+    "fr": "Accord salarial enregistré.",
+    "en": "Pay agreement saved.",
+    "de": "Lohnvereinbarung gespeichert.",
+    "es": "Acuerdo salarial guardado."
+  },
+  "Stel loonafspraken in en bereken het maandloon per medewerker.": {
+    "fr": "Définissez les accords salariaux et calculez le salaire mensuel par employé.",
+    "en": "Set pay agreements and calculate monthly pay per employee.",
+    "de": "Lege Lohnvereinbarungen fest und berechne den Monatslohn je Mitarbeiter.",
+    "es": "Establece acuerdos salariales y calcula el salario mensual de cada empleado."
+  },
+  "Looninstelling gewijzigd": {
+    "fr": "Accord salarial modifié",
+    "en": "Pay setting changed",
+    "de": "Lohneinstellung geändert",
+    "es": "Configuración salarial modificada"
+  },
+  "Geef een positief loonbedrag met maximaal twee decimalen en maximaal 1.000.000 euro.": {
+    "fr": "Indiquez un montant positif avec deux décimales maximum et au plus 1 000 000 euros.",
+    "en": "Enter a positive pay amount with at most two decimals and no more than 1,000,000 euros.",
+    "de": "Gib einen positiven Lohnbetrag mit höchstens zwei Dezimalstellen und maximal 1.000.000 Euro ein.",
+    "es": "Introduce un salario positivo con un máximo de dos decimales y de 1.000.000 euros."
+  },
+  "Kies uurloon of vast maandloon.": {
+    "fr": "Choisissez un salaire horaire ou mensuel fixe.",
+    "en": "Choose hourly or fixed monthly pay.",
+    "de": "Wähle Stundenlohn oder festen Monatslohn.",
+    "es": "Elige salario por hora o mensual fijo."
+  },
+  "Kies uurloon of vast maandloon en bruto of netto afgesproken.": {
+    "fr": "Choisissez un salaire horaire ou mensuel fixe, et brut ou net convenu.",
+    "en": "Choose hourly or fixed monthly pay and gross or agreed net.",
+    "de": "Wähle Stundenlohn oder festen Monatslohn und brutto oder vereinbartes netto.",
+    "es": "Elige salario por hora o mensual fijo y bruto o neto acordado."
+  },
+  "Kies de eerste dag van een geldige loonmaand.": {
+    "fr": "Choisissez le premier jour d'un mois de paie valide.",
+    "en": "Choose the first day of a valid pay month.",
+    "de": "Wähle den ersten Tag eines gültigen Lohnmonats.",
+    "es": "Elige el primer día de un mes de nómina válido."
+  },
+  "Bij voormalige medewerkers met maandloon is contractcontrole nodig. Hun bedrag is niet in de totalen opgenomen.": {
+    "fr": "Pour les anciens employés au salaire mensuel, vérifiez le contrat. Leur montant est exclu des totaux.",
+    "en": "Former employees with monthly pay need a contract check. Their amount is excluded from the totals.",
+    "de": "Bei ehemaligen Mitarbeitern mit Monatslohn muss der Vertrag geprüft werden. Ihr Betrag ist nicht in den Summen enthalten.",
+    "es": "Los antiguos empleados con salario mensual requieren revisar su contrato. Su importe no se incluye en los totales."
   }
 }

@@ -12,7 +12,7 @@ from argon2.exceptions import VerificationError, InvalidHashError
 from sqlalchemy import select, or_, text, delete
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.dialects.postgresql import insert
-from workforce.models import User, Organization, Branch, Membership, WorkEntry, AuthSession, LoginLimit, Audit, ApprovalDecision, Notification, ShiftReview, AccountToken, ShiftPlan, SickNote, Absence, SystemEvent
+from workforce.models import User, Organization, Branch, Membership, WorkEntry, AuthSession, LoginLimit, Audit, ApprovalDecision, Notification, ShiftReview, AccountToken, ShiftPlan, SickNote, Absence, SystemEvent, SalaryRate
 
 hasher = PasswordHasher()
 DUMMY_HASH = hasher.hash(secrets.token_urlsafe(32))
@@ -247,6 +247,72 @@ class Service:
             return {'mail_configured': mail_configured() and os.getenv('EMAIL_DELIVERY_ENABLED') == '1',
                     'last_backup': s.scalar(select(SystemEvent.occurred_at).where(SystemEvent.category == 'backup', SystemEvent.code == 'completed').order_by(SystemEvent.occurred_at.desc()).limit(1)),
                     'events': [dict(category=e.category, code=e.code, time=e.occurred_at) for e in events]}
+
+    def set_salary_rate(self, token, branch_id, user_id, kind, amount, basis, effective_from):
+        from workforce.payroll import salary_amount
+        amount = salary_amount(amount)
+        if kind not in ('hourly', 'monthly') or basis not in ('gross', 'net'):
+            raise ValueError('Kies uurloon of vast maandloon en bruto of netto afgesproken.')
+        if type(effective_from) is not date or effective_from.day != 1 or not 2000 <= effective_from.year <= 2100:
+            raise ValueError('Kies de eerste dag van een geldige loonmaand.')
+        with self.sessions.begin() as s:
+            actor = self._actor(s, token)
+            self._access(s, actor, branch_id, owner=True, lock=True)
+            target = s.get(User, user_id, populate_existing=True)
+            membership = s.get(Membership, (branch_id, user_id), populate_existing=True)
+            if not target or not target.is_active or not membership or membership.role == 'revoked':
+                raise ValueError('Kies een actieve medewerker van deze vestiging.')
+            rate = s.scalar(select(SalaryRate).where(SalaryRate.branch_id == branch_id,
+                            SalaryRate.user_id == user_id, SalaryRate.effective_from == effective_from))
+            if rate is None:
+                rate = SalaryRate(branch_id=branch_id, user_id=user_id, effective_from=effective_from)
+                s.add(rate)
+            rate.kind, rate.amount, rate.basis = kind, amount, basis
+            rate.changed_by, rate.changed_at = actor.id, now()
+            s.flush()
+            # The branch audit is visible to ordinary admins: never put amounts there.
+            self._audit(s, actor, branch_id, 'salary.changed', f'user={user_id}; effective={effective_from.isoformat()}')
+            return rate.id
+
+    def monthly_payroll(self, token, branch_id, day):
+        from decimal import Decimal
+        from workforce.payroll import elapsed_seconds, base_pay
+        from workforce.reports import period_bounds
+        if type(day) is not date or not 2000 <= day.year <= 2100:
+            raise ValueError('Kies de eerste dag van een geldige loonmaand.')
+        month = day.replace(day=1)
+        begin, end = period_bounds(month, 'Maand', os.getenv('APP_TIMEZONE', 'Europe/Brussels'))
+        with self.sessions.begin() as s:
+            actor = self._actor(s, token)
+            self._access(s, actor, branch_id, owner=True, lock=True)
+            rates = {}
+            for rate in s.scalars(select(SalaryRate).where(SalaryRate.branch_id == branch_id,
+                                 SalaryRate.effective_from <= month).order_by(SalaryRate.effective_from.desc())):
+                rates.setdefault(rate.user_id, rate)
+            totals = {}
+            for entry in s.scalars(select(WorkEntry).where(WorkEntry.branch_id == branch_id,
+                                   WorkEntry.started_at < end, or_(WorkEntry.ended_at.is_(None), WorkEntry.ended_at > begin))):
+                start = max(entry.started_at, begin)
+                stop = min(entry.ended_at or now(), end)
+                if stop <= start:
+                    continue
+                key = 'approved' if entry.ended_at is not None and entry.review_status == 'approved' else 'active' if entry.ended_at is None else 'pending'
+                values = totals.setdefault(entry.user_id, dict(approved=Decimal(0), pending=Decimal(0), active=Decimal(0)))
+                values[key] += elapsed_seconds(start, stop)
+            result = []
+            for user, membership in s.execute(select(User, Membership).join(Membership).where(Membership.branch_id == branch_id).order_by(User.name, User.id)):
+                active = user.is_active and membership.role != 'revoked'
+                seconds = totals.get(user.id, dict(approved=Decimal(0), pending=Decimal(0), active=Decimal(0)))
+                if not active and user.id not in totals:
+                    continue
+                rate = rates.get(user.id)
+                needs_contract_check = bool(rate and rate.kind == 'monthly' and not active)
+                amount = base_pay(rate.kind, rate.amount, seconds['approved']) if rate and not needs_contract_check else None
+                result.append(dict(user_id=user.id, name=user.name, email=user.email, active=active,
+                    approved_hours=seconds['approved']/Decimal(3600), pending_hours=seconds['pending']/Decimal(3600),
+                    active_hours=seconds['active']/Decimal(3600), amount=amount, needs_contract_check=needs_contract_check,
+                    rate=dict(id=rate.id, kind=rate.kind, basis=rate.basis, amount=rate.amount, effective_from=rate.effective_from) if rate else None))
+            return result
 
     def logout(self, token):
         with self.sessions.begin() as s:
@@ -773,6 +839,7 @@ class Service:
         elif owner and target.is_active:
             blocked = 'Dit account is eigenaar van een organisatie. Blokkeer de organisatie via Aanvragen; eigendomsoverdracht is nog niet beschikbaar.'
         references = [
+            select(SalaryRate.id).where(or_(SalaryRate.user_id == target.id, SalaryRate.changed_by == target.id)),
             select(SickNote.id).where(SickNote.user_id == target.id),
             select(Absence.id).where(or_(Absence.user_id == target.id, Absence.reviewed_by == target.id)),
             select(WorkEntry.id).where(or_(WorkEntry.user_id == target.id, WorkEntry.reviewed_by == target.id)),

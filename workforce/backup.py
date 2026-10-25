@@ -8,6 +8,8 @@ import tempfile
 import uuid
 from sqlalchemy import text, inspect
 from sqlalchemy.engine import make_url
+from alembic.config import Config
+from alembic.script import ScriptDirectory
 from workforce.db import make_engine
 
 
@@ -96,8 +98,10 @@ def verify_restore(archive, target_url, passphrase):
         with engine.connect() as connection:
             revision = connection.scalar(text('SELECT version_num FROM alembic_version'))
             counts = {table: connection.scalar(text(f'SELECT count(*) FROM {table}'))
-                      for table in ('users', 'branches', 'work_entries', 'absences', 'sick_notes')}
-        if revision != '0008':
+                      for table in ('users', 'branches', 'work_entries', 'absences', 'sick_notes', 'salary_rates')}
+        config = Config()
+        config.set_main_option('script_location', str(Path(__file__).resolve().parent.parent / 'migrations'))
+        if revision != ScriptDirectory.from_config(config).get_current_head():
             raise RuntimeError('Restored schema version did not match')
         return counts
     finally:

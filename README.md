@@ -82,6 +82,43 @@ Neon-instellingen, bewaartermijnen, veilige sleutelinvoer en beperkingen.
 Migratie `0008` voegt afwezigheden, vervaldatums en operationele registratie toe;
 `cloud_app.py` en `scripts/start.sh` voeren migraties automatisch uit.
 
+## Maandloon berekenen
+
+Kies als organisatie-eigenaar of platformbeheerder een vestiging en open **Lonen**.
+Selecteer een loonmaand en stel onder **Loon per medewerker instellen** per persoon
+een **uurloon** of **vast maandloon** in. Geef ook aan of het afgesproken bedrag
+bruto of netto is. Er staat vooraf geen verzonnen loonbedrag ingevuld.
+
+Een uurloon wordt vermenigvuldigd met de **goedgekeurde, afgesloten uren** in de
+geselecteerde maand. Diensten over een maandgrens tellen alleen voor het gedeelte
+binnen de maand. De berekening gebruikt werkelijk verstreken tijd, inclusief
+zomer-/wintertijd, en rondt pas het eindbedrag af op eurocenten. Lopende en
+niet-goedgekeurde uren staan apart en worden nog niet in het bedrag meegerekend.
+
+Een vast maandloon toont het volledige afgesproken maandbedrag. Contracturen,
+ziekte, verlof en een gedeeltelijke maand worden hierbij niet automatisch
+verrekend. Controleer dit met je sociaal secretariaat. Voormalige medewerkers
+met geregistreerde uren en een vast maandloon krijgen een contractwaarschuwing
+in plaats van een automatisch berekend bedrag; historische goedgekeurde uren
+bij een uurloon blijven wel meetellen.
+
+De afspraak geldt vanaf de eerste dag van de gekozen maand tot de volgende
+loonafspraak. Een nieuw tarief vanaf november laat het oktober-tarief behouden.
+Een correctie van de afspraak voor dezelfde ingangsmaand vervangt die afspraak;
+maandoverzichten worden steeds opnieuw uit de actuele tarieven en goedgekeurde
+uren berekend. Dit zijn berekeningen, geen vastgezette loonfiches of betaalbewijzen.
+Bruto en netto volgens afspraak hebben aparte totalen; een ontbrekend tarief
+wordt gemeld en levert geen fictief bedrag van nul op.
+
+Alleen organisatie-eigenaars en platformbeheerders kunnen loonbedragen instellen
+en zien. Gewone vestigingsadmins en medewerkers krijgen hiervoor geen toegang,
+ook niet via de servicelaag. De gedeelde auditgeschiedenis vermeldt dat een
+loonafspraak veranderde, zonder het bedrag. De back-up bevat ook looninstellingen.
+
+Migratie `0009` voegt de loonafspraken toe. Er vindt geen automatische
+bruto-nettoberekening, inhouding, toeslagberekening of bankoverschrijving plaats.
+Het overzicht dient als basis voor de uiteindelijke loonverwerking en uitbetaling.
+
 ## Tests en migraties
 
 Tests wissen tabellen in de opgegeven testdatabase. Gebruik uitsluitend een afzonderlijke, wegwerpbare database waarvan de naam op `_test` eindigt, nooit een klanten- of productiedatabase.
