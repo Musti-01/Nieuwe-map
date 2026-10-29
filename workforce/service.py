@@ -12,7 +12,7 @@ from argon2.exceptions import VerificationError, InvalidHashError
 from sqlalchemy import select, or_, text, delete
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.dialects.postgresql import insert
-from workforce.models import User, Organization, Branch, Membership, WorkEntry, AuthSession, LoginLimit, Audit, ApprovalDecision, Notification, ShiftReview, AccountToken, ShiftPlan, SickNote, Absence, SystemEvent, SalaryRate
+from workforce.models import User, Organization, Branch, Membership, WorkEntry, AuthSession, LoginLimit, Audit, ApprovalDecision, Notification, ShiftReview, AccountToken, ShiftPlan, SickNote, Absence, SystemEvent, SalaryRate, Availability
 
 hasher = PasswordHasher()
 DUMMY_HASH = hasher.hash(secrets.token_urlsafe(32))
@@ -933,6 +933,50 @@ class Service:
                     self._audit(s,actor,entry.branch_id,'clock.closed_by_deactivation',f'entry={entry.id}; user={target.id}')
                 s.execute(delete(AuthSession).where(AuthSession.user_id==target.id))
             self._audit(s,actor,None,'account.reactivated' if enabled else 'account.deactivated',f'user={target.id}; reason={reason}')
+            return True
+
+
+    def availability(self, token, branch_id, team=False):
+        with self.sessions.begin() as s:
+            actor = self._actor(s, token)
+            self._access(s, actor, branch_id, admin=team)
+            q = select(Availability, User.name).join(User, User.id == Availability.user_id).where(
+                Availability.branch_id == branch_id, Availability.ends_at >= now())
+            if not team:
+                q = q.where(Availability.user_id == actor.id)
+            return [dict(id=a.id, user_id=a.user_id, name=name, start=a.starts_at, end=a.ends_at)
+                    for a, name in s.execute(q.order_by(Availability.starts_at))]
+
+    def add_availability(self, token, branch_id, start, end):
+        if not all(isinstance(v, datetime) and v.tzinfo is not None and v.utcoffset() is not None for v in (start, end)):
+            raise ValueError("Geef begin- en eindtijd met tijdzone op.")
+        if start >= end or start < now() or end - start > timedelta(hours=24):
+            raise ValueError("Kies een toekomstig tijdsblok van maximaal 24 uur.")
+        with self.sessions.begin() as s:
+            actor = self._actor(s, token)
+            self._access(s, actor, branch_id, lock=True)
+            m = s.get(Membership, (branch_id, actor.id))
+            if not m or m.role == "revoked":
+                raise Denied("Alleen gekoppelde medewerkers kunnen beschikbaarheid opgeven.")
+            if s.scalar(select(Availability.id).where(Availability.branch_id == branch_id,
+                        Availability.user_id == actor.id, Availability.starts_at < end, Availability.ends_at > start)):
+                raise ValueError("Dit tijdsblok overlapt met een eerder opgegeven beschikbaarheid.")
+            a = Availability(branch_id=branch_id, user_id=actor.id, starts_at=start, ends_at=end, created_at=now())
+            s.add(a)
+            s.flush()
+            self._audit(s, actor, branch_id, "availability.added", f"availability={a.id}")
+            return a.id
+
+    def delete_availability(self, token, branch_id, availability_id):
+        with self.sessions.begin() as s:
+            actor = self._actor(s, token)
+            self._access(s, actor, branch_id, lock=True)
+            a = s.scalar(select(Availability).where(Availability.id == availability_id,
+                         Availability.branch_id == branch_id, Availability.user_id == actor.id).with_for_update())
+            if not a:
+                raise Denied("Je kunt alleen je eigen beschikbaarheid verwijderen.")
+            s.delete(a)
+            self._audit(s, actor, branch_id, "availability.deleted", f"availability={availability_id}")
             return True
 
     def plans(self, token, branch_id, team=False):
