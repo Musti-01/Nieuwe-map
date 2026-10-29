@@ -37,7 +37,39 @@ def show_planning(api,token,branch_id,admin,tz,zone,run):
                        tr('Begin'): a['start'], tr('Einde'): a['end'], tr('Status'): tr(STATUSES[a['status']])}
                       for a in period_absences], hide_index=True, use_container_width=True)
         st.caption(tr('Bestaande shiften blijven staan. Controleer conflicten; goedgekeurde afwezigheid blokkeert nieuwe planning en inklokken.'))
-    if not admin:
+    st.subheader("Beschikbaarheid medewerkers")
+    slots = run(lambda: api.availability(token, branch_id, team=admin))
+    if slots is None:
+        return
+    if admin:
+        shown = [a for a in slots if a["start"] < end and a["end"] > begin]
+        if shown:
+            st.dataframe([{"Medewerker": a["name"], "Beschikbaar vanaf": a["start"].astimezone(tz),
+                           "Beschikbaar tot": a["end"].astimezone(tz)} for a in shown],
+                         hide_index=True, use_container_width=True)
+        else:
+            st.info("Er zijn geen beschikbaarheden opgegeven voor deze periode.")
+        st.caption("Beschikbaarheid is een voorkeur, geen bevestigde shift. Controleer vóór het inplannen.")
+    else:
+        st.write("Geef aan op welke dagen en uren je kunt werken. Je manager ziet deze tijdsblokken.")
+        with st.form("add_availability"):
+            d = st.date_input("Beschikbare datum", value=datetime.now(tz).date() + timedelta(days=1))
+            start_time = st.time_input("Vanaf", value=datetime.strptime("09:00", "%H:%M").time())
+            end_time = st.time_input("Tot", value=datetime.strptime("17:00", "%H:%M").time())
+            if st.form_submit_button("Beschikbaarheid opslaan"):
+                start_at = datetime.combine(d, start_time, tzinfo=tz)
+                end_at = datetime.combine(d, end_time, tzinfo=tz)
+                if run(lambda: api.add_availability(token, branch_id, start_at, end_at), "Beschikbaarheid opgeslagen."):
+                    st.rerun()
+        if slots:
+            st.dataframe([{"Vanaf": a["start"].astimezone(tz), "Tot": a["end"].astimezone(tz)}
+                          for a in slots], hide_index=True, use_container_width=True)
+            ids = [a["id"] for a in slots]
+            selected = st.selectbox("Beschikbaarheid verwijderen", ids,
+                format_func=lambda i: next(a["start"].astimezone(tz).strftime("%d-%m %H:%M") for a in slots if a["id"] == i))
+            if st.button("Geselecteerde beschikbaarheid verwijderen"):
+                if run(lambda: api.delete_availability(token, branch_id, selected), "Beschikbaarheid verwijderd."):
+                    st.rerun()
         return
     members=run(lambda: api.members(token,branch_id)) or []
     members=[m for m in members if m['role']!='revoked' and m['active']]
