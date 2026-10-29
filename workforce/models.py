@@ -218,3 +218,16 @@ class ShiftPlan(Base):
     note: Mapped[str] = mapped_column(String(500))
     version: Mapped[int] = mapped_column(Integer, default=1)
     __table_args__ = (ForeignKeyConstraint(["branch_id", "user_id"], ["memberships.branch_id", "memberships.user_id"]), CheckConstraint("ends_at > starts_at", name="plan_interval"), CheckConstraint("status IN ('scheduled', 'cancelled')", name="plan_status"))
+
+class Availability(Base):
+    __tablename__ = "employee_availability"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    branch_id: Mapped[int] = mapped_column(Integer, index=True)
+    user_id: Mapped[int] = mapped_column(Integer, index=True)
+    starts_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    ends_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    __table_args__ = (
+        ForeignKeyConstraint(["branch_id", "user_id"], ["memberships.branch_id", "memberships.user_id"]),
+        CheckConstraint("ends_at > starts_at", name="availability_interval"),
+    )
