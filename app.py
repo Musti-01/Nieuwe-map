@@ -54,6 +54,10 @@ def run(action, success=None):
         st.error(tr('Er ging iets mis. Probeer opnieuw of geef deze foutcode door: {v0}', v0=reference))
     return None
 
+scan_code = st.query_params.get('clock')
+if isinstance(scan_code, str) and 0 < len(scan_code) <= 180:
+    st.session_state['pending_clock'] = scan_code
+
 token = st.session_state.get('token')
 if token:
     try:
@@ -178,8 +182,28 @@ if not branches:
     st.info(tr('Je account is klaar. Vraag jouw beheerder om je via jouw e-mailadres aan een vestiging te koppelen.'))
     st.stop()
 
+branch_index = 0
+pending_clock = st.session_state.get('pending_clock')
+if pending_clock and os.getenv('SHIFTFLOW_QR_ENABLED') == '1':
+    try:
+        from workforce.qr_station import verify_station_code
+        branch_index = next(
+            (i for i, candidate in enumerate(branches)
+             if verify_station_code(pending_clock, candidate['id'])),
+            0,
+        )
+    except RuntimeError:
+        branch_index = 0
+
 with st.sidebar:
-    branch_id = st.selectbox(tr('Actieve vestiging'), [b['id'] for b in branches], format_func=translated_formatter(lambda i: next((tr('{v0} · {v1}', v0=b['organization'], v1=b['name']) for b in branches if b['id'] == i))))
+    branch_id = st.selectbox(
+        tr('Actieve vestiging'),
+        [b['id'] for b in branches],
+        index=branch_index,
+        format_func=translated_formatter(
+            lambda i: next((tr('{v0} · {v1}', v0=b['organization'], v1=b['name']) for b in branches if b['id'] == i))
+        ),
+    )
 b = next(b for b in branches if b['id'] == branch_id)
 st.subheader(b['name'])
 labels = {"pending": "In afwachting", "approved": "Goedgekeurd", "rejected": "Geweigerd", "blocked": "Geblokkeerd"}
@@ -189,7 +213,7 @@ if b['status'] != 'approved' or b['organization_status'] != 'approved':
     st.stop()
 st.caption(tr('{v0} · {v1}', v0=b['organization'], v1=tr('Organisatie-eigenaar' if b['owner'] else 'Vestigingsadmin' if b['admin'] else 'Medewerker')))
 if b['admin']:
-    pages = ['Overzicht', 'Medewerkers toevoegen', 'Medewerkers & rechten', 'Planning', 'Afwezigheden', 'Werkuren', 'Shiften controleren', 'Meldingen', 'Ziektebriefjes', 'Auditlog']
+    pages = ['Overzicht', 'QR inklokstation', 'Medewerkers toevoegen', 'Medewerkers & rechten', 'Planning', 'Afwezigheden', 'Werkuren', 'Shiften controleren', 'Meldingen', 'Ziektebriefjes', 'Auditlog']
     if b['owner']:
         pages.insert(pages.index('Werkuren')+1, 'Lonen')
     if b['member']:
@@ -212,6 +236,9 @@ except Exception:
 if b['admin'] and page == 'Overzicht':
     from workforce.ui_manager import show_manager_home
     show_manager_home(api, token, branch_id, page_key, run, tz, owner=b['owner'])
+if b['admin'] and page == 'QR inklokstation':
+    from workforce.ui_qr_station import show_qr_station
+    show_qr_station(branch_id, b['name'])
 if b['admin'] and page == 'Medewerkers toevoegen':
     st.subheader(tr('Medewerkers toevoegen'))
     st.write(tr('Nodig een nieuwe medewerker uit via e-mail. Heeft de medewerker al een account? Koppel die via Medewerkers & rechten.'))
@@ -238,10 +265,39 @@ if not b['admin'] or page == 'Mijn werktijd':
         if st.button(tr('Inklokmogelijkheden verversen')):
             st.rerun()
         if b['member']:
+            qr_required = os.getenv('SHIFTFLOW_QR_ENABLED') == '1'
+            pending_qr = st.session_state.get('pending_clock')
+            qr_valid = not qr_required
+            if qr_required and pending_qr:
+                try:
+                    from workforce.qr_station import verify_station_code
+                    qr_valid = verify_station_code(pending_qr, branch_id)
+                except RuntimeError:
+                    qr_valid = False
+                    st.error(tr('QR-inklokstation is niet correct geconfigureerd.'))
+
+            if qr_required:
+                if qr_valid:
+                    st.success(tr('QR-code gescand. Kies je shift en klok in.'))
+                elif pending_qr:
+                    st.warning(tr('Deze QR-code is verlopen of hoort bij een andere vestiging. Scan de actuele QR-code opnieuw.'))
+                else:
+                    st.info(tr('Scan eerst de actuele QR-code die in de vestiging wordt getoond.'))
+
             a, c = st.columns(2)
             with a:
-                if st.button(tr('Inklokken'), type="primary", disabled=active is not None or plan_id is None, use_container_width=True):
-                    if run(lambda: api.clock_in(token, branch_id, plan_id), "Je bent ingeklokt."):
+                clock_label = tr('Inklokken met QR') if qr_required else tr('Inklokken')
+                if st.button(
+                    clock_label,
+                    type="primary",
+                    disabled=active is not None or plan_id is None or not qr_valid,
+                    use_container_width=True,
+                ):
+                    qr_value = pending_qr if qr_required else None
+                    if run(lambda: api.clock_in(token, branch_id, plan_id, qr_code=qr_value), "Je bent ingeklokt."):
+                        st.session_state.pop('pending_clock', None)
+                        if qr_required:
+                            st.query_params.clear()
                         st.rerun()
             with c:
                 if st.button(tr('Uitklokken'), disabled=active is None, use_container_width=True):
