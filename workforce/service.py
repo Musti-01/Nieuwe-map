@@ -13,7 +13,7 @@ from argon2.exceptions import VerificationError, InvalidHashError
 from sqlalchemy import select, or_, text, delete
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.dialects.postgresql import insert
-from workforce.models import User, Organization, Branch, Membership, WorkEntry, AuthSession, LoginLimit, Audit, ApprovalDecision, Notification, ShiftReview, AccountToken, ShiftPlan, SickNote, Absence, SystemEvent, SalaryRate, ScannerDevice, QRScanUse, Availability
+from workforce.models import User, Organization, Branch, Membership, WorkEntry, AuthSession, LoginLimit, Audit, ApprovalDecision, Notification, ShiftReview, AccountToken, ShiftPlan, SickNote, Absence, SystemEvent, SalaryRate, ScannerDevice, QRScanUse, Availability, StoreQRUse
 
 hasher = PasswordHasher()
 DUMMY_HASH = hasher.hash(secrets.token_urlsafe(32))
@@ -446,7 +446,66 @@ class Service:
         return e
 
     def clock_in(self, token, branch_id, plan_id=None):
-        raise Denied("Inklokken kan alleen via een geautoriseerde winkelscanner.")
+        raise Denied("Inklokken kan alleen door de QR-code in de vestiging te scannen.")
+
+    def store_qr_clock_in(self, token, qr_code):
+        from workforce.qr_clock import verify_store_code
+        try:
+            with self.sessions.begin() as s:
+                employee = self._actor(s, token)
+                data = verify_store_code(qr_code)
+                if not data:
+                    raise Denied("QR-code is ongeldig, vervalst of verlopen.")
+                branch_id = data["branch_id"]
+                self._access(s, employee, branch_id, lock=True)
+                membership = s.get(Membership, (branch_id, employee.id), populate_existing=True)
+                if not membership or membership.role == "revoked":
+                    raise Denied("Deze QR-code hoort niet bij een vestiging waar je werkt.")
+
+                current = now()
+                tz = ZoneInfo(os.getenv("APP_TIMEZONE", "Europe/Brussels"))
+                eligible = []
+                for plan in s.scalars(
+                    select(ShiftPlan).where(
+                        ShiftPlan.branch_id == branch_id,
+                        ShiftPlan.user_id == employee.id,
+                        ShiftPlan.status == "scheduled",
+                    ).order_by(ShiftPlan.starts_at)
+                ):
+                    if s.scalar(select(WorkEntry.id).where(WorkEntry.plan_id == plan.id)):
+                        continue
+                    if clock_in_allowed(plan.starts_at, plan.ends_at, current, tz):
+                        eligible.append(plan)
+                if not eligible:
+                    raise ValueError("Geen geldige ingeplande shift om nu voor in te klokken.")
+                plan = min(eligible, key=lambda p: abs((p.starts_at - current).total_seconds()))
+
+                token_hash = digest(qr_code.strip())
+                claimed = s.scalar(
+                    insert(StoreQRUse)
+                    .values(
+                        token_hash=token_hash,
+                        user_id=employee.id,
+                        branch_id=branch_id,
+                        used_at=current,
+                    )
+                    .on_conflict_do_nothing()
+                    .returning(StoreQRUse.token_hash)
+                )
+                if not claimed:
+                    raise Denied("Je hebt deze QR-code al gebruikt. Scan de nieuwe QR-code.")
+
+                entry = self._clock_in_locked(s, employee, branch_id, plan.id)
+                self._audit(s, employee, branch_id, "clock.in.store_qr", f"entry={entry.id}; window={data['window']}")
+                return {
+                    "entry_id": entry.id,
+                    "branch_id": branch_id,
+                    "clocked_in_at": entry.started_at,
+                    "plan_start": plan.starts_at,
+                    "plan_end": plan.ends_at,
+                }
+        except IntegrityError as exc:
+            raise ValueError("Inklokken kon niet worden geregistreerd; scan de QR-code opnieuw.") from exc
 
     def scanner_pairing_url(self, scanner_token):
         if not isinstance(scanner_token, str) or not (32 <= len(scanner_token) <= 200):
