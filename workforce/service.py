@@ -448,6 +448,11 @@ class Service:
     def clock_in(self, token, branch_id, plan_id=None):
         raise Denied("Inklokken kan alleen via een geautoriseerde winkelscanner.")
 
+    def scanner_pairing_url(self, scanner_token):
+        if not isinstance(scanner_token, str) or not (32 <= len(scanner_token) <= 200):
+            raise ValueError("Ongeldige scannerkoppeling.")
+        return self._public_url() + "?" + urlencode({"scanner": scanner_token})
+
     def create_scanner(self, token, branch_id, name):
         name = clean(name, "Scannernaam", 120)
         with self.sessions.begin() as s:
