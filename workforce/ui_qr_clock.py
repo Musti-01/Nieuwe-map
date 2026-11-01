@@ -1,4 +1,5 @@
 import os
+import hashlib
 import time
 from urllib.parse import quote
 
@@ -109,6 +110,23 @@ def show_scanner_management(api, token, branch_id, run):
         st.info(tr("Nog geen winkelscanner geregistreerd."))
 
 
+def _decode_camera_qr(photo):
+    try:
+        import cv2
+        import numpy as np
+    except ImportError as exc:
+        raise RuntimeError("Camera-scanning is niet beschikbaar; installeer de projectrequirements opnieuw.") from exc
+    raw = np.frombuffer(photo.getvalue(), dtype=np.uint8)
+    image = cv2.imdecode(raw, cv2.IMREAD_COLOR)
+    if image is None:
+        raise ValueError("De camerafoto kon niet worden gelezen.")
+    value, points, _ = cv2.QRCodeDetector().detectAndDecode(image)
+    value = (value or "").strip()
+    if not value:
+        raise ValueError("Geen geldige QR-code gevonden. Houd de QR volledig en scherp in beeld.")
+    return value
+
+
 def show_scanner_station(api, scanner_token, tz):
     try:
         info = api.scanner_info(scanner_token)
@@ -120,25 +138,47 @@ def show_scanner_station(api, scanner_token, tz):
     st.subheader(info["branch_name"])
     st.caption(tr("{v0} · {v1}", v0=info["organization"], v1=info["scanner_name"]))
     st.write(tr(
-        "Scan de persoonlijke QR van de medewerker met de vaste USB/Bluetooth QR-scanner. "
-        "De scanner voert de code als tekst in en registreert daarna automatisch het inklokken."
+        "Scan de persoonlijke QR van de medewerker met een vaste QR-scanner of met de camera van deze tablet."
     ))
 
-    with st.form("scanner_form", clear_on_submit=True):
-        qr_value = st.text_input(
-            tr("QR-scan"),
-            type="password",
-            autocomplete="off",
-            placeholder=tr("Scan nu de QR-code"),
-        )
-        submitted = st.form_submit_button(tr("Scan verwerken"), type="primary", use_container_width=True)
-
-    if submitted:
+    def process_scan(qr_value):
         try:
             result = api.scanner_clock_in(scanner_token, qr_value)
             st.session_state["scanner_last_success"] = result
+            return True
         except (ValueError, Denied) as exc:
             st.error(tr(str(exc)))
+        return False
+
+    hardware_tab, camera_tab = st.tabs([tr("USB/Bluetooth scanner"), tr("Tablet-camera")])
+    with hardware_tab:
+        st.caption(tr(
+            "Een vaste QR-scanner werkt als toetsenbord: scan de code en druk zo nodig op Scan verwerken."
+        ))
+        with st.form("scanner_form", clear_on_submit=True):
+            qr_value = st.text_input(
+                tr("QR-scan"),
+                type="password",
+                autocomplete="off",
+                placeholder=tr("Scan nu de QR-code"),
+            )
+            submitted = st.form_submit_button(tr("Scan verwerken"), type="primary", use_container_width=True)
+        if submitted:
+            process_scan(qr_value)
+
+    with camera_tab:
+        st.caption(tr("Maak met de tablet-camera een scherpe foto van de volledige QR-code."))
+        photo = st.camera_input(tr("Scan QR met camera"), key="scanner_camera")
+        if photo is not None:
+            photo_hash = hashlib.sha256(photo.getvalue()).hexdigest()
+            if st.session_state.get("scanner_camera_processed") != photo_hash:
+                try:
+                    decoded = _decode_camera_qr(photo)
+                    st.session_state["scanner_camera_processed"] = photo_hash
+                    process_scan(decoded)
+                except (ValueError, RuntimeError) as exc:
+                    st.session_state["scanner_camera_processed"] = photo_hash
+                    st.error(tr(str(exc)))
 
     result = st.session_state.pop("scanner_last_success", None)
     if result:
@@ -156,3 +196,4 @@ def show_scanner_station(api, scanner_token, tz):
         "Daarom accepteert ShiftFlow alleen scans van deze geautoriseerde winkelscanner, "
         "verbruikt elke QR maar één keer en bewaart de scanner in het auditspoor."
     ))
+
