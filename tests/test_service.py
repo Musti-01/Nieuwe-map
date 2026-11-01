@@ -3,7 +3,8 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import timedelta
 import pytest
 from sqlalchemy import select, update
-from workforce.models import User, AuthSession, WorkEntry, Membership
+from workforce.models import User, AuthSession, WorkEntry, Membership, ShiftPlan
+from workforce.qr_station import build_station_code
 from workforce.service import Denied, now, digest
 
 
@@ -135,6 +136,38 @@ def test_concurrent_clock_in_one_winner(api, team):
             return False
     with ThreadPoolExecutor(max_workers=2) as pool:
         assert sum(pool.map(clock, [team['branch'], team['other_branch']])) == 1
+
+
+def test_qr_required_for_clock_in_when_enabled(api, team, monkeypatch):
+    monkeypatch.setenv("SHIFTFLOW_QR_ENABLED", "1")
+    monkeypatch.setenv("SHIFTFLOW_QR_SECRET", "0123456789abcdef0123456789abcdef")
+
+    with api.sessions.begin() as s:
+        actor = api._actor(s, team['wt'])
+        plan = ShiftPlan(
+            branch_id=team['branch'],
+            user_id=actor.id,
+            starts_at=now(),
+            ends_at=now() + timedelta(hours=1),
+            note='',
+            status='scheduled',
+            version=1,
+            created_by=actor.id,
+        )
+        s.add(plan)
+        s.flush()
+        plan_id = plan.id
+
+    with pytest.raises(Denied, match='QR'):
+        api.clock_in(team['wt'], team['branch'], plan_id)
+
+    wrong_branch_qr = build_station_code(team['other_branch'])
+    with pytest.raises(Denied, match='QR'):
+        api.clock_in(team['wt'], team['branch'], plan_id, qr_code=wrong_branch_qr)
+
+    valid_qr = build_station_code(team['branch'])
+    entry_id = api.clock_in(team['wt'], team['branch'], plan_id, qr_code=valid_qr)
+    assert entry_id
 
 
 def test_bootstrap_once_and_not_public_signup(api):
