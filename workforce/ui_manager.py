@@ -4,7 +4,6 @@ from datetime import datetime, time, timedelta
 from workforce import service
 from workforce.clock_policy import clock_in_allowed
 from workforce.i18n import tr
-from workforce.ui_navigation import open_shift_review
 
 
 def show_manager_home(api, token, branch_id, page_key, run, tz, owner=False):
@@ -16,10 +15,9 @@ def show_manager_home(api, token, branch_id, page_key, run, tz, owner=False):
     if entries is None or members is None:
         return
     with st.container(key='sf_metrics_manager'):
-        a, b, c = st.columns(3)
+        a, b = st.columns(2)
         a.metric(tr('Actieve teamleden'), sum(m['active'] and m['role'] != 'revoked' for m in members))
         b.metric(tr('Nu aan het werk'), sum(e['end'] is None for e in entries))
-        c.metric(tr('Shiften te controleren'), sum(e['end'] is not None and e['review_status'] != 'approved' for e in entries))
 
 
     def navigate(target):
@@ -30,10 +28,9 @@ def show_manager_home(api, token, branch_id, page_key, run, tz, owner=False):
         ('Planning', 'Plan diensten en bekijk wie wanneer werkt.'),
         ('Medewerkers & rechten', 'Bekijk je team en beheer de toegang en rollen.'),
         ('Werkuren', 'Bekijk gewerkte uren per medewerker en periode.'),
-        ('Shiften controleren', 'Controleer, corrigeer en keur geregistreerde uren goed.'),
         ('Meldingen', 'Bekijk vergeten uitklokacties en openstaande controles.'),
     ]
-    icons = ['person_add', 'calendar_month', 'group', 'schedule', 'fact_check', 'notifications']
+    icons = ['person_add', 'calendar_month', 'group', 'schedule', 'notifications']
     if owner:
         actions.append(('Lonen', 'Stel loonafspraken in en bereken het maandloon per medewerker.'))
         icons.append('payments')
@@ -78,8 +75,6 @@ def show_manager_home(api, token, branch_id, page_key, run, tz, owner=False):
         st.subheader(tr('Dit vraagt aandacht'))
         for alert in alerts[:3]:
             st.write(tr('{v0}: {v1}', v0=alert['medewerker'], v1=tr(alert['melding'])))
-            st.button(tr('Shift bekijken en controleren'), key=f"home_review_{alert['shift']}",
-                      on_click=open_shift_review, args=(branch_id, alert['shift']))
         if len(alerts) > 3:
             st.caption(tr('Bekijk alle meldingen via Meldingen.'))
     if st.button(tr('Overzicht verversen')):
