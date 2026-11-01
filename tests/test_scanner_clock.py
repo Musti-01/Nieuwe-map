@@ -36,7 +36,7 @@ def test_scanner_clock_in_success_replay_and_direct_path_blocked(api, team, monk
     assert result["name"] == "Worker"
     assert api.entries(team["wt"], team["branch"])[0]["end"] is None
 
-    with pytest.raises(Denied, match="alleen via"):
+    with pytest.raises(Denied, match="QR-code"):
         api.clock_in(team["wt"], team["branch"], result["entry_id"])
 
     with pytest.raises(Denied, match="al gebruikt"):
