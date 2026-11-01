@@ -62,13 +62,14 @@ def show_planning(api,token,branch_id,admin,tz,zone,run):
         )
         stop_at=old['end'].astimezone(tz) if old else start_at+timedelta(hours=4)
 
+        editor_key = str(selected) if selected is not None else f"new_{day.isoformat()}"
         a,b=st.columns(2)
         with a:
-            sd=st.date_input(tr('Geplande begindatum'),value=start_at.date(),key=f'plan_sd_{selected or "new"}')
-            stime=st.time_input(tr('Geplande begintijd'),value=start_at.time().replace(tzinfo=None),step=60,key=f'plan_st_{selected or "new"}')
+            sd=st.date_input(tr('Geplande begindatum'),value=start_at.date(),key=f'plan_sd_{editor_key}')
+            stime=st.time_input(tr('Geplande begintijd'),value=start_at.time().replace(tzinfo=None),step=60,key=f'plan_st_{editor_key}')
         with b:
-            ed=st.date_input(tr('Geplande einddatum'),value=stop_at.date(),key=f'plan_ed_{selected or "new"}')
-            etime=st.time_input(tr('Geplande eindtijd'),value=stop_at.time().replace(tzinfo=None),step=60,key=f'plan_et_{selected or "new"}')
+            ed=st.date_input(tr('Geplande einddatum'),value=stop_at.date(),key=f'plan_ed_{editor_key}')
+            etime=st.time_input(tr('Geplande eindtijd'),value=stop_at.time().replace(tzinfo=None),step=60,key=f'plan_et_{editor_key}')
 
         proposed_start=datetime.combine(sd,stime,tzinfo=tz)
         proposed_end=datetime.combine(ed,etime,tzinfo=tz)
@@ -104,7 +105,7 @@ def show_planning(api,token,branch_id,admin,tz,zone,run):
                 index=ids.index(default_id),
                 disabled=old is not None,
                 format_func=translated_formatter(candidate_label),
-                key=f'plan_uid_{selected or "new"}',
+                key=f'plan_uid_{editor_key}',
             )
             chosen=next(m for m in candidates if m['id']==uid)
             if chosen['available']:
@@ -120,9 +121,9 @@ def show_planning(api,token,branch_id,admin,tz,zone,run):
                 tr('Opmerking bij planning'),
                 value=old['note'] if old else '',
                 max_chars=500,
-                key=f'plan_note_{selected or "new"}',
+                key=f'plan_note_{editor_key}',
             )
-            if st.button(tr('Planning opslaan'),type='primary',key=f'plan_save_{selected or "new"}'):
+            if st.button(tr('Planning opslaan'),type='primary',key=f'plan_save_{editor_key}'):
                 if run(lambda:api.save_plan(
                     token,branch_id,uid,proposed_start,proposed_end,note,selected,old['version'] if old else None
                 ),'Planning opgeslagen.'):
