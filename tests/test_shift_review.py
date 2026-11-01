@@ -11,6 +11,12 @@ def closed(api, team):
     with api.sessions.begin() as s:
         s.get(WorkEntry,eid).started_at = now()-timedelta(hours=2)
     api.clock_out(team['wt'],team['branch'])
+    # Legacy review service remains covered even though the review UI is removed.
+    with api.sessions.begin() as s:
+        row = s.get(WorkEntry, eid)
+        row.review_status = 'pending'
+        row.reviewed_by = None
+        row.reviewed_at = None
     return api.entries(team['wt'],team['branch'])[0]
 
 
