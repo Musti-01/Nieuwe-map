@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
 import pytest
+from clock_helpers import planned_clock_in
 from workforce.service import Denied, now
 from test_sick_notes import attachment
 from workforce.models import SickNote
@@ -59,7 +60,7 @@ def test_sick_blocks_clock_in_but_not_clock_out(api, team, monkeypatch):
     day = current.date()
     absence = api.request_absence(team['wt'], team['branch'], 'sick', day, day)
     with pytest.raises(ValueError, match='afwezig'):
-        api.clock_in(team['wt'], team['branch'], plan)
+        planned_clock_in(api, team['wt'], team['branch'], plan)
     api.review_absence(team['ot'], team['branch'], absence, 'cancel')
     api.clock_in(team['wt'], team['branch'], plan)
     api.request_absence(team['wt'], team['branch'], 'sick', day, day)
