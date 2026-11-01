@@ -1075,6 +1075,7 @@ class Service:
             select(Availability.id).where(Availability.user_id == target.id),
             select(ScannerDevice.id).where(ScannerDevice.created_by == target.id),
             select(QRScanUse.token_hash).where(QRScanUse.user_id == target.id),
+            select(StoreQRUse.token_hash).where(StoreQRUse.user_id == target.id),
         ]
         delete_reason = blocked
         if not delete_reason and (owner or target.platform_admin):
