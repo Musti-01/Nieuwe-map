@@ -3,7 +3,7 @@ import logging
 import uuid
 from datetime import datetime, timedelta, timezone
 from sqlalchemy import delete
-from workforce.models import SystemEvent, SickNote, Notification
+from workforce.models import SystemEvent, SickNote, Notification, PhoneQRUse
 
 logger = logging.getLogger('shiftflow.operations')
 
@@ -34,6 +34,7 @@ def maintenance(session_factory):
         removed = session.execute(delete(SickNote).where(SickNote.expires_at <= now)).rowcount
         session.execute(delete(Notification).where(Notification.expires_at <= now, Notification.sent_at.is_(None)))
         session.execute(delete(SystemEvent).where(SystemEvent.occurred_at < now-timedelta(days=30)))
+        session.execute(delete(PhoneQRUse).where(PhoneQRUse.used_at < now-timedelta(days=1)))
         session.add(SystemEvent(category='maintenance', code='completed', occurred_at=now))
     return removed
 
