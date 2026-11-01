@@ -16,7 +16,7 @@ from workforce.ui_design import apply_design, brand, welcome
 apply_design()
 
 @st.cache_resource
-def backend_engine(schema_revision="0011"):
+def backend_engine(schema_revision="0012"):
     engine = make_engine()
     if os.getenv('AUTO_MIGRATE') == '1':
         from workforce.hosting import migrate
@@ -222,7 +222,7 @@ if pending_store_qr:
         st.rerun()
 
 if b['admin']:
-    pages = ['Overzicht', 'QR inklokken', 'Beschikbaarheden', 'Medewerkers toevoegen', 'Medewerkers & rechten', 'Planning', 'Afwezigheden', 'Werkuren', 'Shiften controleren', 'Meldingen', 'Ziektebriefjes', 'Auditlog']
+    pages = ['Overzicht', 'QR inklokken', 'Beschikbaarheden', 'Medewerkers toevoegen', 'Medewerkers & rechten', 'Planning', 'Afwezigheden', 'Werkuren', 'Meldingen', 'Ziektebriefjes', 'Auditlog']
     if b['owner']:
         pages.insert(pages.index('Werkuren')+1, 'Lonen')
     if b['member']:
@@ -283,7 +283,7 @@ if not b['admin'] or page == 'Mijn werktijd':
                     if run(lambda: api.clock_out(token, branch_id), "Je bent uitgeklokt."):
                         st.rerun()
         st.caption(tr('Een actieve sessie in een andere vestiging moet je daar eerst afsluiten.'))
-        st.caption(tr('Onderstaande uren zijn geregistreerd en kunnen nog op controle wachten. Definitief goedgekeurde uren staan bij Mijn shiften.'))
+        st.caption(tr('Onderstaande uren zijn geregistreerd. Afgesloten shiften worden automatisch verwerkt.'))
         today = datetime.now(tz).date()
         columns = st.columns(3)
         for col, period in zip(columns, ["Dag", "Week", "Maand"]):
@@ -342,19 +342,12 @@ if b['admin'] and page == 'Werkuren':
     day = st.date_input(tr('Datum'), value=datetime.now(tz).date())
     begin, end = period_bounds(day, period, zone)
     snapshot = now()
-    for label, selected in [("Goedgekeurde uren", [e for e in team if e['review_status'] == 'approved']), ("Wacht op controle", [e for e in team if e['end'] is not None and e['review_status'] != 'approved']), ("Lopende uren (voorlopig)", [e for e in team if e['end'] is None])]:
+    for label, selected in [("Afgesloten uren", [e for e in team if e['end'] is not None]), ("Lopende uren (voorlopig)", [e for e in team if e['end'] is None])]:
         totals = hours(selected, begin, end, snapshot)
         st.metric(tr(label), tr('{v0:.2f} uur', v0=sum((r['Uren'] for r in totals))))
         if totals:
             st.dataframe(translated_table(totals), hide_index=True, use_container_width=True)
-    st.caption(tr('Alleen goedgekeurde uren zijn gecontroleerd. Ongecontroleerde en lopende uren staan apart. Periodes worden berekend in de ingestelde tijdzone.'))
-
-if b['admin'] and page == 'Shiften controleren':
-    team = run(lambda: api.entries(token, branch_id, team=True))
-    if team is None:
-        st.stop()
-    from workforce.ui_review import show_reviews
-    show_reviews(api, token, branch_id, team, me, tz, run)
+    st.caption(tr('Afgesloten shiften worden automatisch verwerkt. Lopende uren staan apart. Periodes worden berekend in de ingestelde tijdzone.'))
 
 if b['owner'] and page == 'Lonen':
     from workforce.ui_payroll import show_payroll
