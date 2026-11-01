@@ -69,19 +69,19 @@ def show_scanner_management(api, token, branch_id, run):
                 st.session_state[f"new_scanner_{branch_id}"] = created
                 st.rerun()
 
-    created = st.session_state.pop(f"new_scanner_{branch_id}", None)
+    created = st.session_state.get(f"new_scanner_{branch_id}")
     if created:
-        base = os.getenv("APP_BASE_URL", "").strip().rstrip("/")
-        st.success(tr("Scanner geregistreerd. Deze koppeling wordt slechts één keer getoond."))
-        if base:
-            link = f"{base}?scanner={quote(created['token'], safe='')}"
+        st.success(tr("Scanner geregistreerd. Bewaar de koppeling nu op het vaste winkeltoestel."))
+        link = run(lambda: api.scanner_pairing_url(created["token"]))
+        if link:
             st.code(link, language=None)
             st.caption(tr(
-                "Open deze link alleen op het vaste winkeltoestel. Wie deze link bezit, heeft scannerrechten "
-                "totdat je de scanner intrekt."
+                "Open deze geheime HTTPS-link alleen op het vaste winkeltoestel. Wie deze link bezit, heeft "
+                "scannerrechten totdat je de scanner intrekt."
             ))
-        else:
-            st.warning(tr("APP_BASE_URL ontbreekt; stel eerst het publieke app-adres in om een koppellink te maken."))
+            if st.button(tr("Koppeling is opgeslagen op het winkeltoestel"), key=f"scanner_saved_{created['id']}"):
+                st.session_state.pop(f"new_scanner_{branch_id}", None)
+                st.rerun()
 
     devices = run(lambda: api.scanners(token, branch_id))
     if devices is None:
