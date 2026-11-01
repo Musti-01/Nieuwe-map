@@ -4300,5 +4300,29 @@
     "en": "APP_BASE_URL must be a public HTTPS URL.",
     "de": "APP_BASE_URL muss eine öffentliche HTTPS-URL sein.",
     "es": "APP_BASE_URL debe ser una URL HTTPS pública."
+  },
+  "QR scannen met je gsm": {
+    "fr": "Scanner le QR avec votre téléphone",
+    "en": "Scan QR with your phone",
+    "de": "QR mit dem Smartphone scannen",
+    "es": "Escanear QR con tu móvil"
+  },
+  "Open dit onderdeel op je gsm en scan de QR-code die in de vestiging wordt getoond. Na een geldige scan word je automatisch ingeklokt.": {
+    "fr": "Ouvrez cette section sur votre téléphone et scannez le code QR affiché dans l'établissement. Après un scan valide, votre entrée est automatiquement enregistrée.",
+    "en": "Open this section on your phone and scan the QR code shown in the branch. After a valid scan, you are clocked in automatically.",
+    "de": "Öffne diesen Bereich auf deinem Smartphone und scanne den in der Filiale angezeigten QR-Code. Nach einem gültigen Scan wirst du automatisch eingestempelt.",
+    "es": "Abre esta sección en tu móvil y escanea el código QR mostrado en la sucursal. Tras un escaneo válido, se registra automáticamente tu entrada."
+  },
+  "Scan de winkel-QR": {
+    "fr": "Scanner le QR du magasin",
+    "en": "Scan the store QR",
+    "de": "Filial-QR scannen",
+    "es": "Escanear el QR de la tienda"
+  },
+  "Deze QR-code hoort bij een andere vestiging.": {
+    "fr": "Ce code QR appartient à un autre établissement.",
+    "en": "This QR code belongs to another branch.",
+    "de": "Dieser QR-Code gehört zu einer anderen Filiale.",
+    "es": "Este código QR pertenece a otra sucursal."
   }
 }
