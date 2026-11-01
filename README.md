@@ -13,7 +13,7 @@ Een Streamlit-app met Python 3.12 en PostgreSQL 16 voor onafhankelijke franchise
 - Eigenaar selecteert bestaande gebruikers via exact e-mailadres en kent vestigingsadminrechten toe. Eén gebruiker kan meerdere vestigingen beheren.
 - Vestigingsadmin koppelt medewerkers; alleen eigenaar/platformbeheerder wijzigt adminrechten. Intrekken werkt bij de volgende serveractie, ook voor bestaande sessies.
 - QR-inklokken via de gsm van de medewerker: de vestiging toont één wisselende, vestigingsgebonden QR-code die elke 15 seconden verandert. De medewerker scant die met de eigen telefoon; na authenticatie controleert ShiftFlow de planning, afwezigheden en actieve tijdregistraties en klokt automatisch in. Dezelfde QR is per medewerker slechts één keer bruikbaar.
-- Uitklokken blijft een persoonlijke knop in het account; de bestaande serverklok, urenberekening, correctie- en goedkeuringsflow blijven behouden.
+- Uitklokken blijft een persoonlijke knop in het account; afgesloten shiften worden daarna automatisch verwerkt zodat geen handmatige shiftcontrole nodig is.
 - Medewerkers beheren eigen beschikbaarheid als eenmalige of wekelijks terugkerende tijdsblokken. Managers bekijken beschikbaarheid per dag/week/maand, zien conflicten en krijgen beschikbare medewerkers bovenaan bij het plannen; beschikbaarheid blijft een voorkeur en maakt nooit automatisch een shift.
 - Eigen uren en dashboard per dag/week/maand, actieve medewerkers, teambeheer en auditlog van rolwijzigingen en klokacties.
 - Organisatie-eigenaar kan schakelen tussen eigen vestigingen. Platformbeheerder kan alle organisaties en vestigingen bekijken en beheren via hetzelfde rechtenbeheer.
@@ -229,17 +229,13 @@ Medewerkers openen **In- en uitklokken** om een dienst te starten of af te sluit
 
 Platformbeheer start met **Overzicht**, met uitleg van alle beschikbare bevoegdheden en knoppen naar **Aanvragen** en **Besluitgeschiedenis**. Uitsluitend de platformeigenaar krijgt daarnaast **Platformbeheerders**, voor het expliciet machtigen en intrekken van platformrechten. **Werkruimte → Vestigingen** opent de bestaande dashboards, teams, rollen, uren en auditlog. Via Gebruikers kunnen platformbeheerders accounts deactiveren en heractiveren. Ongebruikte, gewone accounts kunnen via Gebruikers definitief verwijderd worden; bij accounts met historiek blijft deactiveren beschikbaar.
 
-## Shiften controleren voordat uren definitief zijn
+## Automatische verwerking van gewerkte uren
 
-Een medewerker kan nog steeds op een later tijdstip op Uitklokken drukken: zonder rooster of fysieke controle kan de app het werkelijke vertrekmoment niet vaststellen. Daarom krijgt iedere afgesloten shift **Wacht op controle**. Alleen een bevoegde vestigingsadmin, organisatie-eigenaar of platformbeheerder kan de shift goedkeuren. Niemand mag zijn eigen shift goedkeuren of corrigeren; vraag hiervoor een andere bevoegde beheerder.
+Na **Uitklokken** wordt een afgesloten shift automatisch verwerkt. De server bewaart de geregistreerde begin- en eindtijd, en de uren tellen direct mee in de uren- en loonoverzichten. Er is daarom geen aparte pagina **Shiften controleren** meer nodig.
 
-Open de vestiging en kies **Shiften controleren**. Kies een status en shift. **Goedkeuren** accepteert de opgeslagen tijden. **Corrigeren** wijzigt begin/einde met een verplichte reden; ook een lopende, vergeten uitklokshift kan zo worden afgesloten. Toekomstige eindtijden, ongeldige intervallen en overlap met andere diensten van dezelfde medewerker worden geweigerd. Na iedere correctie wacht de shift opnieuw op goedkeuring. Gelijktijdige of verouderde wijzigingen worden geweigerd; ververs dan het overzicht.
+Migratie `0012` zet ook bestaande afgesloten shiften die nog op **Wacht op controle** stonden automatisch om naar verwerkt. Lopende shiften blijven uiteraard lopend totdat de medewerker uitklokt of de toegang administratief wordt afgesloten.
 
-De datum/tijdvelden gelden uitsluitend bij Corrigeren; bij Goedkeuren worden de opgeslagen tijden gebruikt. De UI vermeldt dit expliciet. Shift- en aanvraaggoedkeuring zijn aparte processen: een goedgekeurde vestiging betekent niet dat alle gewerkte uren automatisch gecontroleerd zijn.
-
-Het dashboard toont **Goedgekeurde uren**, **Wacht op controle** en **Lopende uren (voorlopig)** apart. Medewerkers zien de status in **Mijn shiften**, met hun eigen correctiehistoriek. De klokpagina toont geregistreerde uren inclusief nog ongecontroleerde uren; alleen expliciet goedgekeurde uren zijn gecontroleerd. In de audit- en shifthistoriek staan de beoordelaar, het tijdstip, de reden en oude/nieuwe tijden.
-
-Migratie `0003` bewaart alle bestaande werkregistraties en zet ze op **Wacht op controle**; bestaande uren worden niet stilzwijgend goedgekeurd. De migration wordt automatisch uitgevoerd bij starten van `cloud_app.py`. Dit voegt geen automatische uitklok op roostertijden en geen payroll-export toe.
+Meldingen blijven beschikbaar voor een vergeten uitklok. De manager ziet dan dat een medewerker nog actief staat en kan de medewerker vragen uit te klokken. Historische audit- en reviewgegevens uit eerdere versies blijven in de database bewaard.
 
 ## Medewerkersbeheer, planning en meldingen (migratie 0004)
 
@@ -314,9 +310,9 @@ Migratie `0006` voegt de archiefdatum en verantwoordelijke toe en wordt bij Comm
 ## Duidelijk beginscherm voor vestigingsbeheerders
 
 Organisatie-eigenaars en vestigingsadmins openen hun vestiging voortaan op **Overzicht**.
-Zes actiekaarten brengen hen direct naar **Medewerkers toevoegen**, **Planning**,
-**Medewerkers & rechten**, **Werkuren**, **Shiften controleren** en **Meldingen**.
-Het overzicht toont actieve teamleden, ingeklokte medewerkers en nog te controleren shiften.
+Vijf actiekaarten brengen hen direct naar **Medewerkers toevoegen**, **Planning**,
+**Medewerkers & rechten**, **Werkuren** en **Meldingen**.
+Het overzicht toont actieve teamleden en momenteel ingeklokte medewerkers.
 **Medewerkers toevoegen** opent meteen het uitnodigingsformulier; bestaande accounts koppel je via **Medewerkers & rechten**.
 De zijbalk houdt de navigatie zichtbaar. De gekozen pagina wordt per vestiging onthouden.
 Voor beheerders die ook een vestigingslidmaatschap hebben, staat eigen tijdregistratie apart onder **Mijn werktijd**.
@@ -361,7 +357,7 @@ Een ontbrekende planning moet de beheerder eerst toevoegen via **Planning**.
 ## Praktischer dagelijks gebruik
 
 - Het beheeroverzicht toont de planning van vandaag, inclusief doorlopende nachtdiensten, met onderscheid tussen later starten, kunnen inklokken, nog niet ingeklokt, aan het werk en afgesloten. Geannuleerde shiften tellen niet mee. Niet geregistreerd betekent uitsluitend dat geen tijdregistratie is gekoppeld; het bewijst geen afwezigheid.
-- Namen van momenteel ingeklokte medewerkers en de eerste drie meldingen staan direct op het overzicht. **Shift bekijken en controleren** opent de juiste registratie en status in **Shiften controleren**. Dezelfde snelkoppeling staat bij meldingen. De bestaande bevoegdheden en bescherming tegen eigen goedkeuring blijven gelden.
+- Namen van momenteel ingeklokte medewerkers en de eerste drie meldingen staan direct op het overzicht. Afgesloten shiften worden automatisch verwerkt; meldingen blijven vooral bedoeld voor vergeten uitklokken.
 - De medewerker ziet de volgende ingeplande shift en het exacte lokale tijdstip waarop inklokken mogelijk wordt. Bij een lopende registratie staat duidelijk sinds wanneer die actief is en hoe je uitklokt. Gebruik de bestaande verversknoppen om tijdsafhankelijke informatie opnieuw te berekenen; er zijn geen automatische pushupdates.
 - **Medewerkers toevoegen → Bestaande medewerker koppelen** brengt je direct bij het zoeken op e-mailadres en rechtenbeheer.
 - Het planningsformulier staat meteen open en een nieuwe shift gebruikt de datum die je in het planningsoverzicht hebt geselecteerd. Controleer de begin- en eindtijden vóór opslaan.
