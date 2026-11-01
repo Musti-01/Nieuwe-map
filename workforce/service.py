@@ -446,16 +446,7 @@ class Service:
         return e
 
     def clock_in(self, token, branch_id, plan_id=None):
-        """Trusted application method retained for tests/admin tooling.
-
-        The employee UI no longer exposes this method; normal clock-in is scanner-only.
-        """
-        try:
-            with self.sessions.begin() as s:
-                u = self._actor(s, token)
-                return self._clock_in_locked(s, u, branch_id, plan_id).id
-        except IntegrityError as exc:
-            raise ValueError("Je hebt al een actieve inkloksessie.") from exc
+        raise Denied("Inklokken kan alleen via een geautoriseerde winkelscanner.")
 
     def create_scanner(self, token, branch_id, name):
         name = clean(name, "Scannernaam", 120)
