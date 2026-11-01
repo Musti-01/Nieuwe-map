@@ -416,11 +416,19 @@ class Service:
             self._access(s, u, branch_id, admin=True)
             return [{"id": member.id, "name": member.name, "email": member.email, "role": m.role, "active": member.is_active} for member, m in s.execute(select(User, Membership).join(Membership).where(Membership.branch_id == branch_id).order_by(User.name))]
 
-    def clock_in(self, token, branch_id, plan_id=None):
+    def clock_in(self, token, branch_id, plan_id=None, qr_code=None):
         try:
             with self.sessions.begin() as s:
                 u = self._actor(s, token)
                 self._access(s, u, branch_id, lock=True)
+                if os.getenv("SHIFTFLOW_QR_ENABLED") == "1":
+                    from workforce.qr_station import verify_station_code
+                    try:
+                        valid_qr = verify_station_code(qr_code, branch_id)
+                    except RuntimeError as exc:
+                        raise Denied("QR-inklokstation is niet correct geconfigureerd.") from exc
+                    if not valid_qr:
+                        raise Denied("Scan de actuele QR-code in de vestiging om in te klokken.")
                 s.execute(text("SELECT pg_advisory_xact_lock(793125043, :uid)"), {"uid": u.id})
                 m = s.get(Membership, (branch_id, u.id))
                 if not m or m.role == "revoked":
@@ -443,7 +451,8 @@ class Service:
                 e = WorkEntry(branch_id=branch_id, user_id=u.id, started_at=current, plan_id=plan_id)
                 s.add(e)
                 s.flush()
-                self._audit(s, u, branch_id, "clock.in", f"entry={e.id}")
+                method = "qr" if qr_code else "button"
+                self._audit(s, u, branch_id, "clock.in", f"entry={e.id}; method={method}")
                 return e.id
         except IntegrityError as exc:
             raise ValueError("Je hebt al een actieve inkloksessie.") from exc
