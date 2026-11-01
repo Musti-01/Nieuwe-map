@@ -21,7 +21,7 @@ def test_owner_today_planning_keeps_other_branches_and_cancelled_shifts_out(api,
     assert any('04-05-2020' in c.value for c in app.caption)
 
 
-def test_overview_shortcut_opens_the_requested_shift_and_approves_it(api,team,engine,monkeypatch):
+def test_completed_shifts_are_auto_processed_without_review_shortcuts(api,team,engine,monkeypatch):
     old=planned_clock_in(api,team['wt'],team['branch'])
     api.clock_out(team['wt'],team['branch'])
     second=api.register('second@example.test','Second','Strong-password-123')
@@ -30,36 +30,32 @@ def test_overview_shortcut_opens_the_requested_shift_and_approves_it(api,team,en
     recent=planned_clock_in(api,token,team['branch'])
     api.clock_out(token,team['branch'])
     app=app_for(team['ot'],engine,monkeypatch)
-    app.button(key=f'home_review_{old}').click().run()
     assert not app.exception
-    assert app.selectbox(key=f"review_entry_{team['branch']}").value==old
-    next(b for b in app.button if b.label=='Shiftactie bevestigen').click().run()
-    assert not app.exception
+    assert not any((b.key or '').startswith('home_review_') for b in app.button)
+    assert 'Shiften controleren' not in app.radio(key=f"branch_page_{team['branch']}").options
     entries={e['id']:e for e in api.entries(team['ot'],team['branch'],team=True)}
     assert entries[old]['review_status']=='approved'
-    assert entries[recent]['review_status']=='pending'
+    assert entries[recent]['review_status']=='approved'
 
 
-def test_alert_shortcut_opens_active_shift_for_correction(api,team,engine,monkeypatch):
+def test_alert_page_has_no_manual_review_shortcut(api,team,engine,monkeypatch):
     entry=planned_clock_in(api,team['wt'],team['branch'])
     future=now()+timedelta(hours=2)
     monkeypatch.setattr('workforce.service.now',lambda:future)
     app=app_for(team['ot'],engine,monkeypatch)
     app.radio(key=f"branch_page_{team['branch']}").set_value('Meldingen').run()
-    app.button(key=f'alert_review_{entry}').click().run()
     assert not app.exception
-    assert app.selectbox(key=f"review_status_{team['branch']}").value=='Bezig'
-    assert app.selectbox(key=f"review_entry_{team['branch']}").value==entry
-    assert next(s for s in app.selectbox if s.label=='Shiftactie').options==['Corrigeren']
+    assert not any(b.key==f'alert_review_{entry}' for b in app.button)
+    assert not any(s.label=='Shiftactie' for s in app.selectbox)
 
 
-def test_foreign_shift_focus_does_not_leak_employee_details(api,team,engine,monkeypatch):
-    foreign=planned_clock_in(api,team['xt'],team['other_branch'])
+def test_stale_review_navigation_is_ignored(api,team,engine,monkeypatch):
     app=app_for(team['ot'],engine,monkeypatch)
-    app.session_state[f"focus_review_{team['branch']}"]=foreign
-    app.radio(key=f"branch_page_{team['branch']}").set_value('Shiften controleren').run()
+    app.session_state[f"branch_page_{team['branch']}"]='Shiften controleren'
+    app.run()
     assert not app.exception
-    assert any('niet meer beschikbaar' in i.value for i in app.info)
+    assert app.radio(key=f"branch_page_{team['branch']}").value=='Overzicht'
+    assert 'Shiften controleren' not in app.radio(key=f"branch_page_{team['branch']}").options
     assert not any(s.label=='Shift selecteren' for s in app.selectbox)
 
 
