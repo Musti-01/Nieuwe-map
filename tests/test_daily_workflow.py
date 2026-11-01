@@ -75,7 +75,7 @@ def test_employee_next_shift_and_midnight_opening_are_explicit(api,team,engine,m
     assert any('Volgende shift: 05-05-2020 00:05' in i.value for i in app.info)
     assert any('Inklokken mogelijk vanaf 05-05-2020 00:00' in m.value for m in app.markdown)
     assert not any(b.label=='Inklokken' for b in app.button)
-    assert any('winkelscanner' in i.value for i in app.info)
+    assert any('Scan met je gsm' in i.value for i in app.info)
 
 
 def test_existing_employee_shortcut_and_planning_date(api,team,engine,monkeypatch):
