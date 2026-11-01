@@ -552,6 +552,10 @@ class Service:
                 if not employee or not employee.is_active or not membership or membership.role == "revoked":
                     raise Denied("Deze medewerker heeft geen actieve toegang tot deze vestiging.")
 
+                token_hash = digest(qr_code.strip())
+                if s.get(QRScanUse, token_hash):
+                    raise Denied("Deze QR-code is al gebruikt. Wacht op de volgende QR-code.")
+
                 current = now()
                 tz = ZoneInfo(os.getenv("APP_TIMEZONE", "Europe/Brussels"))
                 eligible = []
@@ -570,7 +574,6 @@ class Service:
                     raise ValueError("Geen geldige ingeplande shift om nu voor in te klokken.")
                 plan = min(eligible, key=lambda p: abs((p.starts_at - current).total_seconds()))
 
-                token_hash = digest(qr_code.strip())
                 claimed = s.scalar(
                     insert(QRScanUse)
                     .values(
