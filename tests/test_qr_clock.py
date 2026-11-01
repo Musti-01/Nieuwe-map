@@ -25,5 +25,5 @@ def test_qr_secret_required(monkeypatch):
 def test_qr_svg_rendered_locally(monkeypatch):
     monkeypatch.setenv("SHIFTFLOW_QR_SECRET", "0123456789abcdef0123456789abcdef")
     svg = qr_svg(build_employee_code(1, 1, time.time()))
-    assert "<svg" in svg
-    assert "</svg>" in svg
+    assert b"<svg" in svg
+    assert b"</svg>" in svg
