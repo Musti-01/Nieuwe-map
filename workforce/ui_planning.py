@@ -28,7 +28,7 @@ def show_planning(api,token,branch_id,admin,tz,zone,run):
         st.dataframe(translated_table(rows),hide_index=True,use_container_width=True)
     else:
         st.info(tr('Nog geen shiften gepland in deze periode.'))
-    st.caption(tr('Geregistreerde uren kunnen nog op controle wachten. Goedkeuring gebeurt via Shiften controleren; planning keurt geen uren automatisch goed.'))
+    st.caption(tr('Geregistreerde uren worden na uitklokken automatisch verwerkt.'))
     from workforce.ui_absences import KINDS, STATUSES
     period_absences = [a for a in absences if a['start'] < end.astimezone(tz).date() and a['end'] >= begin.astimezone(tz).date() and a['status'] in ('pending', 'approved')]
     if period_absences:
@@ -149,13 +149,8 @@ def show_alerts(api,token,branch_id,admin,run):
                 st.warning(tr('{v0}: {v1}', v0=a['medewerker'], v1=tr(a['melding'])))
             else:
                 st.info(tr('{v0}: {v1}', v0=a['medewerker'], v1=tr(a['melding'])))
-            if admin:
-                from workforce.ui_navigation import open_shift_review
-                st.button(tr('Shift bekijken en controleren'), key=f"alert_review_{a['shift']}", on_click=open_shift_review, args=(branch_id, a['shift']))
     elif alerts is not None:
         st.success(tr('Geen openstaande meldingen.'))
-    st.write(tr('Vergeten uitklokken: meer dan 15 minuten na de gekoppelde geplande eindtijd, of meer dan 12 uur ingeklokt zonder zo’n afwijking. Controleer de werkelijke tijden voordat je uren goedkeurt.'))
-    if admin:
-        st.write(tr('Gebruik Shiften controleren voor correcties en goedkeuringen.'))
+    st.write(tr('Vergeten uitklokken: meer dan 15 minuten na de gekoppelde geplande eindtijd, of meer dan 12 uur ingeklokt zonder zo’n afwijking. Vraag de medewerker om uit te klokken zodra de shift is afgelopen.'))
     if st.button(tr('Meldingen verversen')):
         st.rerun()
