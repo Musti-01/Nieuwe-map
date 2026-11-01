@@ -3622,5 +3622,245 @@
     "en": "Former employees with monthly pay need a contract check. Their amount is excluded from the totals.",
     "de": "Bei ehemaligen Mitarbeitern mit Monatslohn muss der Vertrag geprüft werden. Ihr Betrag ist nicht in den Summen enthalten.",
     "es": "Los antiguos empleados con salario mensual requieren revisar su contrato. Su importe no se incluye en los totales."
+  },
+  "Scanners": {
+    "fr": "Scanners",
+    "en": "Scanners",
+    "de": "Scanner",
+    "es": "Escáneres"
+  },
+  "Beschikbaarheden": {
+    "fr": "Disponibilités",
+    "en": "Availability",
+    "de": "Verfügbarkeiten",
+    "es": "Disponibilidades"
+  },
+  "Mijn beschikbaarheid": {
+    "fr": "Ma disponibilité",
+    "en": "My availability",
+    "de": "Meine Verfügbarkeit",
+    "es": "Mi disponibilidad"
+  },
+  "Persoonlijke QR-code": {
+    "fr": "Code QR personnel",
+    "en": "Personal QR code",
+    "de": "Persönlicher QR-Code",
+    "es": "Código QR personal"
+  },
+  "Nieuwe QR over": {
+    "fr": "Nouveau QR dans",
+    "en": "New QR in",
+    "de": "Neuer QR in",
+    "es": "Nuevo QR en"
+  },
+  "Winkelscanners": {
+    "fr": "Scanners du magasin",
+    "en": "Store scanners",
+    "de": "Filialscanner",
+    "es": "Escáneres de tienda"
+  },
+  "Scannernaam": {
+    "fr": "Nom du scanner",
+    "en": "Scanner name",
+    "de": "Scannername",
+    "es": "Nombre del escáner"
+  },
+  "Scanner registreren": {
+    "fr": "Enregistrer le scanner",
+    "en": "Register scanner",
+    "de": "Scanner registrieren",
+    "es": "Registrar escáner"
+  },
+  "Scanner": {
+    "fr": "Scanner",
+    "en": "Scanner",
+    "de": "Scanner",
+    "es": "Escáner"
+  },
+  "Ingetrokken": {
+    "fr": "Révoqué",
+    "en": "Revoked",
+    "de": "Widerrufen",
+    "es": "Revocado"
+  },
+  "Aangemaakt": {
+    "fr": "Créé",
+    "en": "Created",
+    "de": "Erstellt",
+    "es": "Creado"
+  },
+  "Laatst gezien": {
+    "fr": "Dernière activité",
+    "en": "Last seen",
+    "de": "Zuletzt gesehen",
+    "es": "Visto por última vez"
+  },
+  "Scanner intrekken": {
+    "fr": "Révoquer le scanner",
+    "en": "Revoke scanner",
+    "de": "Scanner widerrufen",
+    "es": "Revocar escáner"
+  },
+  "Scannerrechten intrekken": {
+    "fr": "Révoquer les droits du scanner",
+    "en": "Revoke scanner access",
+    "de": "Scannerzugriff widerrufen",
+    "es": "Revocar acceso del escáner"
+  },
+  "ShiftFlow winkelscanner": {
+    "fr": "Scanner magasin ShiftFlow",
+    "en": "ShiftFlow store scanner",
+    "de": "ShiftFlow Filialscanner",
+    "es": "Escáner de tienda ShiftFlow"
+  },
+  "USB/Bluetooth scanner": {
+    "fr": "Scanner USB/Bluetooth",
+    "en": "USB/Bluetooth scanner",
+    "de": "USB-/Bluetooth-Scanner",
+    "es": "Escáner USB/Bluetooth"
+  },
+  "Tablet-camera": {
+    "fr": "Caméra de la tablette",
+    "en": "Tablet camera",
+    "de": "Tablet-Kamera",
+    "es": "Cámara de la tableta"
+  },
+  "QR-scan": {
+    "fr": "Scan QR",
+    "en": "QR scan",
+    "de": "QR-Scan",
+    "es": "Escaneo QR"
+  },
+  "Scan verwerken": {
+    "fr": "Traiter le scan",
+    "en": "Process scan",
+    "de": "Scan verarbeiten",
+    "es": "Procesar escaneo"
+  },
+  "Scan QR met camera": {
+    "fr": "Scanner le QR avec la caméra",
+    "en": "Scan QR with camera",
+    "de": "QR mit Kamera scannen",
+    "es": "Escanear QR con cámara"
+  },
+  "Geregistreerde inkloktijd": {
+    "fr": "Heure d'entrée enregistrée",
+    "en": "Recorded clock-in time",
+    "de": "Erfasste Einstempelzeit",
+    "es": "Hora de entrada registrada"
+  },
+  "Scanner op dit toestel ontkoppelen": {
+    "fr": "Dissocier le scanner de cet appareil",
+    "en": "Disconnect scanner on this device",
+    "de": "Scanner auf diesem Gerät trennen",
+    "es": "Desvincular escáner de este dispositivo"
+  },
+  "Beschikbare dag": {
+    "fr": "Jour disponible",
+    "en": "Available day",
+    "de": "Verfügbarer Tag",
+    "es": "Día disponible"
+  },
+  "Vanaf": {
+    "fr": "De",
+    "en": "From",
+    "de": "Von",
+    "es": "Desde"
+  },
+  "Tot": {
+    "fr": "À",
+    "en": "Until",
+    "de": "Bis",
+    "es": "Hasta"
+  },
+  "Elke week herhalen": {
+    "fr": "Répéter chaque semaine",
+    "en": "Repeat every week",
+    "de": "Jede Woche wiederholen",
+    "es": "Repetir cada semana"
+  },
+  "Herhalen tot": {
+    "fr": "Répéter jusqu'au",
+    "en": "Repeat until",
+    "de": "Wiederholen bis",
+    "es": "Repetir hasta"
+  },
+  "Beschikbaarheid opslaan": {
+    "fr": "Enregistrer la disponibilité",
+    "en": "Save availability",
+    "de": "Verfügbarkeit speichern",
+    "es": "Guardar disponibilidad"
+  },
+  "Beschikbaarheid toevoegen of wijzigen": {
+    "fr": "Ajouter ou modifier une disponibilité",
+    "en": "Add or edit availability",
+    "de": "Verfügbarkeit hinzufügen oder ändern",
+    "es": "Añadir o editar disponibilidad"
+  },
+  "Nieuw tijdsblok": {
+    "fr": "Nouveau créneau",
+    "en": "New time slot",
+    "de": "Neues Zeitfenster",
+    "es": "Nuevo bloque horario"
+  },
+  "Eenmalig": {
+    "fr": "Unique",
+    "en": "One-time",
+    "de": "Einmalig",
+    "es": "Una vez"
+  },
+  "Wekelijks": {
+    "fr": "Hebdomadaire",
+    "en": "Weekly",
+    "de": "Wöchentlich",
+    "es": "Semanal"
+  },
+  "Herhaling": {
+    "fr": "Récurrence",
+    "en": "Recurrence",
+    "de": "Wiederholung",
+    "es": "Repetición"
+  },
+  "Medewerkers per tijdsblok": {
+    "fr": "Employés par créneau",
+    "en": "Employees per time slot",
+    "de": "Mitarbeiter pro Zeitfenster",
+    "es": "Empleados por bloque horario"
+  },
+  "Beschikbare medewerkers": {
+    "fr": "Employés disponibles",
+    "en": "Available employees",
+    "de": "Verfügbare Mitarbeiter",
+    "es": "Empleados disponibles"
+  },
+  "Datum beschikbaarheden": {
+    "fr": "Date des disponibilités",
+    "en": "Availability date",
+    "de": "Verfügbarkeitsdatum",
+    "es": "Fecha de disponibilidad"
+  },
+  "beschikbaar": {
+    "fr": "disponible",
+    "en": "available",
+    "de": "verfügbar",
+    "es": "disponible"
+  },
+  "niet als beschikbaar opgegeven": {
+    "fr": "non indiqué comme disponible",
+    "en": "not marked available",
+    "de": "nicht als verfügbar angegeben",
+    "es": "no indicado como disponible"
+  },
+  "afwezig": {
+    "fr": "absent",
+    "en": "absent",
+    "de": "abwesend",
+    "es": "ausente"
+  },
+  "reeds ingepland": {
+    "fr": "déjà planifié",
+    "en": "already scheduled",
+    "de": "bereits eingeplant",
+    "es": "ya programado"
   }
 }
