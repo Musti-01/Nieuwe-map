@@ -3,6 +3,7 @@ import pytest
 from workforce.qr_station import (
     build_scan_url,
     build_station_code,
+    qr_svg,
     verify_station_code,
 )
 
@@ -38,3 +39,9 @@ def test_missing_secret_is_rejected(monkeypatch):
     monkeypatch.delenv("SHIFTFLOW_QR_SECRET", raising=False)
     with pytest.raises(RuntimeError):
         build_station_code(1, 150.0)
+
+
+def test_qr_svg_is_generated():
+    svg = qr_svg("https://shiftflow.example?clock=sfq1.test")
+    assert "<svg" in svg
+    assert "</svg>" in svg
