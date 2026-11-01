@@ -4,6 +4,7 @@ from urllib.parse import urlsplit, urlencode
 import hashlib
 import re
 import secrets
+from types import SimpleNamespace
 from datetime import date, datetime, time, timedelta, timezone
 from zoneinfo import ZoneInfo
 from workforce.clock_policy import clock_in_allowed
@@ -1084,6 +1085,225 @@ class Service:
                 s.execute(delete(AuthSession).where(AuthSession.user_id==target.id))
             self._audit(s,actor,None,'account.reactivated' if enabled else 'account.deactivated',f'user={target.id}; reason={reason}')
             return True
+
+    def availability_rules(self, token, branch_id, team=False):
+        with self.sessions.begin() as s:
+            actor = self._actor(s, token)
+            self._access(s, actor, branch_id, admin=team)
+            q = select(Availability, User.name).join(User, User.id == Availability.user_id).where(
+                Availability.branch_id == branch_id
+            )
+            if not team:
+                q = q.where(Availability.user_id == actor.id)
+            return [
+                {
+                    "id": a.id,
+                    "user_id": a.user_id,
+                    "name": name,
+                    "start": a.starts_at,
+                    "end": a.ends_at,
+                    "weekly": a.weekly,
+                    "recurrence_until": a.recurrence_until,
+                    "version": a.version,
+                }
+                for a, name in s.execute(q.order_by(Availability.starts_at, Availability.id))
+            ]
+
+    def _availability_rules_overlap(self, existing, candidate, tz):
+        from workforce.availability import occurrences
+
+        def final_end(rule):
+            if rule.weekly:
+                return datetime.combine(
+                    rule.recurrence_until + timedelta(days=1),
+                    time.min,
+                    tzinfo=tz,
+                )
+            return rule.ends_at.astimezone(tz)
+
+        begin = min(existing.starts_at.astimezone(tz), candidate.starts_at.astimezone(tz)) - timedelta(days=1)
+        end = max(final_end(existing), final_end(candidate)) + timedelta(days=1)
+        left = occurrences(existing, begin, end, tz)
+        right = occurrences(candidate, begin, end, tz)
+        return any(a_start < b_end and a_end > b_start for _, a_start, a_end in left for _, b_start, b_end in right)
+
+    def save_availability(self, token, branch_id, start, end, weekly=False,
+                          recurrence_until=None, availability_id=None, version=None):
+        from workforce.availability import validate_rule
+        tz = ZoneInfo(os.getenv("APP_TIMEZONE", "Europe/Brussels"))
+        local_start, local_end = validate_rule(start, end, bool(weekly), recurrence_until, tz)
+        with self.sessions.begin() as s:
+            actor = self._actor(s, token)
+            self._access(s, actor, branch_id, lock=True)
+            membership = s.get(Membership, (branch_id, actor.id), populate_existing=True)
+            if not membership or membership.role == "revoked":
+                raise Denied("Alleen gekoppelde medewerkers kunnen beschikbaarheid instellen.")
+
+            current = None
+            if availability_id is not None:
+                current = s.scalar(
+                    select(Availability).where(
+                        Availability.id == availability_id,
+                        Availability.branch_id == branch_id,
+                        Availability.user_id == actor.id,
+                    ).with_for_update()
+                )
+                if not current:
+                    raise Denied("Je kunt alleen je eigen beschikbaarheid wijzigen.")
+                if current.version != version:
+                    raise ValueError("De beschikbaarheid is gewijzigd; ververs het overzicht.")
+
+            candidate = SimpleNamespace(
+                id=availability_id or -1,
+                starts_at=local_start,
+                ends_at=local_end,
+                weekly=bool(weekly),
+                recurrence_until=recurrence_until,
+            )
+            others = s.scalars(
+                select(Availability).where(
+                    Availability.branch_id == branch_id,
+                    Availability.user_id == actor.id,
+                    Availability.id != (availability_id or -1),
+                )
+            )
+            for other in others:
+                if self._availability_rules_overlap(other, candidate, tz):
+                    raise ValueError("Deze beschikbaarheid overlapt met een bestaand tijdsblok.")
+
+            timestamp = now()
+            if current:
+                current.starts_at = local_start
+                current.ends_at = local_end
+                current.weekly = bool(weekly)
+                current.recurrence_until = recurrence_until
+                current.updated_at = timestamp
+                current.version += 1
+                saved = current
+                action = "availability.updated"
+            else:
+                saved = Availability(
+                    branch_id=branch_id,
+                    user_id=actor.id,
+                    starts_at=local_start,
+                    ends_at=local_end,
+                    weekly=bool(weekly),
+                    recurrence_until=recurrence_until,
+                    version=1,
+                    created_at=timestamp,
+                    updated_at=timestamp,
+                )
+                s.add(saved)
+                action = "availability.created"
+            s.flush()
+            self._audit(s, actor, branch_id, action, f"availability={saved.id}")
+            return saved.id
+
+    def delete_availability(self, token, branch_id, availability_id, version):
+        with self.sessions.begin() as s:
+            actor = self._actor(s, token)
+            self._access(s, actor, branch_id, lock=True)
+            rule = s.scalar(
+                select(Availability).where(
+                    Availability.id == availability_id,
+                    Availability.branch_id == branch_id,
+                    Availability.user_id == actor.id,
+                ).with_for_update()
+            )
+            if not rule:
+                raise Denied("Je kunt alleen je eigen beschikbaarheid verwijderen.")
+            if rule.version != version:
+                raise ValueError("De beschikbaarheid is gewijzigd; ververs het overzicht.")
+            s.delete(rule)
+            self._audit(s, actor, branch_id, "availability.deleted", f"availability={availability_id}")
+            return True
+
+    def availability_occurrences(self, token, branch_id, begin, end, team=False):
+        from workforce.availability import occurrences
+        if not all(isinstance(v, datetime) and v.tzinfo is not None and v.utcoffset() is not None for v in (begin, end)):
+            raise ValueError("Geef een geldige periode met tijdzone op.")
+        if end <= begin or end - begin > timedelta(days=93):
+            raise ValueError("Kies een periode van maximaal 93 dagen.")
+        tz = ZoneInfo(os.getenv("APP_TIMEZONE", "Europe/Brussels"))
+        with self.sessions.begin() as s:
+            actor = self._actor(s, token)
+            self._access(s, actor, branch_id, admin=team)
+            q = select(Availability, User.name).join(User, User.id == Availability.user_id).where(
+                Availability.branch_id == branch_id
+            )
+            if not team:
+                q = q.where(Availability.user_id == actor.id)
+            result = []
+            for rule, name in s.execute(q.order_by(User.name, Availability.starts_at)):
+                for _, start_at, end_at in occurrences(rule, begin, end, tz):
+                    shift_conflict = bool(s.scalar(
+                        select(ShiftPlan.id).where(
+                            ShiftPlan.user_id == rule.user_id,
+                            ShiftPlan.status == "scheduled",
+                            ShiftPlan.starts_at < end_at,
+                            ShiftPlan.ends_at > start_at,
+                        ).limit(1)
+                    ))
+                    absence_conflict = self._absence_conflict(s, branch_id, rule.user_id, start_at, end_at)
+                    result.append({
+                        "availability_id": rule.id,
+                        "user_id": rule.user_id,
+                        "name": name,
+                        "start": start_at,
+                        "end": end_at,
+                        "weekly": rule.weekly,
+                        "recurrence_until": rule.recurrence_until,
+                        "version": rule.version,
+                        "shift_conflict": shift_conflict,
+                        "absence_conflict": absence_conflict,
+                    })
+            return sorted(result, key=lambda r: (r["start"], r["name"], r["end"]))
+
+    def planning_candidates(self, token, branch_id, start, end, exclude_plan_id=None):
+        from workforce.availability import occurrences
+        if not all(isinstance(v, datetime) and v.tzinfo is not None and v.utcoffset() is not None for v in (start, end)) or end <= start:
+            raise ValueError("Geef geldige begin- en eindtijden met tijdzone.")
+        tz = ZoneInfo(os.getenv("APP_TIMEZONE", "Europe/Brussels"))
+        with self.sessions.begin() as s:
+            actor = self._actor(s, token)
+            self._access(s, actor, branch_id, admin=True)
+            members = list(s.execute(
+                select(User, Membership).join(Membership).where(
+                    Membership.branch_id == branch_id,
+                    Membership.role != "revoked",
+                    User.is_active.is_(True),
+                ).order_by(User.name)
+            ))
+            rules = list(s.scalars(select(Availability).where(Availability.branch_id == branch_id)))
+            result = []
+            for user, membership in members:
+                available = False
+                for rule in rules:
+                    if rule.user_id != user.id:
+                        continue
+                    if any(a <= start and b >= end for _, a, b in occurrences(rule, start, end, tz)):
+                        available = True
+                        break
+                overlap = select(ShiftPlan.id).where(
+                    ShiftPlan.user_id == user.id,
+                    ShiftPlan.status == "scheduled",
+                    ShiftPlan.starts_at < end,
+                    ShiftPlan.ends_at > start,
+                )
+                if exclude_plan_id is not None:
+                    overlap = overlap.where(ShiftPlan.id != exclude_plan_id)
+                shift_conflict = bool(s.scalar(overlap.limit(1)))
+                absence_conflict = self._absence_conflict(s, branch_id, user.id, start, end)
+                result.append({
+                    "id": user.id,
+                    "name": user.name,
+                    "email": user.email,
+                    "role": membership.role,
+                    "available": available,
+                    "shift_conflict": shift_conflict,
+                    "absence_conflict": absence_conflict,
+                })
+            return sorted(result, key=lambda r: (not r["available"], r["absence_conflict"] or r["shift_conflict"], r["name"].casefold()))
 
     def plans(self, token, branch_id, team=False):
         with self.sessions.begin() as s:
