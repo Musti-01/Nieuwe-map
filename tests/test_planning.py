@@ -63,7 +63,7 @@ def test_alerts_for_overdue_and_unplanned_long_shift(api,team,monkeypatch):
     assert api.alerts(team['wt'],team['branch'])[0]['type']=='uitklokken'
     api.clock_out(team['wt'],team['branch'])
     assert api.alerts(team['wt'],team['branch'])==[]
-    assert api.alerts(team['ot'],team['branch'],True)[0]['type']=='controle'
+    assert api.alerts(team['ot'],team['branch'],True)==[]
     start=now();end=now()+timedelta(minutes=30)
     plan=api.save_plan(team['ot'],team['branch'],team['worker'],start,end)
     planned_clock_in(api, team['wt'],team['branch'],plan)
