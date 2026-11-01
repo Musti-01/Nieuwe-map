@@ -503,18 +503,31 @@ class Service:
     def _scanner_device(self, s, scanner_token, lock=False):
         if not isinstance(scanner_token, str) or not (32 <= len(scanner_token) <= 200):
             raise Denied("Scanner niet geautoriseerd.")
-        q = select(ScannerDevice).where(
-            ScannerDevice.token_hash == digest(scanner_token),
+        token_hash = digest(scanner_token)
+        device = s.scalar(select(ScannerDevice).where(
+            ScannerDevice.token_hash == token_hash,
             ScannerDevice.revoked_at.is_(None),
-        )
-        if lock:
-            q = q.with_for_update()
-        device = s.scalar(q)
+        ))
         if not device:
             raise Denied("Scanner niet geautoriseerd.")
         branch = s.get(Branch, device.branch_id, populate_existing=True)
         org = s.get(Organization, branch.organization_id, populate_existing=True) if branch else None
-        if not branch or not org or branch.archived_at is not None or branch.status != "approved" or org.status != "approved":
+        if lock and branch and org:
+            # Keep the same lock order as authenticated branch writes: organization -> branch -> scanner.
+            org = s.scalar(select(Organization).where(
+                Organization.id == org.id
+            ).with_for_update().execution_options(populate_existing=True))
+            branch = s.scalar(select(Branch).where(
+                Branch.id == branch.id
+            ).with_for_update().execution_options(populate_existing=True))
+            device = s.scalar(select(ScannerDevice).where(
+                ScannerDevice.id == device.id,
+                ScannerDevice.token_hash == token_hash,
+            ).with_for_update().execution_options(populate_existing=True))
+        if (
+            not device or device.revoked_at is not None or not branch or not org
+            or branch.archived_at is not None or branch.status != "approved" or org.status != "approved"
+        ):
             raise Denied("Deze scanner hoort niet bij een actieve vestiging.")
         device.last_seen_at = now()
         return device, branch, org
