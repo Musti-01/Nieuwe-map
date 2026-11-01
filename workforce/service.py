@@ -683,9 +683,13 @@ class Service:
             e = s.scalar(select(WorkEntry).where(WorkEntry.user_id == u.id, WorkEntry.branch_id == branch_id, WorkEntry.ended_at.is_(None)).with_for_update())
             if not e:
                 raise ValueError("Geen actieve sessie in deze vestiging.")
-            e.ended_at = now()
+            ended_at = now()
+            e.ended_at = ended_at
+            e.review_status = "approved"
+            e.reviewed_by = u.id
+            e.reviewed_at = ended_at
             e.version += 1
-            self._audit(s, u, branch_id, "clock.out", f"entry={e.id}")
+            self._audit(s, u, branch_id, "clock.out", f"entry={e.id}; auto_processed=true")
             return e.id
 
     def entries(self, token, branch_id, team=False):
@@ -816,8 +820,11 @@ class Service:
                 active = list(s.scalars(select(WorkEntry).where(WorkEntry.branch_id.in_(branches), WorkEntry.ended_at.is_(None)).with_for_update()))
                 for entry in active:
                     entry.ended_at = entity.reviewed_at
+                    entry.review_status = "approved"
+                    entry.reviewed_by = u.id
+                    entry.reviewed_at = entity.reviewed_at
                     entry.version += 1
-                    self._audit(s, u, entry.branch_id, "clock.closed_by_block", f"entry={entry.id}; decision={d.id}")
+                    self._audit(s, u, entry.branch_id, "clock.closed_by_block", f"entry={entry.id}; decision={d.id}; auto_processed=true")
             self._audit(s, u, d.branch_id, "approval." + action, f"{kind}={entity.id}; {old}->{new}; decision={d.id}")
             owner_user = s.get(User, org.owner_id)
             title = {"approved": "Goedgekeurd", "rejected": "Geweigerd", "blocked": "Geblokkeerd"}[new]
@@ -848,8 +855,11 @@ class Service:
                 entries = s.scalars(select(WorkEntry).where(WorkEntry.branch_id == b.id, WorkEntry.ended_at.is_(None)).with_for_update())
                 for entry in entries:
                     entry.ended_at = b.archived_at
+                    entry.review_status = "approved"
+                    entry.reviewed_by = u.id
+                    entry.reviewed_at = b.archived_at
                     entry.version += 1
-                    self._audit(s, u, b.id, "clock.closed_by_archive", f"entry={entry.id}")
+                    self._audit(s, u, b.id, "clock.closed_by_archive", f"entry={entry.id}; auto_processed=true")
             else:
                 return True
             self._audit(s, u, b.id, "branch.restored" if restore else "branch.archived", b.name)
@@ -1158,9 +1168,13 @@ class Service:
             target.is_active=enabled
             if not enabled:
                 for entry in s.scalars(select(WorkEntry).where(WorkEntry.user_id==target.id,WorkEntry.ended_at.is_(None)).with_for_update()):
-                    entry.ended_at=now()
+                    ended_at=now()
+                    entry.ended_at=ended_at
+                    entry.review_status='approved'
+                    entry.reviewed_by=actor.id
+                    entry.reviewed_at=ended_at
                     entry.version+=1
-                    self._audit(s,actor,entry.branch_id,'clock.closed_by_deactivation',f'entry={entry.id}; user={target.id}')
+                    self._audit(s,actor,entry.branch_id,'clock.closed_by_deactivation',f'entry={entry.id}; user={target.id}; auto_processed=true')
                 s.execute(delete(AuthSession).where(AuthSession.user_id==target.id))
             self._audit(s,actor,None,'account.reactivated' if enabled else 'account.deactivated',f'user={target.id}; reason={reason}')
             return True
