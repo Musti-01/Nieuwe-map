@@ -91,7 +91,7 @@ def test_employee_shift_screen_and_preference_restore(api,team,engine,monkeypatc
     assert not app.exception
     assert app.selectbox(key='language').value==language
     assert app.tabs[1].label==tr('Mijn shiften')
-    assert app.dataframe[0].value.iloc[0][tr('Status')]==tr('Wacht op controle')
+    assert app.dataframe[0].value.iloc[0][tr('Status')]==tr('Goedgekeurd')
     app.selectbox(key='language').set_value('nl').run()
     assert api.identity(team['wt'])['language']=='nl'
 
