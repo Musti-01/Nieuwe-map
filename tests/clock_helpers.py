@@ -19,4 +19,6 @@ def planned_clock_in(api, token, branch_id, plan_id=None):
             s.add(plan)
             s.flush()
             plan_id=plan.id
-    return api.clock_in(token, branch_id, plan_id)
+    with api.sessions.begin() as s:
+        actor = api._actor(s, token)
+        return api._clock_in_locked(s, actor, branch_id, plan_id).id

@@ -16,7 +16,7 @@ from workforce.ui_design import apply_design, brand, welcome
 apply_design()
 
 @st.cache_resource
-def backend_engine(schema_revision="0009"):
+def backend_engine(schema_revision="0010"):
     engine = make_engine()
     if os.getenv('AUTO_MIGRATE') == '1':
         from workforce.hosting import migrate
@@ -38,6 +38,17 @@ try:
                 'resend' if os.getenv('RESEND_API_KEY') else os.getenv('SMTP_HOST'))
 except (RuntimeError, SQLAlchemyError):
     st.error(tr('Database nog niet geconfigureerd. Stel DATABASE_URL in en voer de migraties uit; zie README.'))
+    st.stop()
+
+scanner_token = st.query_params.get('scanner')
+if isinstance(scanner_token, str) and scanner_token:
+    try:
+        scanner_tz = ZoneInfo(os.getenv('APP_TIMEZONE', 'Europe/Brussels'))
+    except Exception:
+        st.error(tr('APP_TIMEZONE is ongeldig.'))
+        st.stop()
+    from workforce.ui_qr_clock import show_scanner_station
+    show_scanner_station(api, scanner_token, scanner_tz)
     st.stop()
 
 def run(action, success=None):
@@ -189,7 +200,7 @@ if b['status'] != 'approved' or b['organization_status'] != 'approved':
     st.stop()
 st.caption(tr('{v0} · {v1}', v0=b['organization'], v1=tr('Organisatie-eigenaar' if b['owner'] else 'Vestigingsadmin' if b['admin'] else 'Medewerker')))
 if b['admin']:
-    pages = ['Overzicht', 'Medewerkers toevoegen', 'Medewerkers & rechten', 'Planning', 'Afwezigheden', 'Werkuren', 'Shiften controleren', 'Meldingen', 'Ziektebriefjes', 'Auditlog']
+    pages = ['Overzicht', 'Scanners', 'Beschikbaarheden', 'Medewerkers toevoegen', 'Medewerkers & rechten', 'Planning', 'Afwezigheden', 'Werkuren', 'Shiften controleren', 'Meldingen', 'Ziektebriefjes', 'Auditlog']
     if b['owner']:
         pages.insert(pages.index('Werkuren')+1, 'Lonen')
     if b['member']:
@@ -201,7 +212,7 @@ if b['admin']:
         page = st.radio(tr('Vestigingsbeheer'), pages, key=page_key, format_func=tr)
 else:
     page = None
-    tabs = st.tabs([tr('In- en uitklokken'), tr('Mijn shiften'), tr('Planning'), tr('Meldingen'), tr('Ziektebriefjes'), tr('Afwezigheden')])
+    tabs = st.tabs([tr('In- en uitklokken'), tr('Mijn shiften'), tr('Planning'), tr('Meldingen'), tr('Ziektebriefjes'), tr('Afwezigheden'), tr('Mijn beschikbaarheid')])
 zone = os.getenv('APP_TIMEZONE', 'Europe/Brussels')
 try:
     tz = ZoneInfo(zone)
@@ -212,6 +223,12 @@ except Exception:
 if b['admin'] and page == 'Overzicht':
     from workforce.ui_manager import show_manager_home
     show_manager_home(api, token, branch_id, page_key, run, tz, owner=b['owner'])
+if b['admin'] and page == 'Scanners':
+    from workforce.ui_qr_clock import show_scanner_management
+    show_scanner_management(api, token, branch_id, run)
+if b['admin'] and page == 'Beschikbaarheden':
+    from workforce.ui_availability import show_team_availability
+    show_team_availability(api, token, branch_id, tz, zone, run)
 if b['admin'] and page == 'Medewerkers toevoegen':
     st.subheader(tr('Medewerkers toevoegen'))
     st.write(tr('Nodig een nieuwe medewerker uit via e-mail. Heeft de medewerker al een account? Koppel die via Medewerkers & rechten.'))
@@ -222,7 +239,7 @@ if b['admin'] and page == 'Medewerkers toevoegen':
 if not b['admin'] or page == 'Mijn werktijd':
     if b['admin']:
         st.info(tr('Dit onderdeel is alleen voor je eigen gewerkte uren. Je hoeft niet in te klokken om je vestiging te beheren.'))
-        tabs = st.tabs([tr('In- en uitklokken'), tr('Mijn shiften')])
+        tabs = st.tabs([tr('In- en uitklokken'), tr('Mijn shiften'), tr('Mijn beschikbaarheid')])
     with tabs[0]:
         entries = run(lambda: api.entries(token, branch_id))
         if entries is None:
@@ -232,19 +249,15 @@ if not b['admin'] or page == 'Mijn werktijd':
         active = next((e for e in entries if not e['end']), None)
         from workforce.ui_clock import show_clock_availability
         choices = show_clock_availability(my_plans, active, snapshot, tz)
-        plan_id = None
-        if choices:
-            plan_id = st.selectbox(tr('Inklokken voor'), [p['id'] for p in choices], format_func=translated_formatter(lambda i: next((tr('{v0:%d-%m %H:%M} – {v1:%H:%M}', v0=p['start'].astimezone(tz), v1=p['end'].astimezone(tz)) for p in choices if p['id'] == i))))
         if st.button(tr('Inklokmogelijkheden verversen')):
             st.rerun()
         if b['member']:
-            a, c = st.columns(2)
-            with a:
-                if st.button(tr('Inklokken'), type="primary", disabled=active is not None or plan_id is None, use_container_width=True):
-                    if run(lambda: api.clock_in(token, branch_id, plan_id), "Je bent ingeklokt."):
-                        st.rerun()
-            with c:
-                if st.button(tr('Uitklokken'), disabled=active is None, use_container_width=True):
+            if active is None:
+                st.info(tr('Inklokken gebeurt uitsluitend via de geautoriseerde winkelscanner. Toon hieronder je persoonlijke QR-code.'))
+                from workforce.ui_qr_clock import show_employee_qr
+                show_employee_qr(api, token, me['id'], branch_id, tz)
+            else:
+                if st.button(tr('Uitklokken'), use_container_width=True):
                     if run(lambda: api.clock_out(token, branch_id), "Je bent uitgeklokt."):
                         st.rerun()
         st.caption(tr('Een actieve sessie in een andere vestiging moet je daar eerst afsluiten.'))
@@ -287,6 +300,11 @@ if not b['admin'] or page == 'Mijn werktijd':
                     st.caption(tr('Nog geen correcties of goedkeuringen voor deze shift.'))
         if st.button(tr('Shiften verversen')):
             st.rerun()
+
+    availability_tab = tabs[2] if b['admin'] else tabs[6]
+    with availability_tab:
+        from workforce.ui_availability import show_my_availability
+        show_my_availability(api, token, branch_id, tz, run)
 
 
 if b['admin'] and page == 'Werkuren':

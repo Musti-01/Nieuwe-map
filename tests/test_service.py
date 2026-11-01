@@ -118,7 +118,7 @@ def test_global_active_session_uniqueness(api, team):
     api.set_role(team['xt'], team['other_branch'], team['worker'], 'employee')
     planned_clock_in(api, team['wt'], team['branch'])
     with pytest.raises(ValueError, match='actieve'):
-        api.clock_in(team['wt'], team['other_branch'])
+        planned_clock_in(api, team['wt'], team['other_branch'])
     with pytest.raises(ValueError):
         api.set_role(team['ot'], team['branch'], team['worker'], None)
     api.clock_out(team['wt'], team['branch'])

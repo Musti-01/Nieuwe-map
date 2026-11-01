@@ -66,7 +66,7 @@ def test_clock_in_vs_deletion_never_discards_a_work_entry(api,team):
     plan=api.save_plan(team['ot'],team['branch'],team['worker'],now(),now()+timedelta(hours=1))
     def clock():
         try:
-            return bool(api.clock_in(team['wt'],team['branch'],plan))
+            return bool(planned_clock_in(api,team['wt'],team['branch'],plan))
         except (Denied,ValueError):
             return False
     def remove():

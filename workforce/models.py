@@ -218,3 +218,46 @@ class ShiftPlan(Base):
     note: Mapped[str] = mapped_column(String(500))
     version: Mapped[int] = mapped_column(Integer, default=1)
     __table_args__ = (ForeignKeyConstraint(["branch_id", "user_id"], ["memberships.branch_id", "memberships.user_id"]), CheckConstraint("ends_at > starts_at", name="plan_interval"), CheckConstraint("status IN ('scheduled', 'cancelled')", name="plan_status"))
+
+class ScannerDevice(Base):
+    __tablename__ = "scanner_devices"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    branch_id: Mapped[int] = mapped_column(ForeignKey("branches.id"), index=True)
+    name: Mapped[str] = mapped_column(String(120))
+    token_hash: Mapped[str] = mapped_column(String(64), unique=True)
+    created_by: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    last_seen_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    revoked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class QRScanUse(Base):
+    __tablename__ = "qr_scan_uses"
+    token_hash: Mapped[str] = mapped_column(String(64), primary_key=True)
+    branch_id: Mapped[int] = mapped_column(ForeignKey("branches.id"), index=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
+    scanner_id: Mapped[int] = mapped_column(ForeignKey("scanner_devices.id"))
+    used_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+
+
+class Availability(Base):
+    __tablename__ = "employee_availability"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    branch_id: Mapped[int] = mapped_column(Integer, index=True)
+    user_id: Mapped[int] = mapped_column(Integer, index=True)
+    starts_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    ends_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    weekly: Mapped[bool] = mapped_column(Boolean, default=False)
+    recurrence_until: Mapped[date | None] = mapped_column(Date)
+    version: Mapped[int] = mapped_column(Integer, default=1)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    __table_args__ = (
+        ForeignKeyConstraint(["branch_id", "user_id"], ["memberships.branch_id", "memberships.user_id"]),
+        CheckConstraint("ends_at > starts_at", name="availability_interval"),
+        CheckConstraint(
+            "(weekly = false AND recurrence_until IS NULL) OR "
+            "(weekly = true AND recurrence_until IS NOT NULL)",
+            name="availability_recurrence",
+        ),
+    )

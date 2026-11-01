@@ -46,27 +46,91 @@ def show_planning(api,token,branch_id,admin,tz,zone,run):
         return
     with st.expander(tr('Shift toevoegen of wijzigen'), expanded=True):
         editable=[p for p in plans if p['status']=='scheduled' and p['entry_id'] is None]
-        selected=st.selectbox(tr('Geplande shift bewerken'),[None]+[p['id'] for p in editable],format_func=translated_formatter(lambda i: tr('Nieuwe shift') if i is None else next((tr('{v0} · {v1:%d-%m-%Y %H:%M}', v0=p['name'], v1=p['start'].astimezone(tz)) for p in editable if p['id'] == i))))
+        selected=st.selectbox(
+            tr('Geplande shift bewerken'),
+            [None]+[p['id'] for p in editable],
+            format_func=translated_formatter(
+                lambda i: tr('Nieuwe shift') if i is None else next(
+                    (tr('{v0} · {v1:%d-%m-%Y %H:%M}', v0=p['name'], v1=p['start'].astimezone(tz))
+                     for p in editable if p['id'] == i)
+                )
+            ),
+        )
         old=next((p for p in editable if p['id']==selected),None)
-        start=old['start'].astimezone(tz) if old else datetime.combine(day, datetime.now(tz).time().replace(second=0, microsecond=0), tzinfo=tz)
-        stop=old['end'].astimezone(tz) if old else start+timedelta(hours=4)
-        ids=[m['id'] for m in members]
-        if old and old['user_id'] not in ids:
-            st.info(tr('Deze medewerker is niet meer actief; annuleer de planning hieronder.'))
+        start_at=old['start'].astimezone(tz) if old else datetime.combine(
+            day, datetime.now(tz).time().replace(second=0, microsecond=0), tzinfo=tz
+        )
+        stop_at=old['end'].astimezone(tz) if old else start_at+timedelta(hours=4)
+
+        editor_key = str(selected) if selected is not None else f"new_{day.isoformat()}"
+        a,b=st.columns(2)
+        with a:
+            sd=st.date_input(tr('Geplande begindatum'),value=start_at.date(),key=f'plan_sd_{editor_key}')
+            stime=st.time_input(tr('Geplande begintijd'),value=start_at.time().replace(tzinfo=None),step=60,key=f'plan_st_{editor_key}')
+        with b:
+            ed=st.date_input(tr('Geplande einddatum'),value=stop_at.date(),key=f'plan_ed_{editor_key}')
+            etime=st.time_input(tr('Geplande eindtijd'),value=stop_at.time().replace(tzinfo=None),step=60,key=f'plan_et_{editor_key}')
+
+        proposed_start=datetime.combine(sd,stime,tzinfo=tz)
+        proposed_end=datetime.combine(ed,etime,tzinfo=tz)
+        candidates=[]
+        if proposed_end>proposed_start:
+            candidates=run(lambda:api.planning_candidates(
+                token,branch_id,proposed_start,proposed_end,exclude_plan_id=selected
+            )) or []
         else:
-            with st.form(f'plan_{selected}_{old["version"] if old else 0}'):
-                uid=st.selectbox(tr('Medewerker inplannen'),ids,index=ids.index(old['user_id']) if old else 0,disabled=old is not None,format_func=translated_formatter(lambda i: next((tr('{v0} · {v1}', v0=m['name'], v1=m['email']) for m in members if m['id'] == i))))
-                a,b=st.columns(2)
-                with a:
-                    sd=st.date_input(tr('Geplande begindatum'),value=start.date())
-                    stime=st.time_input(tr('Geplande begintijd'),value=start.time(),step=60)
-                with b:
-                    ed=st.date_input(tr('Geplande einddatum'),value=stop.date())
-                    etime=st.time_input(tr('Geplande eindtijd'),value=stop.time(),step=60)
-                note=st.text_input(tr('Opmerking bij planning'),value=old['note'] if old else '',max_chars=500)
-                if st.form_submit_button(tr('Planning opslaan')):
-                    if run(lambda:api.save_plan(token,branch_id,uid,datetime.combine(sd,stime,tzinfo=tz),datetime.combine(ed,etime,tzinfo=tz),note,selected,old['version'] if old else None),'Planning opgeslagen.'):
-                        st.rerun()
+            st.warning(tr('De geplande eindtijd moet na de begintijd liggen.'))
+
+        if old and old['user_id'] not in [m['id'] for m in members]:
+            st.info(tr('Deze medewerker is niet meer actief; annuleer de planning hieronder.'))
+        elif candidates:
+            ids=[m['id'] for m in candidates]
+            default_id=old['user_id'] if old else ids[0]
+            if default_id not in ids:
+                default_id=ids[0]
+
+            def candidate_label(uid):
+                candidate=next(m for m in candidates if m['id']==uid)
+                labels=[]
+                labels.append(tr('beschikbaar') if candidate['available'] else tr('niet als beschikbaar opgegeven'))
+                if candidate['absence_conflict']:
+                    labels.append(tr('afwezig'))
+                if candidate['shift_conflict']:
+                    labels.append(tr('reeds ingepland'))
+                return tr('{v0} · {v1}', v0=candidate['name'], v1=' · '.join(labels))
+
+            uid=st.selectbox(
+                tr('Medewerker inplannen'),
+                ids,
+                index=ids.index(default_id),
+                disabled=old is not None,
+                format_func=translated_formatter(candidate_label),
+                key=f'plan_uid_{editor_key}',
+            )
+            chosen=next(m for m in candidates if m['id']==uid)
+            if chosen['available']:
+                st.success(tr('Deze medewerker heeft zichzelf voor het volledige gekozen tijdsblok als beschikbaar opgegeven.'))
+            else:
+                st.warning(tr('Deze medewerker heeft voor dit volledige tijdsblok geen beschikbaarheid opgegeven. Je kunt nog steeds plannen; beschikbaarheid is een voorkeur.'))
+            if chosen['absence_conflict']:
+                st.error(tr('Conflict: deze medewerker is afwezig in deze periode. Opslaan wordt door de server geblokkeerd.'))
+            if chosen['shift_conflict']:
+                st.error(tr('Conflict: deze medewerker heeft al een overlappende shift. Opslaan wordt door de server geblokkeerd.'))
+
+            note=st.text_input(
+                tr('Opmerking bij planning'),
+                value=old['note'] if old else '',
+                max_chars=500,
+                key=f'plan_note_{editor_key}',
+            )
+            if st.button(tr('Planning opslaan'),type='primary',key=f'plan_save_{editor_key}'):
+                if run(lambda:api.save_plan(
+                    token,branch_id,uid,proposed_start,proposed_end,note,selected,old['version'] if old else None
+                ),'Planning opgeslagen.'):
+                    st.rerun()
+        elif proposed_end>proposed_start:
+            st.info(tr('Geen actieve medewerkers gevonden voor deze vestiging.'))
+
         if old:
             with st.form(f'cancel_plan_{selected}'):
                 reason=st.text_input(tr('Reden annulering'))

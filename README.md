@@ -12,7 +12,9 @@ Een Streamlit-app met Python 3.12 en PostgreSQL 16 voor onafhankelijke franchise
 - Eenmalige lokale bootstrap voor de platformeigenaar.
 - Eigenaar selecteert bestaande gebruikers via exact e-mailadres en kent vestigingsadminrechten toe. Eén gebruiker kan meerdere vestigingen beheren.
 - Vestigingsadmin koppelt medewerkers; alleen eigenaar/platformbeheerder wijzigt adminrechten. Intrekken werkt bij de volgende serveractie, ook voor bestaande sessies.
-- In-/uitklokken met serverklok en databasegarantie van maximaal één actieve dienst per gebruiker, over alle vestigingen heen.
+- Scanner-only inklokken: iedere medewerker toont een persoonlijke, vestigingsgebonden QR-code die elke 15 seconden wisselt; alleen een geregistreerde winkelscanner/tablet kan een scan verwerken. QR's zijn HMAC-ondertekend, kort geldig en atomair eenmalig te gebruiken. De bestaande controles op geplande shifts, afwezigheden en maximaal één actieve dienst blijven gelden.
+- Uitklokken blijft een persoonlijke knop in het account; de bestaande serverklok, urenberekening, correctie- en goedkeuringsflow blijven behouden.
+- Medewerkers beheren eigen beschikbaarheid als eenmalige of wekelijks terugkerende tijdsblokken. Managers bekijken beschikbaarheid per dag/week/maand, zien conflicten en krijgen beschikbare medewerkers bovenaan bij het plannen; beschikbaarheid blijft een voorkeur en maakt nooit automatisch een shift.
 - Eigen uren en dashboard per dag/week/maand, actieve medewerkers, teambeheer en auditlog van rolwijzigingen en klokacties.
 - Organisatie-eigenaar kan schakelen tussen eigen vestigingen. Platformbeheerder kan alle organisaties en vestigingen bekijken en beheren via hetzelfde rechtenbeheer.
 
@@ -159,6 +161,8 @@ Controleer vóór commit dat `.env`, `.local`, `.venv` en secrets uitgesloten bl
 ## Streamlit Community Cloud
 
 Zie [de stapsgewijze handleiding](docs/STREAMLIT_DEPLOY.md). Kies `cloud_app.py` als entrypoint. Databasegegevens horen uitsluitend in Streamlit Secrets; migraties starten automatisch en zijn geserialiseerd.
+
+Voor QR-inklokken is daarnaast `SHIFTFLOW_QR_SECRET` verplicht: een willekeurige server-side secret van minimaal 32 tekens. De echte waarde hoort alleen in Streamlit Secrets/host-secretbeheer. `APP_BASE_URL` moet het publieke HTTPS-adres van de app zijn om een winkelscanner veilig te koppelen.
 
 ## Deployment met duurzame PostgreSQL
 

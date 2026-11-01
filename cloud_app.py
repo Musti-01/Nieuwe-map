@@ -8,7 +8,7 @@ from cloud_bootstrap import prepare_release, startup_error
 try:
     for key in ('DATABASE_URL', 'APP_TIMEZONE', 'APP_BASE_URL', 'EMAIL_DELIVERY_ENABLED',
                 'RESEND_API_KEY', 'MAIL_FROM', 'SMTP_HOST', 'SMTP_PORT', 'SMTP_USER',
-                'SMTP_PASSWORD', 'SICK_NOTE_RETENTION_DAYS'):
+                'SMTP_PASSWORD', 'SICK_NOTE_RETENTION_DAYS', 'SHIFTFLOW_QR_SECRET'):
         if key in st.secrets:
             os.environ[key] = str(st.secrets[key])
 except FileNotFoundError:
