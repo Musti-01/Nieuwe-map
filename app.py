@@ -16,7 +16,7 @@ from workforce.ui_design import apply_design, brand, welcome
 apply_design()
 
 @st.cache_resource
-def backend_engine(schema_revision="0010"):
+def backend_engine(schema_revision="0011"):
     engine = make_engine()
     if os.getenv('AUTO_MIGRATE') == '1':
         from workforce.hosting import migrate
@@ -40,16 +40,10 @@ except (RuntimeError, SQLAlchemyError):
     st.error(tr('Database nog niet geconfigureerd. Stel DATABASE_URL in en voer de migraties uit; zie README.'))
     st.stop()
 
-scanner_token = st.query_params.get('scanner')
-if isinstance(scanner_token, str) and scanner_token:
-    try:
-        scanner_tz = ZoneInfo(os.getenv('APP_TIMEZONE', 'Europe/Brussels'))
-    except Exception:
-        st.error(tr('APP_TIMEZONE is ongeldig.'))
-        st.stop()
-    from workforce.ui_qr_clock import show_scanner_station
-    show_scanner_station(api, scanner_token, scanner_tz)
-    st.stop()
+clock_query = st.query_params.get('clock')
+if isinstance(clock_query, str) and 0 < len(clock_query) <= 180:
+    st.session_state['pending_store_qr'] = clock_query
+    st.query_params.clear()
 
 def run(action, success=None):
     try:
@@ -189,8 +183,27 @@ if not branches:
     st.info(tr('Je account is klaar. Vraag jouw beheerder om je via jouw e-mailadres aan een vestiging te koppelen.'))
     st.stop()
 
+branch_index = 0
+pending_store_qr = st.session_state.get('pending_store_qr')
+if pending_store_qr:
+    try:
+        from workforce.qr_store import verify_store_code
+        qr_data = verify_store_code(pending_store_qr)
+        if qr_data:
+            branch_index = next(
+                (i for i, candidate in enumerate(branches) if candidate['id'] == qr_data['branch_id']),
+                0,
+            )
+    except RuntimeError:
+        branch_index = 0
+
 with st.sidebar:
-    branch_id = st.selectbox(tr('Actieve vestiging'), [b['id'] for b in branches], format_func=translated_formatter(lambda i: next((tr('{v0} · {v1}', v0=b['organization'], v1=b['name']) for b in branches if b['id'] == i))))
+    branch_id = st.selectbox(
+        tr('Actieve vestiging'),
+        [b['id'] for b in branches],
+        index=branch_index,
+        format_func=translated_formatter(lambda i: next((tr('{v0} · {v1}', v0=b['organization'], v1=b['name']) for b in branches if b['id'] == i)))
+    )
 b = next(b for b in branches if b['id'] == branch_id)
 st.subheader(b['name'])
 labels = {"pending": "In afwachting", "approved": "Goedgekeurd", "rejected": "Geweigerd", "blocked": "Geblokkeerd"}
@@ -199,8 +212,17 @@ if b['status'] != 'approved' or b['organization_status'] != 'approved':
     st.info(tr('Operationele toegang en rolbeheer worden beschikbaar zodra de platformbeheerder zowel de organisatie als de vestiging goedkeurt. Bij blokkering vervalt de toegang direct.'))
     st.stop()
 st.caption(tr('{v0} · {v1}', v0=b['organization'], v1=tr('Organisatie-eigenaar' if b['owner'] else 'Vestigingsadmin' if b['admin'] else 'Medewerker')))
+
+pending_store_qr = st.session_state.pop('pending_store_qr', None)
+if pending_store_qr:
+    result = run(lambda: api.phone_qr_clock_in(token, pending_store_qr))
+    if result:
+        local_time = result['clocked_in_at'].astimezone(ZoneInfo(os.getenv('APP_TIMEZONE', 'Europe/Brussels'))).strftime('%H:%M:%S')
+        st.session_state['notice'] = tr('Je bent ingeklokt om {v0}.', v0=local_time)
+        st.rerun()
+
 if b['admin']:
-    pages = ['Overzicht', 'Scanners', 'Beschikbaarheden', 'Medewerkers toevoegen', 'Medewerkers & rechten', 'Planning', 'Afwezigheden', 'Werkuren', 'Shiften controleren', 'Meldingen', 'Ziektebriefjes', 'Auditlog']
+    pages = ['Overzicht', 'QR inklokken', 'Beschikbaarheden', 'Medewerkers toevoegen', 'Medewerkers & rechten', 'Planning', 'Afwezigheden', 'Werkuren', 'Shiften controleren', 'Meldingen', 'Ziektebriefjes', 'Auditlog']
     if b['owner']:
         pages.insert(pages.index('Werkuren')+1, 'Lonen')
     if b['member']:
@@ -223,9 +245,9 @@ except Exception:
 if b['admin'] and page == 'Overzicht':
     from workforce.ui_manager import show_manager_home
     show_manager_home(api, token, branch_id, page_key, run, tz, owner=b['owner'])
-if b['admin'] and page == 'Scanners':
-    from workforce.ui_qr_clock import show_scanner_management
-    show_scanner_management(api, token, branch_id, run)
+if b['admin'] and page == 'QR inklokken':
+    from workforce.ui_store_qr import show_store_qr
+    show_store_qr(branch_id, b['name'])
 if b['admin'] and page == 'Beschikbaarheden':
     from workforce.ui_availability import show_team_availability
     show_team_availability(api, token, branch_id, tz, zone, run)
@@ -253,9 +275,9 @@ if not b['admin'] or page == 'Mijn werktijd':
             st.rerun()
         if b['member']:
             if active is None:
-                st.info(tr('Inklokken gebeurt uitsluitend via de geautoriseerde winkelscanner. Toon hieronder je persoonlijke QR-code.'))
-                from workforce.ui_qr_clock import show_employee_qr
-                show_employee_qr(api, token, me['id'], branch_id, tz)
+                st.info(tr('Scan met je gsm de actuele QR-code die in de vestiging wordt getoond om in te klokken.'))
+                from workforce.ui_store_qr import show_employee_phone_scan
+                show_employee_phone_scan(api, token, branch_id, tz)
             else:
                 if st.button(tr('Uitklokken'), use_container_width=True):
                     if run(lambda: api.clock_out(token, branch_id), "Je bent uitgeklokt."):

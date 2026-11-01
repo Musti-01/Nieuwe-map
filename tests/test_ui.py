@@ -153,7 +153,7 @@ def test_manager_invites_employee_without_clocking_in(api,team,engine,monkeypatc
     app.radio(key=f"branch_page_{team['branch']}").set_value('Mijn werktijd').run()
     assert not app.exception
     assert not any(b.label=='Inklokken' for b in app.button)
-    assert any('winkelscanner' in i.value for i in app.info)
+    assert any('Scan met je gsm' in i.value for i in app.info)
 
 
 def test_employee_cannot_open_manager_page_through_session_state(api,team,engine,monkeypatch):

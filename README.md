@@ -12,7 +12,7 @@ Een Streamlit-app met Python 3.12 en PostgreSQL 16 voor onafhankelijke franchise
 - Eenmalige lokale bootstrap voor de platformeigenaar.
 - Eigenaar selecteert bestaande gebruikers via exact e-mailadres en kent vestigingsadminrechten toe. Eén gebruiker kan meerdere vestigingen beheren.
 - Vestigingsadmin koppelt medewerkers; alleen eigenaar/platformbeheerder wijzigt adminrechten. Intrekken werkt bij de volgende serveractie, ook voor bestaande sessies.
-- Scanner-only inklokken: iedere medewerker toont een persoonlijke, vestigingsgebonden QR-code die elke 15 seconden wisselt; alleen een geregistreerde winkelscanner/tablet kan een scan verwerken. QR's zijn HMAC-ondertekend, kort geldig en atomair eenmalig te gebruiken. De bestaande controles op geplande shifts, afwezigheden en maximaal één actieve dienst blijven gelden.
+- QR-inklokken via de gsm van de medewerker: de vestiging toont één wisselende, vestigingsgebonden QR-code die elke 15 seconden verandert. De medewerker scant die met de eigen telefoon; na authenticatie controleert ShiftFlow de planning, afwezigheden en actieve tijdregistraties en klokt automatisch in. Dezelfde QR is per medewerker slechts één keer bruikbaar.
 - Uitklokken blijft een persoonlijke knop in het account; de bestaande serverklok, urenberekening, correctie- en goedkeuringsflow blijven behouden.
 - Medewerkers beheren eigen beschikbaarheid als eenmalige of wekelijks terugkerende tijdsblokken. Managers bekijken beschikbaarheid per dag/week/maand, zien conflicten en krijgen beschikbare medewerkers bovenaan bij het plannen; beschikbaarheid blijft een voorkeur en maakt nooit automatisch een shift.
 - Eigen uren en dashboard per dag/week/maand, actieve medewerkers, teambeheer en auditlog van rolwijzigingen en klokacties.
@@ -162,7 +162,7 @@ Controleer vóór commit dat `.env`, `.local`, `.venv` en secrets uitgesloten bl
 
 Zie [de stapsgewijze handleiding](docs/STREAMLIT_DEPLOY.md). Kies `cloud_app.py` als entrypoint. Databasegegevens horen uitsluitend in Streamlit Secrets; migraties starten automatisch en zijn geserialiseerd.
 
-Voor QR-inklokken is daarnaast `SHIFTFLOW_QR_SECRET` verplicht: een willekeurige server-side secret van minimaal 32 tekens. De echte waarde hoort alleen in Streamlit Secrets/host-secretbeheer. `APP_BASE_URL` moet het publieke HTTPS-adres van de app zijn om een winkelscanner veilig te koppelen.
+Voor QR-inklokken is daarnaast `SHIFTFLOW_QR_SECRET` verplicht: een willekeurige server-side secret van minimaal 32 tekens. De echte waarde hoort alleen in Streamlit Secrets/host-secretbeheer. `APP_BASE_URL` moet het publieke HTTPS-adres van de app zijn, omdat de QR-code naar de huidige ShiftFlow-app verwijst.
 
 ## Deployment met duurzame PostgreSQL
 
@@ -273,7 +273,7 @@ wijzigen zonder e-maildienst. Zie [OPERATIONS.md](docs/OPERATIONS.md).
 
 **Planning** toont een dag-, week- of maandoverzicht. Medewerkers zien uitsluitend hun eigen diensten. Beheerders zien en beheren het team van hun vestiging, kunnen nieuwe diensten maken, bestaande diensten wijzigen of met een reden annuleren. Een dienst met gekoppelde tijdregistratie kan niet meer verplaatst of geannuleerd worden. Overlappende planning voor dezelfde medewerker wordt over alle vestigingen heen geweigerd, ook bij gelijktijdige aanvragen. Dit controleert geplande diensten, geen wettelijke arbeids- of rusttijden.
 
-Bij **In- en uitklokken → Inklokken voor** kan een medewerker expliciet de geplande shift kiezen. Alleen diens eigen, actieve planning in de gekozen vestiging is toegestaan. Eén geplande shift kan aan één registratie gekoppeld worden; opnieuw inklokken voor dezelfde planning wordt geweigerd. Een planning is verplicht: inklokken kan alleen op de lokale begindag, vanaf 10 minuten voor de start en vóór de geplande eindtijd. De klok stopt niet automatisch. Het planningsoverzicht vergelijkt gekoppelde geregistreerde uren met geplande uren. Die geregistreerde uren kunnen nog op controle wachten; planning vervangt geen shiftgoedkeuring.
+De medewerker klokt in door met de eigen gsm de actuele QR-code in de vestiging te scannen. ShiftFlow kiest daarbij automatisch de geldige eigen ingeplande shift in die vestiging. Eén geplande shift kan aan één registratie gekoppeld worden; opnieuw inklokken voor dezelfde planning wordt geweigerd. Een planning is verplicht: inklokken kan alleen op de lokale begindag, vanaf 10 minuten voor de start en vóór de geplande eindtijd. Uitklokken blijft via de knop in het medewerkeraccount.
 
 ### Meldingen bij vergeten uitklokken
 

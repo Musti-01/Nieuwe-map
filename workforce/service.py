@@ -13,7 +13,7 @@ from argon2.exceptions import VerificationError, InvalidHashError
 from sqlalchemy import select, or_, text, delete
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.dialects.postgresql import insert
-from workforce.models import User, Organization, Branch, Membership, WorkEntry, AuthSession, LoginLimit, Audit, ApprovalDecision, Notification, ShiftReview, AccountToken, ShiftPlan, SickNote, Absence, SystemEvent, SalaryRate, ScannerDevice, QRScanUse, Availability
+from workforce.models import User, Organization, Branch, Membership, WorkEntry, AuthSession, LoginLimit, Audit, ApprovalDecision, Notification, ShiftReview, AccountToken, ShiftPlan, SickNote, Absence, SystemEvent, SalaryRate, ScannerDevice, QRScanUse, Availability, PhoneQRUse
 
 hasher = PasswordHasher()
 DUMMY_HASH = hasher.hash(secrets.token_urlsafe(32))
@@ -417,7 +417,7 @@ class Service:
             self._access(s, u, branch_id, admin=True)
             return [{"id": member.id, "name": member.name, "email": member.email, "role": m.role, "active": member.is_active} for member, m in s.execute(select(User, Membership).join(Membership).where(Membership.branch_id == branch_id).order_by(User.name))]
 
-    def _clock_in_locked(self, s, u, branch_id, plan_id, scanner_id=None):
+    def _clock_in_locked(self, s, u, branch_id, plan_id, scanner_id=None, source=None):
         self._access(s, u, branch_id, lock=True)
         s.execute(text("SELECT pg_advisory_xact_lock(793125043, :uid)"), {"uid": u.id})
         m = s.get(Membership, (branch_id, u.id), populate_existing=True)
@@ -442,11 +442,75 @@ class Service:
         s.add(e)
         s.flush()
         detail = f"entry={e.id}" + (f"; scanner={scanner_id}" if scanner_id else "")
-        self._audit(s, u, branch_id, "clock.in.scanner" if scanner_id else "clock.in", detail)
+        action = "clock.in.store_qr" if source == "store_qr" else ("clock.in.scanner" if scanner_id else "clock.in")
+        self._audit(s, u, branch_id, action, detail)
         return e
 
     def clock_in(self, token, branch_id, plan_id=None):
-        raise Denied("Inklokken kan alleen via een geautoriseerde winkelscanner.")
+        raise Denied("Inklokken kan alleen door de QR-code in de vestiging met je gsm te scannen.")
+
+    def phone_qr_clock_in(self, token, qr_code):
+        from workforce.qr_store import verify_store_code
+        data = verify_store_code(qr_code)
+        if not data:
+            raise Denied("QR-code is ongeldig, vervalst of verlopen.")
+        branch_id = data["branch_id"]
+        try:
+            with self.sessions.begin() as s:
+                actor = self._actor(s, token)
+                self._access(s, actor, branch_id, lock=True)
+                s.execute(text("SELECT pg_advisory_xact_lock(793125043, :uid)"), {"uid": actor.id})
+
+                membership = s.get(Membership, (branch_id, actor.id), populate_existing=True)
+                if not membership or membership.role == "revoked":
+                    raise Denied("Je bent geen medewerker van deze vestiging.")
+
+                replay_hash = digest(f"{actor.id}:{qr_code.strip()}")
+                if s.get(PhoneQRUse, replay_hash):
+                    raise Denied("Deze QR-code heb je al gebruikt. Scan de nieuwe QR-code.")
+
+                current = now()
+                tz = ZoneInfo(os.getenv("APP_TIMEZONE", "Europe/Brussels"))
+                eligible = []
+                for plan in s.scalars(
+                    select(ShiftPlan).where(
+                        ShiftPlan.branch_id == branch_id,
+                        ShiftPlan.user_id == actor.id,
+                        ShiftPlan.status == "scheduled",
+                    ).order_by(ShiftPlan.starts_at)
+                ):
+                    if s.scalar(select(WorkEntry.id).where(WorkEntry.plan_id == plan.id)):
+                        continue
+                    if clock_in_allowed(plan.starts_at, plan.ends_at, current, tz):
+                        eligible.append(plan)
+                if not eligible:
+                    raise ValueError("Geen geldige ingeplande shift om nu voor in te klokken.")
+                plan = min(eligible, key=lambda p: abs((p.starts_at - current).total_seconds()))
+
+                claimed = s.scalar(
+                    insert(PhoneQRUse)
+                    .values(
+                        token_hash=replay_hash,
+                        branch_id=branch_id,
+                        user_id=actor.id,
+                        used_at=current,
+                    )
+                    .on_conflict_do_nothing()
+                    .returning(PhoneQRUse.token_hash)
+                )
+                if not claimed:
+                    raise Denied("Deze QR-code heb je al gebruikt. Scan de nieuwe QR-code.")
+
+                entry = self._clock_in_locked(s, actor, branch_id, plan.id, source="store_qr")
+                return {
+                    "entry_id": entry.id,
+                    "branch_id": branch_id,
+                    "clocked_in_at": entry.started_at,
+                    "plan_start": plan.starts_at,
+                    "plan_end": plan.ends_at,
+                }
+        except IntegrityError as exc:
+            raise ValueError("Inklokken kon niet worden geregistreerd; ververs en probeer opnieuw.") from exc
 
     def scanner_pairing_url(self, scanner_token):
         if not isinstance(scanner_token, str) or not (32 <= len(scanner_token) <= 200):
