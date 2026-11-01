@@ -106,6 +106,9 @@ def test_clock_lifecycle_and_history_isolation(api, team):
     api.clock_out(team['wt'], team['branch'])
     e = api.entries(team['wt'], team['branch'])[0]
     assert 2 <= (e['end']-e['start']).total_seconds()/3600 < 2.01
+    assert e['review_status'] == 'approved'
+    assert e['reviewed_by'] == team['worker']
+    assert e['reviewed_at'] == e['end']
     with pytest.raises(ValueError):
         api.clock_out(team['wt'], team['branch'])
     events = api.audit(team['ot'], team['branch'])
