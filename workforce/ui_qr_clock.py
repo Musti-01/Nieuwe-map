@@ -110,7 +110,6 @@ def show_scanner_management(api, token, branch_id, run):
 
 
 def show_scanner_station(api, scanner_token, tz):
-    st.set_page_config(page_title="ShiftFlow · Scanner", page_icon="📷", layout="centered")
     try:
         info = api.scanner_info(scanner_token)
     except (ValueError, Denied) as exc:
