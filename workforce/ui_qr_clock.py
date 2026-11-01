@@ -40,7 +40,7 @@ def show_employee_qr(api, token, employee_id, branch_id, tz):
         except RuntimeError as exc:
             st.error(tr(str(exc)))
             return
-        st.image(svg, width=330)
+        st.markdown(svg.decode("utf-8"), unsafe_allow_html=True)
         remaining = WINDOW_SECONDS - (int(time.time()) % WINDOW_SECONDS)
         st.metric(tr("Nieuwe QR over"), tr("{v0} sec", v0=remaining))
         st.caption(tr(
