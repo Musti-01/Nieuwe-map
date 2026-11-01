@@ -1,4 +1,6 @@
 from datetime import timedelta
+from concurrent.futures import ThreadPoolExecutor
+from zoneinfo import ZoneInfo
 import time
 import pytest
 
@@ -66,9 +68,26 @@ def test_scanner_keeps_absence_and_shift_controls(api, team, monkeypatch):
     monkeypatch.setenv("SHIFTFLOW_QR_SECRET", SECRET)
     device = api.create_scanner(team["ot"], team["branch"], "Scanner 1")
     _plan_now(api, team)
-    today = now().date()
+    today = now().astimezone(ZoneInfo("Europe/Brussels")).date()
     api.request_absence(team["wt"], team["branch"], "sick", today, today)
 
     code = build_employee_code(team["worker"], team["branch"])
     with pytest.raises(ValueError, match="afwezig"):
         api.scanner_clock_in(device["token"], code)
+
+
+def test_same_qr_concurrent_scan_has_one_winner(api, team, monkeypatch):
+    monkeypatch.setenv("SHIFTFLOW_QR_SECRET", SECRET)
+    device = api.create_scanner(team["ot"], team["branch"], "Scanner concurrent")
+    _plan_now(api, team)
+    code = build_employee_code(team["worker"], team["branch"])
+
+    def scan(_):
+        try:
+            api.scanner_clock_in(device["token"], code)
+            return True
+        except (ValueError, Denied):
+            return False
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        assert sum(pool.map(scan, [1, 2])) == 1
