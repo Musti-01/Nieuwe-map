@@ -14,6 +14,10 @@ De code op GitHub is nog geen online app. Onderstaande accountstappen voer je in
 ```toml
 DATABASE_URL = "postgresql://USER:PASSWORD@HOST/DATABASE?sslmode=require"
 APP_TIMEZONE = "Europe/Brussels"
+# Voeg dit pas toe wanneer je QR-inklokken wilt activeren:
+# APP_BASE_URL = "https://jouw-eigen-app.streamlit.app"
+# SHIFTFLOW_QR_ENABLED = "1"
+# SHIFTFLOW_QR_SECRET = "een-willekeurige-lange-server-secret-van-minstens-32-tekens"
 ```
 
 5. Klik **Deploy**. Streamlit installeert `requirements.txt`. Bij de eerste appstart voert `cloud_app.py` de migraties uit onder een PostgreSQL-lock. Er is geen aparte shell of handmatige schema-installatie nodig. Een databasegebruiker met migratierechten is hiervoor vereist. Starten na slaapstand herhaalt de migratiecontrole veilig.
@@ -60,3 +64,23 @@ Voeg voor deelbare uitnodigingslinks `APP_BASE_URL = "https://jouw-eigen-app.str
 Wachtwoordherstel per e-mail vereist eerst een geconfigureerde, werkende e-maildienst zoals Resend. Zet pas na een geslaagde afleveringscontrole `EMAIL_DELIVERY_ENABLED = "1"` in Streamlit Secrets. Zonder die vlag meldt de app eerlijk dat e-mailherstel nog niet beschikbaar is. Het wijzigen van een bekend wachtwoord werkt voor ingelogde gebruikers via het zijmenu, zonder e-mail.
 
 Meldingen over vergeten uitklokken worden in de app berekend wanneer je het scherm opent of ververst. Dit zijn geen achtergrond- of pushmeldingen. Planning vervangt de afzonderlijke urencontrole niet.
+
+
+## QR-inklokken activeren
+
+De vestigingsbeheerder krijgt een pagina **QR inklokstation**. Wanneer
+`SHIFTFLOW_QR_ENABLED = "1"`, toont die pagina een vestigingsgebonden QR-code
+die iedere 15 seconden wisselt. De QR bevat een kortlevende HMAC-token en het
+publieke `APP_BASE_URL`. Een medewerker scant de QR met de telefooncamera,
+logt zo nodig in en kan daarna alleen voor een geldige geplande shift inklokken.
+Uitklokken blijft zonder QR.
+
+Bewaar `SHIFTFLOW_QR_SECRET` uitsluitend in Streamlit Secrets of het secretbeheer
+van de host. Gebruik minimaal 32 willekeurige tekens en commit de echte waarde
+nooit naar GitHub. De server valideert de QR opnieuw op het moment van inklokken;
+een verlopen, gewijzigde of vestigingsvreemde QR wordt geweigerd.
+
+Een wisselende QR verkleint het risico op thuis inklokken, maar is geen hard
+bewijs van fysieke aanwezigheid: een screenshot kan binnen het korte
+geldigheidsvenster worden doorgestuurd. Gebruik voor strengere aanwezigheid later
+een beheerd winkeltoestel, extra locatiecontrole of een aparte scannerflow.
