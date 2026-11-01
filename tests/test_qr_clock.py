@@ -27,3 +27,17 @@ def test_qr_svg_rendered_locally(monkeypatch):
     svg = qr_svg(build_employee_code(1, 1, time.time()))
     assert b"<svg" in svg
     assert b"</svg>" in svg
+
+
+def test_tablet_camera_decoder_reads_generated_qr(monkeypatch):
+    import io
+    import qrcode
+    from workforce.ui_qr_clock import _decode_camera_qr
+
+    monkeypatch.setenv("SHIFTFLOW_QR_SECRET", "0123456789abcdef0123456789abcdef")
+    code = build_employee_code(9, 4)
+    image = qrcode.make(code)
+    buffer = io.BytesIO()
+    image.save(buffer, format="PNG")
+    buffer.seek(0)
+    assert _decode_camera_qr(buffer) == code
