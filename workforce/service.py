@@ -417,7 +417,7 @@ class Service:
             self._access(s, u, branch_id, admin=True)
             return [{"id": member.id, "name": member.name, "email": member.email, "role": m.role, "active": member.is_active} for member, m in s.execute(select(User, Membership).join(Membership).where(Membership.branch_id == branch_id).order_by(User.name))]
 
-    def _clock_in_locked(self, s, u, branch_id, plan_id, scanner_id=None):
+    def _clock_in_locked(self, s, u, branch_id, plan_id, scanner_id=None, source=None):
         self._access(s, u, branch_id, lock=True)
         s.execute(text("SELECT pg_advisory_xact_lock(793125043, :uid)"), {"uid": u.id})
         m = s.get(Membership, (branch_id, u.id), populate_existing=True)
@@ -442,7 +442,8 @@ class Service:
         s.add(e)
         s.flush()
         detail = f"entry={e.id}" + (f"; scanner={scanner_id}" if scanner_id else "")
-        self._audit(s, u, branch_id, "clock.in.scanner" if scanner_id else "clock.in", detail)
+        action = "clock.in.store_qr" if source == "store_qr" else "clock.in.scanner" if scanner_id else "clock.in"
+        self._audit(s, u, branch_id, action, detail)
         return e
 
     def clock_in(self, token, branch_id, plan_id=None):
@@ -495,8 +496,7 @@ class Service:
                 if not claimed:
                     raise Denied("Je hebt deze QR-code al gebruikt. Scan de nieuwe QR-code.")
 
-                entry = self._clock_in_locked(s, employee, branch_id, plan.id)
-                self._audit(s, employee, branch_id, "clock.in.store_qr", f"entry={entry.id}; window={data['window']}")
+                entry = self._clock_in_locked(s, employee, branch_id, plan.id, source="store_qr")
                 return {
                     "entry_id": entry.id,
                     "branch_id": branch_id,
