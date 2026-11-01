@@ -4234,5 +4234,71 @@
     "en": "A recurrence end date only applies to weekly availability.",
     "de": "Ein Wiederholungsenddatum gilt nur für wöchentliche Verfügbarkeit.",
     "es": "Una fecha final de repetición solo corresponde a una disponibilidad semanal."
+  },
+  "QR inklokken": {
+    "fr": "Pointage QR",
+    "en": "QR clock-in",
+    "de": "QR-Einstempeln",
+    "es": "Entrada con QR"
+  },
+  "QR-inklokken": {
+    "fr": "Pointage QR",
+    "en": "QR clock-in",
+    "de": "QR-Einstempeln",
+    "es": "Entrada con QR"
+  },
+  "Toon deze QR-code op een scherm in de vestiging. Medewerkers scannen hem met hun eigen gsm om in te klokken.": {
+    "fr": "Affichez ce code QR sur un écran dans l'établissement. Les employés le scannent avec leur propre téléphone pour pointer leur entrée.",
+    "en": "Show this QR code on a screen in the branch. Employees scan it with their own phone to clock in.",
+    "de": "Zeige diesen QR-Code auf einem Bildschirm in der Filiale. Mitarbeiter scannen ihn mit ihrem eigenen Smartphone zum Einstempeln.",
+    "es": "Muestra este código QR en una pantalla de la sucursal. Los empleados lo escanean con su propio móvil para registrar la entrada."
+  },
+  "De QR-code verandert automatisch elke 15 seconden. Uitklokken gebeurt later gewoon via de knop in het medewerkeraccount.": {
+    "fr": "Le code QR change automatiquement toutes les 15 secondes. Le pointage de sortie se fait ensuite simplement via le bouton du compte employé.",
+    "en": "The QR code changes automatically every 15 seconds. Clock-out is still done with the button in the employee account.",
+    "de": "Der QR-Code wechselt automatisch alle 15 Sekunden. Ausstempeln erfolgt weiterhin über die Schaltfläche im Mitarbeiterkonto.",
+    "es": "El código QR cambia automáticamente cada 15 segundos. La salida se registra después con el botón de la cuenta del empleado."
+  },
+  "Vestiging: {v0}": {
+    "fr": "Établissement : {v0}",
+    "en": "Branch: {v0}",
+    "de": "Filiale: {v0}",
+    "es": "Sucursal: {v0}"
+  },
+  "Een live QR kan tijdens de korte geldigheid worden doorgestuurd. Daarom is hij vestigingsgebonden, kort geldig en per medewerker maar één keer bruikbaar. Voor absolute fysieke aanwezigheidscontrole zou extra hardware of locatiecontrole nodig zijn.": {
+    "fr": "Un QR actif peut être transféré pendant sa courte période de validité. Il est donc lié à l'établissement, valide brièvement et utilisable une seule fois par employé. Un contrôle physique absolu nécessiterait du matériel ou un contrôle de localisation supplémentaire.",
+    "en": "A live QR can be forwarded during its short validity window. It is therefore branch-bound, short-lived and usable only once per employee. Absolute physical-presence verification would require additional hardware or location checks.",
+    "de": "Ein Live-QR-Code kann während seiner kurzen Gültigkeit weitergeleitet werden. Deshalb ist er filialgebunden, kurz gültig und pro Mitarbeiter nur einmal nutzbar. Für einen absoluten Anwesenheitsnachweis wären zusätzliche Hardware oder Standortprüfungen nötig.",
+    "es": "Un QR activo puede reenviarse durante su breve período de validez. Por eso está vinculado a la sucursal, dura poco y cada empleado solo puede usarlo una vez. Para una verificación física absoluta harían falta hardware o controles de ubicación adicionales."
+  },
+  "Scan met je gsm de actuele QR-code die in de vestiging wordt getoond om in te klokken.": {
+    "fr": "Scannez avec votre téléphone le code QR actuel affiché dans l'établissement pour pointer votre entrée.",
+    "en": "Scan the current QR code shown in the branch with your phone to clock in.",
+    "de": "Scanne mit deinem Smartphone den aktuellen QR-Code in der Filiale, um dich einzustempeln.",
+    "es": "Escanea con tu móvil el código QR actual mostrado en la sucursal para registrar la entrada."
+  },
+  "Je bent ingeklokt om {v0}.": {
+    "fr": "Vous avez pointé à {v0}.",
+    "en": "You clocked in at {v0}.",
+    "de": "Du hast um {v0} eingestempelt.",
+    "es": "Has registrado la entrada a las {v0}."
+  },
+  "Inklokken kan alleen door de QR-code in de vestiging met je gsm te scannen.": {
+    "fr": "Le pointage d'entrée est uniquement possible en scannant avec votre téléphone le code QR affiché dans l'établissement.",
+    "en": "Clock-in is only possible by scanning the QR code shown in the branch with your phone.",
+    "de": "Einstempeln ist nur möglich, indem du den in der Filiale angezeigten QR-Code mit deinem Smartphone scannst.",
+    "es": "La entrada solo puede registrarse escaneando con tu móvil el código QR mostrado en la sucursal."
+  },
+  "Deze QR-code heb je al gebruikt. Scan de nieuwe QR-code.": {
+    "fr": "Vous avez déjà utilisé ce code QR. Scannez le nouveau code QR.",
+    "en": "You have already used this QR code. Scan the new QR code.",
+    "de": "Du hast diesen QR-Code bereits verwendet. Scanne den neuen QR-Code.",
+    "es": "Ya has usado este código QR. Escanea el nuevo código QR."
+  },
+  "APP_BASE_URL moet een publieke HTTPS-link zijn.": {
+    "fr": "APP_BASE_URL doit être un lien HTTPS public.",
+    "en": "APP_BASE_URL must be a public HTTPS URL.",
+    "de": "APP_BASE_URL muss eine öffentliche HTTPS-URL sein.",
+    "es": "APP_BASE_URL debe ser una URL HTTPS pública."
   }
 }
