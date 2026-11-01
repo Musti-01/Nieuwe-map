@@ -33,7 +33,9 @@ def test_new_requests_pending_with_contact_fields(api, application):
 
 def test_pending_operations_and_role_assignment_denied(api, application):
     a = application
-    for fn in [lambda: api.clock_in(a['ot'], a['branch']), lambda: api.clock_out(a['ot'], a['branch']), lambda: api.entries(a['ot'], a['branch']), lambda: api.entries(a['ot'], a['branch'], True), lambda: api.members(a['ot'], a['branch']), lambda: api.set_role(a['ot'], a['branch'], a['owner'], 'admin'), lambda: api.audit(a['ot'], a['branch']), lambda: api.lookup_user(a['ot'], a['branch'], 'owner@example.test')]:
+    with pytest.raises(Denied, match='winkelscanner'):
+        api.clock_in(a['ot'], a['branch'])
+    for fn in [lambda: api.clock_out(a['ot'], a['branch']), lambda: api.entries(a['ot'], a['branch']), lambda: api.entries(a['ot'], a['branch'], True), lambda: api.members(a['ot'], a['branch']), lambda: api.set_role(a['ot'], a['branch'], a['owner'], 'admin'), lambda: api.audit(a['ot'], a['branch']), lambda: api.lookup_user(a['ot'], a['branch'], 'owner@example.test')]:
         with pytest.raises(Denied, match='goedgekeurd'):
             fn()
 
@@ -44,7 +46,7 @@ def test_both_approvals_required_then_operational(api, application):
         api.decide(a['pt'], 'branch', a['branch'], 'approve')
     api.decide(a['pt'], 'organization', a['org'], 'approve')
     with pytest.raises(Denied):
-        api.clock_in(a['ot'], a['branch'])
+        planned_clock_in(api, a['ot'], a['branch'])
     api.decide(a['pt'], 'branch', a['branch'], 'approve')
     assert planned_clock_in(api, a['ot'], a['branch'])
     assert api.clock_out(a['ot'], a['branch'])
@@ -103,7 +105,7 @@ def test_rejection_recorded_and_rejected_unusable(api, application):
         assert org.reviewed_at == rows[0]['tijd']
         assert s.scalar(select(Notification)).recipient == 'owner@example.test'
     with pytest.raises(Denied):
-        api.clock_in(a['ot'], a['branch'])
+        planned_clock_in(api, a['ot'], a['branch'])
     with pytest.raises(ValueError):
         api.decide(a['pt'], 'organization', a['org'], 'approve')
 
@@ -113,7 +115,7 @@ def test_block_and_reactivate_organization_and_branch(api, team):
     for kind, target in [('branch', team['branch']), ('organization', org)]:
         api.decide(team['pt'], kind, target, 'block', 'Owner requested pause')
         with pytest.raises(Denied):
-            api.clock_in(team['wt'], team['branch'])
+            planned_clock_in(api, team['wt'], team['branch'])
         with pytest.raises(Denied):
             api.members(team['ot'], team['branch'])
         api.decide(team['pt'], kind, target, 'reactivate')
