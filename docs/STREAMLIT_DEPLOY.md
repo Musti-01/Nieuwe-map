@@ -66,25 +66,20 @@ Meldingen over vergeten uitklokken worden in de app berekend wanneer je het sche
 
 ## Beveiligde QR-inklokken en beschikbaarheden
 
-Migratie `0010` voegt winkelscanners, een replay-register voor gebruikte QR-codes en medewerkerbeschikbaarheden toe. `cloud_app.py` voert de migratie bij deployment automatisch uit onder dezelfde migratielock als eerdere schemawijzigingen.
+Migratie `0010` voegt beschikbaarheden en de eerdere scannerbasis toe. Migratie `0011` schakelt de zichtbare inklokflow om naar een roterende winkel-QR die medewerkers met hun eigen gsm scannen. `cloud_app.py` voert beide migraties automatisch uit onder dezelfde migratielock als eerdere schemawijzigingen.
 
-### Winkelscanner koppelen
+### QR-code in de vestiging
 
-1. Log in als vestigingsbeheerder en open **Scanners**.
-2. Registreer het vaste toestel, bijvoorbeeld **Tablet kassa 1**.
-3. ShiftFlow toont één geheime HTTPS-koppellink. Open die link alleen op het bedoelde winkeltoestel en bevestig daarna in de beheerdersinterface dat de koppeling is opgeslagen.
-4. Het winkeltoestel kan een vaste USB/Bluetooth QR-scanner gebruiken of de tablet-camera.
-5. Trek het toestel onder **Scanners** onmiddellijk in als de koppellink mogelijk is uitgelekt, het toestel wordt vervangen of het niet meer vertrouwd is.
+1. Log in als vestigingsbeheerder en open **QR-inklokken**.
+2. Laat dit scherm op een pc, tablet of ander zichtbaar scherm in de vestiging staan.
+3. De QR-code verandert automatisch iedere 15 seconden.
+4. Een medewerker scant de QR met de normale camera van zijn eigen gsm.
+5. De link opent ShiftFlow. Is de medewerker nog niet ingelogd, dan moet hij met zijn eigen account inloggen.
+6. ShiftFlow controleert server-side de QR-handtekening, vestiging, medewerkerrechten, geplande shift, afwezigheden en bestaande actieve tijdregistratie en klokt daarna automatisch in.
 
-De database bewaart alleen een SHA-256-hash van de scannercredential. De pairingslink zelf is een bearer credential: wie de link bezit kan als die scanner handelen totdat de manager hem intrekt. Gebruik daarom uitsluitend HTTPS en deel de link niet via onbeveiligde kanalen.
+Rechtstreeks inklokken vanuit het medewerkeraccount blijft uitgeschakeld. **Uitklokken** gebeurt nog altijd met de gewone knop in het medewerkeraccount en gebruikt de bestaande urenberekening.
 
-### Inklokken als medewerker
-
-De medewerker opent **In- en uitklokken** en toont de persoonlijke QR. Deze QR is gebonden aan medewerker én vestiging en wisselt iedere 15 seconden. De winkelscanner valideert de handtekening en geldigheid server-side, controleert de ingeplande shift en afwezigheden, en claimt de QR atomair als eenmalig gebruikt. Rechtstreeks inklokken vanuit het medewerkeraccount is uitgeschakeld.
-
-Na een succesvolle scan toont de winkelscanner de geregistreerde inkloktijd. Het medewerkeraccount ververst de status en toont dezelfde actieve tijdregistratie. **Uitklokken** blijft de gewone knop in het medewerkeraccount en gebruikt de bestaande urenberekening.
-
-Een doorgestuurde live QR kan tijdens het korte geldigheidsvenster nog door een geautoriseerde scanner worden gescand. De oplossing beperkt dit risico met een korte geldigheid, vestigingsbinding, scannerautorisatie, single-use replaybescherming en auditregistratie, maar levert zonder extra hardware/identiteitscontrole geen absoluut bewijs dat de medewerker fysiek naast de scanner staat.
+Dezelfde winkel-QR mag binnen hetzelfde 15-secondenvenster door verschillende medewerkers worden gescand. Per medewerker wordt hergebruik geregistreerd en geblokkeerd. Een doorgestuurde live QR blijft tijdens zijn korte geldigheid een risico; de QR verloopt daarom snel en is cryptografisch aan de vestiging gebonden. Zonder extra locatie- of hardwarecontrole kan een webapp niet absoluut bewijzen dat de telefoon fysiek in de winkel staat.
 
 ### Beschikbaarheden
 
