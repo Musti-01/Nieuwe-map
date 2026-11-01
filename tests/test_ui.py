@@ -34,7 +34,7 @@ def test_employee_shift_history_after_clock_out(api, team, engine, monkeypatch):
     assert not app.exception
     assert [tab.label for tab in app.tabs] == ['In- en uitklokken', 'Mijn shiften', 'Planning', 'Meldingen', 'Ziektebriefjes', 'Afwezigheden', 'Mijn beschikbaarheid']
     assert app.dataframe
-    assert app.dataframe[0].value.iloc[0]['Status'] == 'Wacht op controle'
+    assert app.dataframe[0].value.iloc[0]['Status'] == 'Goedgekeurd'
     assert all(r.label != 'Platformonderdeel' for r in app.radio)
     next(b for b in app.button if b.label == 'Shiften verversen').click().run()
     assert not app.exception
@@ -49,15 +49,16 @@ def test_branch_admin_still_has_dashboard_team_and_audit(api, team, engine, monk
     assert any(b.label == 'Gebruiker zoeken' for b in app.button)
 
 
-def test_admin_approves_shift_from_review_tab(api, team, engine, monkeypatch):
+def test_shift_review_page_is_removed_and_clock_out_is_auto_processed(api, team, engine, monkeypatch):
     planned_clock_in(api, team['wt'], team['branch'])
     api.clock_out(team['wt'], team['branch'])
     app = app_for(team['ot'], engine, monkeypatch)
     assert not app.exception
-    app.button(key='manager_open_Shiften controleren').click().run()
-    next(b for b in app.button if b.label == 'Shiftactie bevestigen').click().run()
-    assert not app.exception
-    assert api.entries(team['wt'],team['branch'])[0]['review_status'] == 'approved'
+    assert 'Shiften controleren' not in app.radio(key=f"branch_page_{team['branch']}").options
+    assert not any(b.key == 'manager_open_Shiften controleren' for b in app.button)
+    entry = api.entries(team['wt'], team['branch'])[0]
+    assert entry['review_status'] == 'approved'
+    assert entry['reviewed_by'] == team['worker']
 
 
 def test_owner_deactivates_employee_from_user_page(api,team,engine,monkeypatch):
