@@ -4234,5 +4234,83 @@
     "en": "A recurrence end date only applies to weekly availability.",
     "de": "Ein Wiederholungsenddatum gilt nur für wöchentliche Verfügbarkeit.",
     "es": "Una fecha final de repetición solo corresponde a una disponibilidad semanal."
+  },
+  "QR-scan gelukt. Je bent ingeklokt om {v0}.": {
+    "fr": "Scan QR réussi. Vous avez pointé à {v0}.",
+    "en": "QR scan successful. You clocked in at {v0}.",
+    "de": "QR-Scan erfolgreich. Du hast um {v0} eingestempelt.",
+    "es": "Escaneo QR correcto. Has registrado la entrada a las {v0}."
+  },
+  "Log in met je medewerkeraccount om de gescande QR-code te gebruiken.": {
+    "fr": "Connectez-vous avec votre compte employé pour utiliser le code QR scanné.",
+    "en": "Log in with your employee account to use the scanned QR code.",
+    "de": "Melde dich mit deinem Mitarbeiterkonto an, um den gescannten QR-Code zu verwenden.",
+    "es": "Inicia sesión con tu cuenta de empleado para usar el código QR escaneado."
+  },
+  "Om in te klokken: scan met je gsm de actuele QR-code die in de vestiging wordt getoond. Rechtstreeks inklokken vanuit je account is uitgeschakeld.": {
+    "fr": "Pour pointer votre entrée, scannez avec votre téléphone le code QR actuel affiché dans l'établissement. Le pointage direct depuis votre compte est désactivé.",
+    "en": "To clock in, scan the current QR code shown at the branch with your phone. Direct clock-in from your account is disabled.",
+    "de": "Zum Einstempeln scannst du mit deinem Handy den aktuellen QR-Code in der Filiale. Direktes Einstempeln über dein Konto ist deaktiviert.",
+    "es": "Para registrar la entrada, escanea con tu móvil el código QR actual mostrado en la sucursal. La entrada directa desde tu cuenta está desactivada."
+  },
+  "QR-inklokken": {
+    "fr": "Pointage par QR",
+    "en": "QR clock-in",
+    "de": "QR-Einstempeln",
+    "es": "Entrada por QR"
+  },
+  "Toon deze QR-code in de vestiging. Medewerkers scannen hem met de camera van hun eigen gsm om in te klokken.": {
+    "fr": "Affichez ce code QR dans l'établissement. Les employés le scannent avec la caméra de leur propre téléphone pour pointer.",
+    "en": "Display this QR code at the branch. Employees scan it with their own phone camera to clock in.",
+    "de": "Zeige diesen QR-Code in der Filiale. Mitarbeiter scannen ihn mit der Kamera ihres eigenen Handys, um einzustempeln.",
+    "es": "Muestra este código QR en la sucursal. Los empleados lo escanean con la cámara de su propio móvil para registrar la entrada."
+  },
+  "De QR-code verandert automatisch elke 15 seconden. Na het scannen controleert ShiftFlow het account, de vestiging, de geplande shift en afwezigheden.": {
+    "fr": "Le code QR change automatiquement toutes les 15 secondes. Après le scan, ShiftFlow vérifie le compte, l'établissement, le shift planifié et les absences.",
+    "en": "The QR code changes automatically every 15 seconds. After scanning, ShiftFlow checks the account, branch, scheduled shift and absences.",
+    "de": "Der QR-Code ändert sich automatisch alle 15 Sekunden. Nach dem Scannen prüft ShiftFlow Konto, Filiale, geplante Schicht und Abwesenheiten.",
+    "es": "El código QR cambia automáticamente cada 15 segundos. Después del escaneo, ShiftFlow comprueba la cuenta, la sucursal, el turno programado y las ausencias."
+  },
+  "Vestiging: {v0}": {
+    "fr": "Établissement : {v0}",
+    "en": "Branch: {v0}",
+    "de": "Filiale: {v0}",
+    "es": "Sucursal: {v0}"
+  },
+  "Medewerkers kunnen niet rechtstreeks vanuit hun account inklokken. Ze moeten een actuele QR-code van deze vestiging scannen. Een doorgestuurde live QR blijft tijdens de korte geldigheid een risico; daarom verloopt hij snel en kan dezelfde medewerker dezelfde QR maar één keer gebruiken.": {
+    "fr": "Les employés ne peuvent pas pointer directement depuis leur compte. Ils doivent scanner un code QR actuel de cet établissement. Un QR en direct transféré reste un risque pendant sa courte validité ; il expire donc rapidement et le même employé ne peut utiliser le même QR qu'une seule fois.",
+    "en": "Employees cannot clock in directly from their account. They must scan a current QR code from this branch. A forwarded live QR remains a risk during its short validity, so it expires quickly and the same employee can use the same QR only once.",
+    "de": "Mitarbeiter können nicht direkt über ihr Konto einstempeln. Sie müssen einen aktuellen QR-Code dieser Filiale scannen. Ein weitergeleiteter Live-QR bleibt während seiner kurzen Gültigkeit ein Risiko; deshalb läuft er schnell ab und derselbe Mitarbeiter kann denselben QR nur einmal verwenden.",
+    "es": "Los empleados no pueden registrar la entrada directamente desde su cuenta. Deben escanear un código QR actual de esta sucursal. Un QR en vivo reenviado sigue siendo un riesgo durante su corta validez; por eso caduca rápidamente y el mismo empleado solo puede usar el mismo QR una vez."
+  },
+  "Inklokken kan alleen door de QR-code in de vestiging te scannen.": {
+    "fr": "Le pointage d'entrée est uniquement possible en scannant le code QR dans l'établissement.",
+    "en": "Clock-in is only possible by scanning the QR code at the branch.",
+    "de": "Einstempeln ist nur durch Scannen des QR-Codes in der Filiale möglich.",
+    "es": "La entrada solo se puede registrar escaneando el código QR en la sucursal."
+  },
+  "Deze QR-code hoort niet bij een vestiging waar je werkt.": {
+    "fr": "Ce code QR n'appartient pas à un établissement où vous travaillez.",
+    "en": "This QR code does not belong to a branch where you work.",
+    "de": "Dieser QR-Code gehört nicht zu einer Filiale, in der du arbeitest.",
+    "es": "Este código QR no pertenece a una sucursal en la que trabajas."
+  },
+  "Je hebt deze QR-code al gebruikt. Scan de nieuwe QR-code.": {
+    "fr": "Vous avez déjà utilisé ce code QR. Scannez le nouveau code QR.",
+    "en": "You have already used this QR code. Scan the new QR code.",
+    "de": "Du hast diesen QR-Code bereits verwendet. Scanne den neuen QR-Code.",
+    "es": "Ya has usado este código QR. Escanea el nuevo código QR."
+  },
+  "Inklokken kon niet worden geregistreerd; scan de QR-code opnieuw.": {
+    "fr": "Le pointage d'entrée n'a pas pu être enregistré ; scannez à nouveau le code QR.",
+    "en": "Clock-in could not be recorded; scan the QR code again.",
+    "de": "Das Einstempeln konnte nicht erfasst werden; scanne den QR-Code erneut.",
+    "es": "No se pudo registrar la entrada; vuelve a escanear el código QR."
+  },
+  "APP_BASE_URL moet een publiek HTTPS-adres zijn.": {
+    "fr": "APP_BASE_URL doit être une adresse HTTPS publique.",
+    "en": "APP_BASE_URL must be a public HTTPS address.",
+    "de": "APP_BASE_URL muss eine öffentliche HTTPS-Adresse sein.",
+    "es": "APP_BASE_URL debe ser una dirección HTTPS pública."
   }
 }
