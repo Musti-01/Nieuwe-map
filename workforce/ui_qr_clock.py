@@ -197,7 +197,7 @@ def show_scanner_station(api, scanner_token, tz):
         "verbruikt elke QR maar één keer en bewaart de scanner in het auditspoor."
     ))
     if st.button(tr("Scanner op dit toestel ontkoppelen")):
-        st.session_state.pop("_scanner_token", None)
         st.session_state.pop("scanner_camera_processed", None)
+        st.query_params.clear()
         st.rerun()
 
