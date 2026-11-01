@@ -23,7 +23,7 @@ def test_plan_lifecycle_permissions_and_actual_link(api,team):
         api.cancel_plan(team['ot'],team['branch'],plan,1,'Changed')
     api.clock_out(team['wt'],team['branch'])
     with pytest.raises(ValueError):
-        api.clock_in(team['wt'],team['branch'],plan)
+        planned_clock_in(api, team['wt'],team['branch'],plan)
 
 
 def test_plan_update_cancel_overlap_and_stale_version(api,team):
@@ -80,4 +80,4 @@ def test_wrong_plan_membership_and_invalid_times(api,team):
     with pytest.raises(ValueError):
         api.save_plan(team['ot'],team['branch'],team['worker'],start.replace(tzinfo=None),end)
     with pytest.raises(Denied):
-        api.clock_in(team['wt'],team['branch'],99999)
+        planned_clock_in(api, team['wt'],team['branch'],99999)
