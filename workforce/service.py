@@ -12,7 +12,7 @@ from argon2.exceptions import VerificationError, InvalidHashError
 from sqlalchemy import select, or_, text, delete
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.dialects.postgresql import insert
-from workforce.models import User, Organization, Branch, Membership, WorkEntry, AuthSession, LoginLimit, Audit, ApprovalDecision, Notification, ShiftReview, AccountToken, ShiftPlan, SickNote, Absence, SystemEvent, SalaryRate
+from workforce.models import User, Organization, Branch, Membership, WorkEntry, AuthSession, LoginLimit, Audit, ApprovalDecision, Notification, ShiftReview, AccountToken, ShiftPlan, SickNote, Absence, SystemEvent, SalaryRate, ScannerDevice, QRScanUse, Availability
 
 hasher = PasswordHasher()
 DUMMY_HASH = hasher.hash(secrets.token_urlsafe(32))
@@ -416,37 +416,187 @@ class Service:
             self._access(s, u, branch_id, admin=True)
             return [{"id": member.id, "name": member.name, "email": member.email, "role": m.role, "active": member.is_active} for member, m in s.execute(select(User, Membership).join(Membership).where(Membership.branch_id == branch_id).order_by(User.name))]
 
+    def _clock_in_locked(self, s, u, branch_id, plan_id, scanner_id=None):
+        self._access(s, u, branch_id, lock=True)
+        s.execute(text("SELECT pg_advisory_xact_lock(793125043, :uid)"), {"uid": u.id})
+        m = s.get(Membership, (branch_id, u.id), populate_existing=True)
+        if not m or m.role == "revoked":
+            raise Denied("Je bent geen medewerker van deze vestiging.")
+        if s.scalar(select(WorkEntry.id).where(WorkEntry.user_id == u.id, WorkEntry.ended_at.is_(None))):
+            raise ValueError("Je hebt al een actieve inkloksessie.")
+        if plan_id is None:
+            raise ValueError("Kies een ingeplande shift om in te klokken.")
+        plan = s.scalar(select(ShiftPlan).where(ShiftPlan.id == plan_id).with_for_update())
+        if not plan or plan.branch_id != branch_id or plan.user_id != u.id or plan.status != "scheduled":
+            raise Denied("Geen toegang tot deze geplande shift.")
+        if s.scalar(select(WorkEntry.id).where(WorkEntry.plan_id == plan_id)):
+            raise ValueError("Deze geplande shift heeft al een tijdregistratie.")
+        current = now()
+        tz = ZoneInfo(os.getenv("APP_TIMEZONE", "Europe/Brussels"))
+        if not clock_in_allowed(plan.starts_at, plan.ends_at, current, tz):
+            raise ValueError("Inklokken kan alleen op de begindag van je shift, vanaf 10 minuten voor de start en vóór de geplande eindtijd.")
+        if self._absence_conflict(s, branch_id, u.id, current, current + timedelta(microseconds=1)):
+            raise ValueError("Je bent afwezig gemeld en kunt nu niet inklokken.")
+        e = WorkEntry(branch_id=branch_id, user_id=u.id, started_at=current, plan_id=plan_id)
+        s.add(e)
+        s.flush()
+        detail = f"entry={e.id}" + (f"; scanner={scanner_id}" if scanner_id else "")
+        self._audit(s, u, branch_id, "clock.in.scanner" if scanner_id else "clock.in", detail)
+        return e
+
     def clock_in(self, token, branch_id, plan_id=None):
+        """Trusted application method retained for tests/admin tooling.
+
+        The employee UI no longer exposes this method; normal clock-in is scanner-only.
+        """
         try:
             with self.sessions.begin() as s:
                 u = self._actor(s, token)
-                self._access(s, u, branch_id, lock=True)
-                s.execute(text("SELECT pg_advisory_xact_lock(793125043, :uid)"), {"uid": u.id})
-                m = s.get(Membership, (branch_id, u.id))
-                if not m or m.role == "revoked":
-                    raise Denied("Je bent geen medewerker van deze vestiging.")
-                if s.scalar(select(WorkEntry.id).where(WorkEntry.user_id == u.id, WorkEntry.ended_at.is_(None))):
-                    raise ValueError("Je hebt al een actieve inkloksessie.")
-                if plan_id is None:
-                    raise ValueError("Kies een ingeplande shift om in te klokken.")
-                plan = s.scalar(select(ShiftPlan).where(ShiftPlan.id == plan_id).with_for_update())
-                if not plan or plan.branch_id != branch_id or plan.user_id != u.id or plan.status != 'scheduled':
-                    raise Denied("Geen toegang tot deze geplande shift.")
-                if s.scalar(select(WorkEntry.id).where(WorkEntry.plan_id == plan_id)):
-                    raise ValueError("Deze geplande shift heeft al een tijdregistratie.")
-                current = now()
-                tz = ZoneInfo(os.getenv('APP_TIMEZONE', 'Europe/Brussels'))
-                if not clock_in_allowed(plan.starts_at, plan.ends_at, current, tz):
-                    raise ValueError("Inklokken kan alleen op de begindag van je shift, vanaf 10 minuten voor de start en vóór de geplande eindtijd.")
-                if self._absence_conflict(s, branch_id, u.id, current, current+timedelta(microseconds=1)):
-                    raise ValueError('Je bent afwezig gemeld en kunt nu niet inklokken.')
-                e = WorkEntry(branch_id=branch_id, user_id=u.id, started_at=current, plan_id=plan_id)
-                s.add(e)
-                s.flush()
-                self._audit(s, u, branch_id, "clock.in", f"entry={e.id}")
-                return e.id
+                return self._clock_in_locked(s, u, branch_id, plan_id).id
         except IntegrityError as exc:
             raise ValueError("Je hebt al een actieve inkloksessie.") from exc
+
+    def create_scanner(self, token, branch_id, name):
+        name = clean(name, "Scannernaam", 120)
+        with self.sessions.begin() as s:
+            actor = self._actor(s, token)
+            self._access(s, actor, branch_id, admin=True, lock=True)
+            raw = secrets.token_urlsafe(40)
+            device = ScannerDevice(
+                branch_id=branch_id,
+                name=name,
+                token_hash=digest(raw),
+                created_by=actor.id,
+                created_at=now(),
+            )
+            s.add(device)
+            s.flush()
+            self._audit(s, actor, branch_id, "scanner.created", f"scanner={device.id}; name={name}")
+            return {"id": device.id, "name": device.name, "token": raw}
+
+    def scanners(self, token, branch_id):
+        with self.sessions.begin() as s:
+            actor = self._actor(s, token)
+            self._access(s, actor, branch_id, admin=True)
+            return [
+                {
+                    "id": d.id,
+                    "name": d.name,
+                    "created_at": d.created_at,
+                    "last_seen_at": d.last_seen_at,
+                    "active": d.revoked_at is None,
+                }
+                for d in s.scalars(
+                    select(ScannerDevice).where(ScannerDevice.branch_id == branch_id).order_by(ScannerDevice.id)
+                )
+            ]
+
+    def revoke_scanner(self, token, branch_id, scanner_id):
+        with self.sessions.begin() as s:
+            actor = self._actor(s, token)
+            self._access(s, actor, branch_id, admin=True, lock=True)
+            device = s.scalar(
+                select(ScannerDevice).where(
+                    ScannerDevice.id == scanner_id,
+                    ScannerDevice.branch_id == branch_id,
+                ).with_for_update()
+            )
+            if not device:
+                raise Denied("Scanner niet gevonden.")
+            if device.revoked_at is None:
+                device.revoked_at = now()
+                self._audit(s, actor, branch_id, "scanner.revoked", f"scanner={device.id}")
+            return True
+
+    def _scanner_device(self, s, scanner_token, lock=False):
+        if not isinstance(scanner_token, str) or not (32 <= len(scanner_token) <= 200):
+            raise Denied("Scanner niet geautoriseerd.")
+        q = select(ScannerDevice).where(
+            ScannerDevice.token_hash == digest(scanner_token),
+            ScannerDevice.revoked_at.is_(None),
+        )
+        if lock:
+            q = q.with_for_update()
+        device = s.scalar(q)
+        if not device:
+            raise Denied("Scanner niet geautoriseerd.")
+        branch = s.get(Branch, device.branch_id, populate_existing=True)
+        org = s.get(Organization, branch.organization_id, populate_existing=True) if branch else None
+        if not branch or not org or branch.archived_at is not None or branch.status != "approved" or org.status != "approved":
+            raise Denied("Deze scanner hoort niet bij een actieve vestiging.")
+        device.last_seen_at = now()
+        return device, branch, org
+
+    def scanner_info(self, scanner_token):
+        with self.sessions.begin() as s:
+            device, branch, org = self._scanner_device(s, scanner_token)
+            return {
+                "scanner_id": device.id,
+                "scanner_name": device.name,
+                "branch_id": branch.id,
+                "branch_name": branch.name,
+                "organization": org.name,
+            }
+
+    def scanner_clock_in(self, scanner_token, qr_code):
+        from workforce.qr_clock import verify_employee_code
+        try:
+            with self.sessions.begin() as s:
+                device, branch, _ = self._scanner_device(s, scanner_token, lock=True)
+                data = verify_employee_code(qr_code, expected_branch_id=branch.id)
+                if not data:
+                    raise Denied("QR-code is ongeldig, vervalst of verlopen.")
+                employee = s.get(User, data["user_id"], populate_existing=True)
+                membership = s.get(Membership, (branch.id, data["user_id"]), populate_existing=True)
+                if not employee or not employee.is_active or not membership or membership.role == "revoked":
+                    raise Denied("Deze medewerker heeft geen actieve toegang tot deze vestiging.")
+
+                current = now()
+                tz = ZoneInfo(os.getenv("APP_TIMEZONE", "Europe/Brussels"))
+                eligible = []
+                for plan in s.scalars(
+                    select(ShiftPlan).where(
+                        ShiftPlan.branch_id == branch.id,
+                        ShiftPlan.user_id == employee.id,
+                        ShiftPlan.status == "scheduled",
+                    ).order_by(ShiftPlan.starts_at)
+                ):
+                    if s.scalar(select(WorkEntry.id).where(WorkEntry.plan_id == plan.id)):
+                        continue
+                    if clock_in_allowed(plan.starts_at, plan.ends_at, current, tz):
+                        eligible.append(plan)
+                if not eligible:
+                    raise ValueError("Geen geldige ingeplande shift om nu voor in te klokken.")
+                plan = min(eligible, key=lambda p: abs((p.starts_at - current).total_seconds()))
+
+                token_hash = digest(qr_code.strip())
+                claimed = s.scalar(
+                    insert(QRScanUse)
+                    .values(
+                        token_hash=token_hash,
+                        branch_id=branch.id,
+                        user_id=employee.id,
+                        scanner_id=device.id,
+                        used_at=current,
+                    )
+                    .on_conflict_do_nothing()
+                    .returning(QRScanUse.token_hash)
+                )
+                if not claimed:
+                    raise Denied("Deze QR-code is al gebruikt. Wacht op de volgende QR-code.")
+
+                entry = self._clock_in_locked(s, employee, branch.id, plan.id, scanner_id=device.id)
+                return {
+                    "entry_id": entry.id,
+                    "user_id": employee.id,
+                    "name": employee.name,
+                    "clocked_in_at": entry.started_at,
+                    "plan_start": plan.starts_at,
+                    "plan_end": plan.ends_at,
+                    "scanner_name": device.name,
+                }
+        except IntegrityError as exc:
+            raise ValueError("Inklokken kon niet worden geregistreerd; ververs en probeer opnieuw.") from exc
 
     def clock_out(self, token, branch_id):
         with self.sessions.begin() as s:
