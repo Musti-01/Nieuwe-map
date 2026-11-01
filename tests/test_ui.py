@@ -32,7 +32,7 @@ def test_employee_shift_history_after_clock_out(api, team, engine, monkeypatch):
     api.clock_out(team['wt'], team['branch'])
     app = app_for(team['wt'], engine, monkeypatch)
     assert not app.exception
-    assert [tab.label for tab in app.tabs] == ['In- en uitklokken', 'Mijn shiften', 'Planning', 'Meldingen', 'Ziektebriefjes', 'Afwezigheden']
+    assert [tab.label for tab in app.tabs] == ['In- en uitklokken', 'Mijn shiften', 'Planning', 'Meldingen', 'Ziektebriefjes', 'Afwezigheden', 'Mijn beschikbaarheid']
     assert app.dataframe
     assert app.dataframe[0].value.iloc[0]['Status'] == 'Wacht op controle'
     assert all(r.label != 'Platformonderdeel' for r in app.radio)
@@ -152,7 +152,8 @@ def test_manager_invites_employee_without_clocking_in(api,team,engine,monkeypatc
     assert not api.entries(team['ot'],team['branch'])
     app.radio(key=f"branch_page_{team['branch']}").set_value('Mijn werktijd').run()
     assert not app.exception
-    assert any(b.label=='Inklokken' for b in app.button)
+    assert not any(b.label=='Inklokken' for b in app.button)
+    assert any('winkelscanner' in i.value for i in app.info)
 
 
 def test_employee_cannot_open_manager_page_through_session_state(api,team,engine,monkeypatch):
