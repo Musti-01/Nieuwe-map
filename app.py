@@ -276,6 +276,8 @@ if not b['admin'] or page == 'Mijn werktijd':
         if b['member']:
             if active is None:
                 st.info(tr('Scan met je gsm de actuele QR-code die in de vestiging wordt getoond om in te klokken.'))
+                from workforce.ui_store_qr import show_employee_phone_scan
+                show_employee_phone_scan(api, token, branch_id, tz)
             else:
                 if st.button(tr('Uitklokken'), use_container_width=True):
                     if run(lambda: api.clock_out(token, branch_id), "Je bent uitgeklokt."):
