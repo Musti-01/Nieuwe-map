@@ -40,8 +40,12 @@ except (RuntimeError, SQLAlchemyError):
     st.error(tr('Database nog niet geconfigureerd. Stel DATABASE_URL in en voer de migraties uit; zie README.'))
     st.stop()
 
-scanner_token = st.query_params.get('scanner')
-if isinstance(scanner_token, str) and scanner_token:
+scanner_query_token = st.query_params.get('scanner')
+if isinstance(scanner_query_token, str) and scanner_query_token:
+    st.session_state['_scanner_token'] = scanner_query_token
+    st.query_params.clear()
+scanner_token = st.session_state.get('_scanner_token')
+if scanner_token:
     try:
         scanner_tz = ZoneInfo(os.getenv('APP_TIMEZONE', 'Europe/Brussels'))
     except Exception:
