@@ -33,7 +33,7 @@ def test_new_requests_pending_with_contact_fields(api, application):
 
 def test_pending_operations_and_role_assignment_denied(api, application):
     a = application
-    with pytest.raises(Denied, match='winkelscanner'):
+    with pytest.raises(Denied, match='QR-code in de vestiging'):
         api.clock_in(a['ot'], a['branch'])
     for fn in [lambda: api.clock_out(a['ot'], a['branch']), lambda: api.entries(a['ot'], a['branch']), lambda: api.entries(a['ot'], a['branch'], True), lambda: api.members(a['ot'], a['branch']), lambda: api.set_role(a['ot'], a['branch'], a['owner'], 'admin'), lambda: api.audit(a['ot'], a['branch']), lambda: api.lookup_user(a['ot'], a['branch'], 'owner@example.test')]:
         with pytest.raises(Denied, match='goedgekeurd'):

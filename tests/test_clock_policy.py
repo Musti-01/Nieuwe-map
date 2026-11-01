@@ -81,22 +81,21 @@ def test_timezone_and_dst_boundaries():
     assert not clock_in_allowed(start,start+timedelta(hours=2),start-timedelta(minutes=10,seconds=1),TZ)
 
 
-def test_ui_uses_scanner_at_boundary_and_keeps_clock_out_available(api,team,engine,monkeypatch):
+def test_ui_uses_store_qr_at_boundary_and_keeps_clock_out_available(api,team,engine,monkeypatch):
     from test_ui import app_for
-    from workforce.qr_clock import build_employee_code
-    monkeypatch.setenv('SHIFTFLOW_QR_SECRET','0123456789abcdef0123456789abcdef')
+    from workforce.qr_clock import build_store_code
+    monkeypatch.setenv('SHIFTFLOW_QR_SECRET','x'*32)
     plan=plan_at(api,team,monkeypatch)
-    scanner=api.create_scanner(team['ot'],team['branch'],'Policy scanner')
     current=[START-timedelta(minutes=10,seconds=1)]
     monkeypatch.setattr('workforce.service.now',lambda:current[0])
     app=app_for(team['wt'],engine,monkeypatch)
     assert not app.exception
     assert not any(b.label=='Inklokken' for b in app.button)
-    code=build_employee_code(team['worker'],team['branch'])
+    code=build_store_code(team['branch'])
     with pytest.raises(ValueError,match='Geen geldige ingeplande shift'):
-        api.scanner_clock_in(scanner['token'],code)
+        api.store_qr_clock_in(team['wt'],code)
     current[0]=START-timedelta(minutes=10)
-    result=api.scanner_clock_in(scanner['token'],code)
+    result=api.store_qr_clock_in(team['wt'],code)
     assert result['entry_id']
     assert api.entries(team['wt'],team['branch'])[0]['plan_id']==plan
     app=app_for(team['wt'],engine,monkeypatch)

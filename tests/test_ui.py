@@ -153,7 +153,7 @@ def test_manager_invites_employee_without_clocking_in(api,team,engine,monkeypatc
     app.radio(key=f"branch_page_{team['branch']}").set_value('Mijn werktijd').run()
     assert not app.exception
     assert not any(b.label=='Inklokken' for b in app.button)
-    assert any('winkelscanner' in i.value for i in app.info)
+    assert any('QR-code' in i.value and 'vestiging' in i.value for i in app.info)
 
 
 def test_employee_cannot_open_manager_page_through_session_state(api,team,engine,monkeypatch):
@@ -163,3 +163,13 @@ def test_employee_cannot_open_manager_page_through_session_state(api,team,engine
     assert not app.exception
     assert not any(b.label=='Uitnodiging maken' for b in app.button)
     assert not any(r.label=='Vestigingsbeheer' for r in app.radio)
+
+
+def test_manager_store_qr_page_shows_rotating_qr(api,team,engine,monkeypatch):
+    monkeypatch.setenv('SHIFTFLOW_QR_SECRET','x'*32)
+    monkeypatch.setenv('APP_BASE_URL','https://shiftflow.example')
+    app=app_for(team['ot'],engine,monkeypatch)
+    app.radio(key=f"branch_page_{team['branch']}").set_value('QR-inklokken').run()
+    assert not app.exception
+    assert any(s.value=='QR-inklokken' for s in app.subheader)
+    assert any(m.label=='Nieuwe QR over' for m in app.metric)

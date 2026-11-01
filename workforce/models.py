@@ -261,3 +261,11 @@ class Availability(Base):
             name="availability_recurrence",
         ),
     )
+
+
+class StoreQRUse(Base):
+    __tablename__ = "store_qr_uses"
+    token_hash: Mapped[str] = mapped_column(String(64), primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), primary_key=True)
+    branch_id: Mapped[int] = mapped_column(ForeignKey("branches.id"), index=True)
+    used_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))

@@ -26,7 +26,7 @@ def engine():
 @pytest.fixture
 def api(engine):
     with engine.begin() as connection:
-        connection.execute(text('TRUNCATE qr_scan_uses, scanner_devices, employee_availability, system_events, account_tokens, shift_plans, shift_reviews, notifications, approval_decisions, audit_events, auth_sessions, login_limits, work_entries, memberships, branches, organizations, users RESTART IDENTITY CASCADE'))
+        connection.execute(text('TRUNCATE store_qr_uses, qr_scan_uses, scanner_devices, employee_availability, system_events, account_tokens, shift_plans, shift_reviews, notifications, approval_decisions, audit_events, auth_sessions, login_limits, work_entries, memberships, branches, organizations, users RESTART IDENTITY CASCADE'))
     return Service(sessions(engine))
 
 @pytest.fixture
