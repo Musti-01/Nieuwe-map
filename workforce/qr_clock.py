@@ -72,4 +72,4 @@ def qr_svg(value):
     image = qr.make_image(image_factory=qrcode.image.svg.SvgPathImage)
     output = io.BytesIO()
     image.save(output)
-    return output.getvalue().decode("utf-8")
+    return output.getvalue()
