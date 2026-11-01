@@ -62,7 +62,7 @@ def test_sick_blocks_clock_in_but_not_clock_out(api, team, monkeypatch):
     with pytest.raises(ValueError, match='afwezig'):
         planned_clock_in(api, team['wt'], team['branch'], plan)
     api.review_absence(team['ot'], team['branch'], absence, 'cancel')
-    api.clock_in(team['wt'], team['branch'], plan)
+    planned_clock_in(api, team['wt'], team['branch'], plan)
     api.request_absence(team['wt'], team['branch'], 'sick', day, day)
     assert api.clock_out(team['wt'], team['branch'])
 
