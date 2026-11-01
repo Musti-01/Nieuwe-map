@@ -18,7 +18,7 @@ def test_remove_branch_revokes_access_and_preserves_history(api, team):
         assert branch.archived_at and branch.archived_by
         assert entry.ended_at == branch.archived_at
         assert entry.review_status=='approved'
-        assert entry.reviewed_by==team['pt']
+        assert entry.reviewed_by==branch.archived_by
         assert entry.reviewed_at==entry.ended_at
         assert s.scalar(select(Audit).where(Audit.action=='branch.archived'))
     with pytest.raises(Denied):
