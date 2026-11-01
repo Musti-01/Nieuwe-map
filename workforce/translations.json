@@ -1638,10 +1638,10 @@
     "es": "Este turno ya está aprobado."
   },
   "Geef begin- en eindtijd met tijdzone op.": {
-    "fr": "Indiquez un début et une fin avec fuseau horaire.",
+    "fr": "Indiquez l'heure de début et de fin avec fuseau horaire.",
     "en": "Provide start and end times with a time zone.",
-    "de": "Gib Beginn und Ende mit Zeitzone an.",
-    "es": "Indica inicio y fin con zona horaria."
+    "de": "Gib Start- und Endzeit mit Zeitzone an.",
+    "es": "Indica la hora de inicio y fin con zona horaria."
   },
   "Einde moet na begin liggen en mag niet in de toekomst liggen.": {
     "fr": "La fin doit suivre le début et ne peut pas être dans le futur.",
@@ -3862,5 +3862,377 @@
     "en": "already scheduled",
     "de": "bereits eingeplant",
     "es": "ya programado"
+  },
+  "Inklokken gebeurt uitsluitend via de geautoriseerde winkelscanner. Toon hieronder je persoonlijke QR-code.": {
+    "fr": "Le pointage d'entrée se fait uniquement via le scanner de magasin autorisé. Présentez votre code QR personnel ci-dessous.",
+    "en": "Clock-in is only possible through the authorized store scanner. Show your personal QR code below.",
+    "de": "Das Einstempeln ist nur über den autorisierten Filialscanner möglich. Zeige unten deinen persönlichen QR-Code.",
+    "es": "La entrada solo se registra mediante el escáner autorizado de la tienda. Muestra abajo tu código QR personal."
+  },
+  "Ingeklokt om {v0}.": {
+    "fr": "Pointé à {v0}.",
+    "en": "Clocked in at {v0}.",
+    "de": "Um {v0} eingestempelt.",
+    "es": "Entrada registrada a las {v0}."
+  },
+  "Je kunt hieronder uitklokken wanneer je klaar bent.": {
+    "fr": "Vous pouvez pointer votre sortie ci-dessous lorsque vous avez terminé.",
+    "en": "You can clock out below when you are finished.",
+    "de": "Wenn du fertig bist, kannst du unten ausstempeln.",
+    "es": "Puedes registrar la salida abajo cuando hayas terminado."
+  },
+  "Inklokken bevestigd om {v0}.": {
+    "fr": "Pointage d'entrée confirmé à {v0}.",
+    "en": "Clock-in confirmed at {v0}.",
+    "de": "Einstempeln um {v0} bestätigt.",
+    "es": "Entrada confirmada a las {v0}."
+  },
+  "{v0} sec": {
+    "fr": "{v0} s",
+    "en": "{v0} sec",
+    "de": "{v0} Sek.",
+    "es": "{v0} s"
+  },
+  "Toon deze persoonlijke QR alleen aan de geautoriseerde winkelscanner. De scanner controleert daarna opnieuw je vestiging, planning en afwezigheden.": {
+    "fr": "Présentez ce QR personnel uniquement au scanner de magasin autorisé. Le scanner vérifie ensuite à nouveau votre établissement, votre planning et vos absences.",
+    "en": "Show this personal QR only to the authorized store scanner. The scanner then rechecks your branch, schedule and absences.",
+    "de": "Zeige diesen persönlichen QR-Code nur dem autorisierten Filialscanner. Der Scanner prüft danach erneut Filiale, Planung und Abwesenheiten.",
+    "es": "Muestra este QR personal solo al escáner autorizado de la tienda. El escáner vuelve a comprobar la sucursal, la planificación y las ausencias."
+  },
+  "Registreer alleen vaste scanners of tablets die in de vestiging worden gebruikt. Elke scanner krijgt een eigen geheime toegang die je later kunt intrekken.": {
+    "fr": "Enregistrez uniquement les scanners ou tablettes fixes utilisés dans l'établissement. Chaque scanner reçoit un accès secret propre que vous pourrez révoquer.",
+    "en": "Register only fixed scanners or tablets used at the branch. Each scanner receives its own secret access that you can revoke later.",
+    "de": "Registriere nur feste Scanner oder Tablets, die in der Filiale verwendet werden. Jeder Scanner erhält einen eigenen geheimen Zugang, den du später widerrufen kannst.",
+    "es": "Registra solo escáneres o tabletas fijos usados en la sucursal. Cada escáner recibe un acceso secreto propio que podrás revocar."
+  },
+  "Bijvoorbeeld: Tablet kassa 1": {
+    "fr": "Par exemple : Tablette caisse 1",
+    "en": "For example: Checkout tablet 1",
+    "de": "Zum Beispiel: Kassen-Tablet 1",
+    "es": "Por ejemplo: Tableta caja 1"
+  },
+  "Scanner geregistreerd. Bewaar de koppeling nu op het vaste winkeltoestel.": {
+    "fr": "Scanner enregistré. Enregistrez maintenant la liaison sur l'appareil fixe du magasin.",
+    "en": "Scanner registered. Save the pairing on the fixed store device now.",
+    "de": "Scanner registriert. Speichere die Kopplung jetzt auf dem festen Filialgerät.",
+    "es": "Escáner registrado. Guarda ahora la vinculación en el dispositivo fijo de la tienda."
+  },
+  "Open deze geheime HTTPS-link alleen op het vaste winkeltoestel. Wie deze link bezit, heeft scannerrechten totdat je de scanner intrekt.": {
+    "fr": "Ouvrez ce lien HTTPS secret uniquement sur l'appareil fixe du magasin. Toute personne qui possède ce lien dispose des droits du scanner jusqu'à sa révocation.",
+    "en": "Open this secret HTTPS link only on the fixed store device. Anyone who has this link has scanner access until you revoke the scanner.",
+    "de": "Öffne diesen geheimen HTTPS-Link nur auf dem festen Filialgerät. Wer den Link besitzt, hat Scannerrechte, bis du den Scanner widerrufst.",
+    "es": "Abre este enlace HTTPS secreto solo en el dispositivo fijo de la tienda. Quien tenga el enlace tendrá permisos de escáner hasta que lo revoques."
+  },
+  "Koppeling is opgeslagen op het winkeltoestel": {
+    "fr": "La liaison est enregistrée sur l'appareil du magasin",
+    "en": "Pairing is saved on the store device",
+    "de": "Kopplung ist auf dem Filialgerät gespeichert",
+    "es": "La vinculación está guardada en el dispositivo de la tienda"
+  },
+  "Nog geen winkelscanner geregistreerd.": {
+    "fr": "Aucun scanner de magasin n'est encore enregistré.",
+    "en": "No store scanner has been registered yet.",
+    "de": "Noch kein Filialscanner registriert.",
+    "es": "Aún no se ha registrado ningún escáner de tienda."
+  },
+  "Scan de persoonlijke QR van de medewerker met een vaste QR-scanner of met de camera van deze tablet.": {
+    "fr": "Scannez le QR personnel de l'employé avec un scanner QR fixe ou avec la caméra de cette tablette.",
+    "en": "Scan the employee's personal QR with a fixed QR scanner or this tablet's camera.",
+    "de": "Scanne den persönlichen QR-Code des Mitarbeiters mit einem festen QR-Scanner oder der Kamera dieses Tablets.",
+    "es": "Escanea el QR personal del empleado con un escáner QR fijo o con la cámara de esta tableta."
+  },
+  "Een vaste QR-scanner werkt als toetsenbord: scan de code en druk zo nodig op Scan verwerken.": {
+    "fr": "Un scanner QR fixe fonctionne comme un clavier : scannez le code et, si nécessaire, appuyez sur Traiter le scan.",
+    "en": "A fixed QR scanner works like a keyboard: scan the code and, if necessary, press Process scan.",
+    "de": "Ein fester QR-Scanner funktioniert wie eine Tastatur: Code scannen und bei Bedarf Scan verarbeiten drücken.",
+    "es": "Un escáner QR fijo funciona como un teclado: escanea el código y, si hace falta, pulsa Procesar escaneo."
+  },
+  "Scan nu de QR-code": {
+    "fr": "Scannez maintenant le code QR",
+    "en": "Scan the QR code now",
+    "de": "QR-Code jetzt scannen",
+    "es": "Escanea ahora el código QR"
+  },
+  "Maak met de tablet-camera een scherpe foto van de volledige QR-code.": {
+    "fr": "Prenez avec la caméra de la tablette une photo nette du code QR complet.",
+    "en": "Take a sharp photo of the complete QR code with the tablet camera.",
+    "de": "Nimm mit der Tablet-Kamera ein scharfes Foto des vollständigen QR-Codes auf.",
+    "es": "Haz con la cámara de la tableta una foto nítida del código QR completo."
+  },
+  "{v0} is succesvol ingeklokt.": {
+    "fr": "{v0} a pointé son entrée avec succès.",
+    "en": "{v0} clocked in successfully.",
+    "de": "{v0} wurde erfolgreich eingestempelt.",
+    "es": "{v0} ha registrado la entrada correctamente."
+  },
+  "Shift: {v0} – {v1}": {
+    "fr": "Shift : {v0} – {v1}",
+    "en": "Shift: {v0} – {v1}",
+    "de": "Schicht: {v0} – {v1}",
+    "es": "Turno: {v0} – {v1}"
+  },
+  "Een doorgestuurde live QR blijft een risico zolang hij nog geldig is. Daarom accepteert ShiftFlow alleen scans van deze geautoriseerde winkelscanner, verbruikt elke QR maar één keer en bewaart de scanner in het auditspoor.": {
+    "fr": "Un QR en direct transféré reste un risque tant qu'il est valide. ShiftFlow n'accepte donc que les scans de ce scanner de magasin autorisé, n'utilise chaque QR qu'une seule fois et enregistre le scanner dans la piste d'audit.",
+    "en": "A forwarded live QR remains a risk while it is valid. ShiftFlow therefore accepts scans only from this authorized store scanner, consumes each QR only once and records the scanner in the audit trail.",
+    "de": "Ein weitergeleiteter Live-QR-Code bleibt während seiner Gültigkeit ein Risiko. ShiftFlow akzeptiert daher nur Scans dieses autorisierten Filialscanners, verwendet jeden QR-Code nur einmal und protokolliert den Scanner im Audit-Trail.",
+    "es": "Un QR en vivo reenviado sigue siendo un riesgo mientras sea válido. Por eso ShiftFlow solo acepta escaneos de este escáner autorizado, consume cada QR una sola vez y registra el escáner en la auditoría."
+  },
+  " · wekelijks": {
+    "fr": " · hebdomadaire",
+    "en": " · weekly",
+    "de": " · wöchentlich",
+    "es": " · semanal"
+  },
+  "Geef aan wanneer je kunt werken. Dit zijn voorkeuren: je bent pas ingepland wanneer een manager een shift aanmaakt.": {
+    "fr": "Indiquez quand vous pouvez travailler. Ce sont des préférences : vous n'êtes planifié que lorsqu'un manager crée un shift.",
+    "en": "Indicate when you can work. These are preferences: you are only scheduled when a manager creates a shift.",
+    "de": "Gib an, wann du arbeiten kannst. Das sind Präferenzen: Du bist erst eingeplant, wenn ein Manager eine Schicht erstellt.",
+    "es": "Indica cuándo puedes trabajar. Son preferencias: solo quedas programado cuando un responsable crea un turno."
+  },
+  "Je hebt nog geen beschikbaarheden opgegeven.": {
+    "fr": "Vous n'avez encore indiqué aucune disponibilité.",
+    "en": "You have not entered any availability yet.",
+    "de": "Du hast noch keine Verfügbarkeiten angegeben.",
+    "es": "Aún no has indicado ninguna disponibilidad."
+  },
+  "Deze einddatum wordt alleen gebruikt wanneer 'Elke week herhalen' is aangevinkt.": {
+    "fr": "Cette date de fin n'est utilisée que si « Répéter chaque semaine » est coché.",
+    "en": "This end date is only used when 'Repeat every week' is checked.",
+    "de": "Dieses Enddatum wird nur verwendet, wenn „Jede Woche wiederholen“ aktiviert ist.",
+    "es": "Esta fecha final solo se usa cuando está marcada «Repetir cada semana»."
+  },
+  "Geselecteerde beschikbaarheid verwijderen": {
+    "fr": "Supprimer la disponibilité sélectionnée",
+    "en": "Delete selected availability",
+    "de": "Ausgewählte Verfügbarkeit löschen",
+    "es": "Eliminar disponibilidad seleccionada"
+  },
+  "Bekijk wanneer medewerkers hebben aangegeven dat ze kunnen werken. Beschikbaarheid maakt nooit automatisch een shift.": {
+    "fr": "Voyez quand les employés ont indiqué pouvoir travailler. Une disponibilité ne crée jamais automatiquement un shift.",
+    "en": "See when employees said they can work. Availability never creates a shift automatically.",
+    "de": "Sieh, wann Mitarbeiter angegeben haben, arbeiten zu können. Verfügbarkeit erstellt niemals automatisch eine Schicht.",
+    "es": "Consulta cuándo los empleados han indicado que pueden trabajar. La disponibilidad nunca crea un turno automáticamente."
+  },
+  "Geen beschikbaarheden in deze periode.": {
+    "fr": "Aucune disponibilité pour cette période.",
+    "en": "No availability in this period.",
+    "de": "Keine Verfügbarkeiten in diesem Zeitraum.",
+    "es": "No hay disponibilidades en este período."
+  },
+  "conflict met afwezigheid": {
+    "fr": "conflit avec une absence",
+    "en": "conflict with absence",
+    "de": "Konflikt mit Abwesenheit",
+    "es": "conflicto con ausencia"
+  },
+  "overlapt bestaande shift": {
+    "fr": "chevauche un shift existant",
+    "en": "overlaps an existing shift",
+    "de": "überschneidet sich mit einer bestehenden Schicht",
+    "es": "se solapa con un turno existente"
+  },
+  "De geplande eindtijd moet na de begintijd liggen.": {
+    "fr": "L'heure de fin planifiée doit être après l'heure de début.",
+    "en": "The planned end time must be after the start time.",
+    "de": "Die geplante Endzeit muss nach der Startzeit liegen.",
+    "es": "La hora final planificada debe ser posterior a la hora de inicio."
+  },
+  "Deze medewerker heeft zichzelf voor het volledige gekozen tijdsblok als beschikbaar opgegeven.": {
+    "fr": "Cet employé s'est déclaré disponible pour l'intégralité du créneau choisi.",
+    "en": "This employee marked themselves available for the entire selected time slot.",
+    "de": "Dieser Mitarbeiter hat sich für das gesamte gewählte Zeitfenster als verfügbar angegeben.",
+    "es": "Este empleado se ha indicado como disponible durante todo el bloque seleccionado."
+  },
+  "Deze medewerker heeft voor dit volledige tijdsblok geen beschikbaarheid opgegeven. Je kunt nog steeds plannen; beschikbaarheid is een voorkeur.": {
+    "fr": "Cet employé n'a pas indiqué de disponibilité pour l'intégralité de ce créneau. Vous pouvez tout de même planifier ; la disponibilité est une préférence.",
+    "en": "This employee did not enter availability for this entire time slot. You can still schedule them; availability is a preference.",
+    "de": "Dieser Mitarbeiter hat für dieses gesamte Zeitfenster keine Verfügbarkeit angegeben. Du kannst trotzdem planen; Verfügbarkeit ist eine Präferenz.",
+    "es": "Este empleado no indicó disponibilidad para todo este bloque. Aun así puedes programarlo; la disponibilidad es una preferencia."
+  },
+  "Conflict: deze medewerker is afwezig in deze periode. Opslaan wordt door de server geblokkeerd.": {
+    "fr": "Conflit : cet employé est absent pendant cette période. Le serveur bloque l'enregistrement.",
+    "en": "Conflict: this employee is absent during this period. The server blocks saving.",
+    "de": "Konflikt: Dieser Mitarbeiter ist in diesem Zeitraum abwesend. Der Server blockiert das Speichern.",
+    "es": "Conflicto: este empleado está ausente durante este período. El servidor bloquea el guardado."
+  },
+  "Conflict: deze medewerker heeft al een overlappende shift. Opslaan wordt door de server geblokkeerd.": {
+    "fr": "Conflit : cet employé a déjà un shift qui se chevauche. Le serveur bloque l'enregistrement.",
+    "en": "Conflict: this employee already has an overlapping shift. The server blocks saving.",
+    "de": "Konflikt: Dieser Mitarbeiter hat bereits eine überlappende Schicht. Der Server blockiert das Speichern.",
+    "es": "Conflicto: este empleado ya tiene un turno solapado. El servidor bloquea el guardado."
+  },
+  "Geen actieve medewerkers gevonden voor deze vestiging.": {
+    "fr": "Aucun employé actif trouvé pour cet établissement.",
+    "en": "No active employees found for this branch.",
+    "de": "Keine aktiven Mitarbeiter für diese Filiale gefunden.",
+    "es": "No se encontraron empleados activos para esta sucursal."
+  },
+  "Inklokken kan alleen via een geautoriseerde winkelscanner.": {
+    "fr": "Le pointage d'entrée n'est possible que via un scanner de magasin autorisé.",
+    "en": "Clock-in is only possible through an authorized store scanner.",
+    "de": "Einstempeln ist nur über einen autorisierten Filialscanner möglich.",
+    "es": "La entrada solo se puede registrar mediante un escáner autorizado de la tienda."
+  },
+  "Ongeldige scannerkoppeling.": {
+    "fr": "Liaison de scanner invalide.",
+    "en": "Invalid scanner pairing.",
+    "de": "Ungültige Scannerkopplung.",
+    "es": "Vinculación de escáner no válida."
+  },
+  "Scanner niet gevonden.": {
+    "fr": "Scanner introuvable.",
+    "en": "Scanner not found.",
+    "de": "Scanner nicht gefunden.",
+    "es": "Escáner no encontrado."
+  },
+  "Scanner niet geautoriseerd.": {
+    "fr": "Scanner non autorisé.",
+    "en": "Scanner not authorized.",
+    "de": "Scanner nicht autorisiert.",
+    "es": "Escáner no autorizado."
+  },
+  "Deze scanner hoort niet bij een actieve vestiging.": {
+    "fr": "Ce scanner n'appartient pas à un établissement actif.",
+    "en": "This scanner does not belong to an active branch.",
+    "de": "Dieser Scanner gehört zu keiner aktiven Filiale.",
+    "es": "Este escáner no pertenece a una sucursal activa."
+  },
+  "QR-code is ongeldig, vervalst of verlopen.": {
+    "fr": "Le code QR est invalide, falsifié ou expiré.",
+    "en": "The QR code is invalid, tampered with or expired.",
+    "de": "Der QR-Code ist ungültig, manipuliert oder abgelaufen.",
+    "es": "El código QR no es válido, ha sido manipulado o ha caducado."
+  },
+  "Deze medewerker heeft geen actieve toegang tot deze vestiging.": {
+    "fr": "Cet employé n'a pas d'accès actif à cet établissement.",
+    "en": "This employee has no active access to this branch.",
+    "de": "Dieser Mitarbeiter hat keinen aktiven Zugriff auf diese Filiale.",
+    "es": "Este empleado no tiene acceso activo a esta sucursal."
+  },
+  "Deze QR-code is al gebruikt. Wacht op de volgende QR-code.": {
+    "fr": "Ce code QR a déjà été utilisé. Attendez le prochain code QR.",
+    "en": "This QR code has already been used. Wait for the next QR code.",
+    "de": "Dieser QR-Code wurde bereits verwendet. Warte auf den nächsten QR-Code.",
+    "es": "Este código QR ya se ha utilizado. Espera al siguiente código QR."
+  },
+  "Geen geldige ingeplande shift om nu voor in te klokken.": {
+    "fr": "Aucun shift planifié valide pour pointer maintenant.",
+    "en": "There is no valid scheduled shift to clock in for now.",
+    "de": "Es gibt aktuell keine gültige geplante Schicht zum Einstempeln.",
+    "es": "No hay un turno programado válido para registrar la entrada ahora."
+  },
+  "Inklokken kon niet worden geregistreerd; ververs en probeer opnieuw.": {
+    "fr": "Le pointage d'entrée n'a pas pu être enregistré ; actualisez et réessayez.",
+    "en": "Clock-in could not be recorded; refresh and try again.",
+    "de": "Das Einstempeln konnte nicht erfasst werden; aktualisiere und versuche es erneut.",
+    "es": "No se pudo registrar la entrada; actualiza e inténtalo de nuevo."
+  },
+  "Alleen gekoppelde medewerkers kunnen beschikbaarheid instellen.": {
+    "fr": "Seuls les employés liés peuvent définir leur disponibilité.",
+    "en": "Only linked employees can set availability.",
+    "de": "Nur zugeordnete Mitarbeiter können Verfügbarkeit festlegen.",
+    "es": "Solo los empleados vinculados pueden establecer disponibilidad."
+  },
+  "Je kunt alleen je eigen beschikbaarheid wijzigen.": {
+    "fr": "Vous ne pouvez modifier que votre propre disponibilité.",
+    "en": "You can only edit your own availability.",
+    "de": "Du kannst nur deine eigene Verfügbarkeit ändern.",
+    "es": "Solo puedes modificar tu propia disponibilidad."
+  },
+  "De beschikbaarheid is gewijzigd; ververs het overzicht.": {
+    "fr": "La disponibilité a été modifiée ; actualisez l'aperçu.",
+    "en": "The availability was changed; refresh the overview.",
+    "de": "Die Verfügbarkeit wurde geändert; aktualisiere die Übersicht.",
+    "es": "La disponibilidad ha cambiado; actualiza el resumen."
+  },
+  "Deze beschikbaarheid overlapt met een bestaand tijdsblok.": {
+    "fr": "Cette disponibilité chevauche un créneau existant.",
+    "en": "This availability overlaps an existing time slot.",
+    "de": "Diese Verfügbarkeit überschneidet sich mit einem bestehenden Zeitfenster.",
+    "es": "Esta disponibilidad se solapa con un bloque horario existente."
+  },
+  "Je kunt alleen je eigen beschikbaarheid verwijderen.": {
+    "fr": "Vous ne pouvez supprimer que votre propre disponibilité.",
+    "en": "You can only delete your own availability.",
+    "de": "Du kannst nur deine eigene Verfügbarkeit löschen.",
+    "es": "Solo puedes eliminar tu propia disponibilidad."
+  },
+  "Geef een geldige periode met tijdzone op.": {
+    "fr": "Indiquez une période valide avec fuseau horaire.",
+    "en": "Provide a valid period with a time zone.",
+    "de": "Gib einen gültigen Zeitraum mit Zeitzone an.",
+    "es": "Indica un período válido con zona horaria."
+  },
+  "Kies een periode van maximaal 93 dagen.": {
+    "fr": "Choisissez une période de 93 jours maximum.",
+    "en": "Choose a period of at most 93 days.",
+    "de": "Wähle einen Zeitraum von höchstens 93 Tagen.",
+    "es": "Elige un período de como máximo 93 días."
+  },
+  "Geef geldige begin- en eindtijden met tijdzone.": {
+    "fr": "Indiquez des heures de début et de fin valides avec fuseau horaire.",
+    "en": "Provide valid start and end times with a time zone.",
+    "de": "Gib gültige Start- und Endzeiten mit Zeitzone an.",
+    "es": "Indica horas de inicio y fin válidas con zona horaria."
+  },
+  "SHIFTFLOW_QR_SECRET moet minimaal 32 tekens bevatten.": {
+    "fr": "SHIFTFLOW_QR_SECRET doit contenir au moins 32 caractères.",
+    "en": "SHIFTFLOW_QR_SECRET must contain at least 32 characters.",
+    "de": "SHIFTFLOW_QR_SECRET muss mindestens 32 Zeichen enthalten.",
+    "es": "SHIFTFLOW_QR_SECRET debe contener al menos 32 caracteres."
+  },
+  "De qrcode-package ontbreekt. Installeer de projectrequirements opnieuw.": {
+    "fr": "Le package qrcode est absent. Réinstallez les dépendances du projet.",
+    "en": "The qrcode package is missing. Reinstall the project requirements.",
+    "de": "Das qrcode-Paket fehlt. Installiere die Projektabhängigkeiten erneut.",
+    "es": "Falta el paquete qrcode. Reinstala las dependencias del proyecto."
+  },
+  "Camera-scanning is niet beschikbaar; installeer de projectrequirements opnieuw.": {
+    "fr": "Le scan par caméra n'est pas disponible ; réinstallez les dépendances du projet.",
+    "en": "Camera scanning is unavailable; reinstall the project requirements.",
+    "de": "Kamera-Scanning ist nicht verfügbar; installiere die Projektabhängigkeiten erneut.",
+    "es": "El escaneo con cámara no está disponible; reinstala las dependencias del proyecto."
+  },
+  "De camerafoto kon niet worden gelezen.": {
+    "fr": "La photo de la caméra n'a pas pu être lue.",
+    "en": "The camera photo could not be read.",
+    "de": "Das Kamerafoto konnte nicht gelesen werden.",
+    "es": "No se pudo leer la foto de la cámara."
+  },
+  "Geen geldige QR-code gevonden. Houd de QR volledig en scherp in beeld.": {
+    "fr": "Aucun code QR valide trouvé. Gardez le QR entièrement visible et net.",
+    "en": "No valid QR code found. Keep the entire QR code sharp and in view.",
+    "de": "Kein gültiger QR-Code gefunden. Halte den QR-Code vollständig und scharf im Bild.",
+    "es": "No se encontró un código QR válido. Mantén todo el QR nítido y dentro de la imagen."
+  },
+  "Beschikbaarheid moet op één dag liggen en het einduur moet na het beginuur liggen.": {
+    "fr": "La disponibilité doit tenir sur une seule journée et l'heure de fin doit être après l'heure de début.",
+    "en": "Availability must be within one day and the end time must be after the start time.",
+    "de": "Die Verfügbarkeit muss innerhalb eines Tages liegen und die Endzeit muss nach der Startzeit liegen.",
+    "es": "La disponibilidad debe estar dentro de un solo día y la hora final debe ser posterior a la inicial."
+  },
+  "Kies een einddatum voor de wekelijkse beschikbaarheid.": {
+    "fr": "Choisissez une date de fin pour la disponibilité hebdomadaire.",
+    "en": "Choose an end date for weekly availability.",
+    "de": "Wähle ein Enddatum für die wöchentliche Verfügbarkeit.",
+    "es": "Elige una fecha final para la disponibilidad semanal."
+  },
+  "De herhaling kan niet vóór de eerste beschikbare dag eindigen.": {
+    "fr": "La répétition ne peut pas se terminer avant le premier jour disponible.",
+    "en": "The recurrence cannot end before the first available day.",
+    "de": "Die Wiederholung kann nicht vor dem ersten verfügbaren Tag enden.",
+    "es": "La repetición no puede terminar antes del primer día disponible."
+  },
+  "Wekelijkse beschikbaarheid kan maximaal één jaar vooruit lopen.": {
+    "fr": "La disponibilité hebdomadaire peut être définie au maximum un an à l'avance.",
+    "en": "Weekly availability can run at most one year ahead.",
+    "de": "Wöchentliche Verfügbarkeit kann höchstens ein Jahr im Voraus laufen.",
+    "es": "La disponibilidad semanal puede extenderse como máximo un año."
+  },
+  "Een einddatum voor herhaling hoort alleen bij wekelijkse beschikbaarheid.": {
+    "fr": "Une date de fin de répétition ne s'applique qu'à une disponibilité hebdomadaire.",
+    "en": "A recurrence end date only applies to weekly availability.",
+    "de": "Ein Wiederholungsenddatum gilt nur für wöchentliche Verfügbarkeit.",
+    "es": "Una fecha final de repetición solo corresponde a una disponibilidad semanal."
   }
 }
