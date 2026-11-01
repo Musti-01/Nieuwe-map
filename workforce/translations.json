@@ -4324,5 +4324,35 @@
     "en": "This QR code belongs to another branch.",
     "de": "Dieser QR-Code gehört zu einer anderen Filiale.",
     "es": "Este código QR pertenece a otra sucursal."
+  },
+  "Onderstaande uren zijn geregistreerd. Afgesloten shiften worden automatisch verwerkt.": {
+    "fr": "Les heures ci-dessous sont enregistrées. Les shifts terminés sont traités automatiquement.",
+    "en": "The hours below are recorded. Completed shifts are processed automatically.",
+    "de": "Die untenstehenden Stunden sind erfasst. Abgeschlossene Schichten werden automatisch verarbeitet.",
+    "es": "Las horas de abajo están registradas. Los turnos finalizados se procesan automáticamente."
+  },
+  "Afgesloten uren": {
+    "fr": "Heures terminées",
+    "en": "Completed hours",
+    "de": "Abgeschlossene Stunden",
+    "es": "Horas finalizadas"
+  },
+  "Afgesloten shiften worden automatisch verwerkt. Lopende uren staan apart. Periodes worden berekend in de ingestelde tijdzone.": {
+    "fr": "Les shifts terminés sont traités automatiquement. Les heures en cours sont affichées séparément. Les périodes sont calculées dans le fuseau horaire configuré.",
+    "en": "Completed shifts are processed automatically. Active hours are shown separately. Periods are calculated in the configured time zone.",
+    "de": "Abgeschlossene Schichten werden automatisch verarbeitet. Laufende Stunden werden separat angezeigt. Zeiträume werden in der eingestellten Zeitzone berechnet.",
+    "es": "Los turnos finalizados se procesan automáticamente. Las horas en curso se muestran por separado. Los períodos se calculan en la zona horaria configurada."
+  },
+  "Geregistreerde uren worden na uitklokken automatisch verwerkt.": {
+    "fr": "Les heures enregistrées sont traitées automatiquement après le pointage de sortie.",
+    "en": "Recorded hours are processed automatically after clock-out.",
+    "de": "Erfasste Stunden werden nach dem Ausstempeln automatisch verarbeitet.",
+    "es": "Las horas registradas se procesan automáticamente después de registrar la salida."
+  },
+  "Vergeten uitklokken: meer dan 15 minuten na de gekoppelde geplande eindtijd, of meer dan 12 uur ingeklokt zonder zo’n afwijking. Vraag de medewerker om uit te klokken zodra de shift is afgelopen.": {
+    "fr": "Oubli de pointage de sortie : plus de 15 minutes après l'heure de fin planifiée associée, ou plus de 12 heures pointé sans cet écart. Demandez à l'employé de pointer sa sortie dès que le shift est terminé.",
+    "en": "Forgotten clock-out: more than 15 minutes after the linked planned end time, or more than 12 hours clocked in without such a deviation. Ask the employee to clock out once the shift has ended.",
+    "de": "Vergessenes Ausstempeln: mehr als 15 Minuten nach dem zugeordneten geplanten Ende oder mehr als 12 Stunden eingestempelt ohne solche Abweichung. Bitte den Mitarbeiter, nach Schichtende auszustempeln.",
+    "es": "Salida olvidada: más de 15 minutos después de la hora final planificada vinculada, o más de 12 horas fichado sin esa desviación. Pide al empleado que registre la salida cuando termine el turno."
   }
 }
