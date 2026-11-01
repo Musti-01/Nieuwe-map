@@ -52,7 +52,7 @@ def show_qr_station(branch_id, branch_name):
         remaining = WINDOW_SECONDS - (int(time.time()) % WINDOW_SECONDS)
         st.metric(tr("Nieuwe QR over"), tr("{v0} sec", v0=remaining))
         st.caption(tr(
-            "Vestiging: {v0}. Een oude of aangepaste QR-code wordt door de server geweigerd.",
+            "Vestiging: {v0}. Een verlopen of aangepaste QR-code wordt door de server geweigerd.",
             v0=branch_name,
         ))
 
