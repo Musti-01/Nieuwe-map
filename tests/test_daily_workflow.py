@@ -68,12 +68,14 @@ def test_employee_next_shift_and_midnight_opening_are_explicit(api,team,engine,m
     start=datetime(2020,5,5,0,5,tzinfo=tz)
     current=start-timedelta(hours=2)
     monkeypatch.setattr('workforce.service.now',lambda:current)
+    monkeypatch.setenv('SHIFTFLOW_QR_SECRET','x'*32)
     api.save_plan(team['ot'],team['branch'],team['worker'],start,start+timedelta(hours=4))
     app=app_for(team['wt'],engine,monkeypatch)
     assert not app.exception
     assert any('Volgende shift: 05-05-2020 00:05' in i.value for i in app.info)
     assert any('Inklokken mogelijk vanaf 05-05-2020 00:00' in m.value for m in app.markdown)
-    assert next(b for b in app.button if b.label=='Inklokken').disabled
+    assert not any(b.label=='Inklokken' for b in app.button)
+    assert any('winkelscanner' in i.value for i in app.info)
 
 
 def test_existing_employee_shortcut_and_planning_date(api,team,engine,monkeypatch):
