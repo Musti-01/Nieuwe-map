@@ -1,8 +1,5 @@
-import os
 import hashlib
 import time
-from urllib.parse import quote
-
 import streamlit as st
 from workforce.i18n import tr
 from workforce.qr_clock import WINDOW_SECONDS, build_employee_code, qr_svg
