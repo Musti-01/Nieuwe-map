@@ -91,3 +91,13 @@ def test_same_qr_concurrent_scan_has_one_winner(api, team, monkeypatch):
 
     with ThreadPoolExecutor(max_workers=2) as pool:
         assert sum(pool.map(scan, [1, 2])) == 1
+
+
+def test_scanner_pairing_url_requires_https(api, monkeypatch):
+    monkeypatch.setenv("APP_BASE_URL", "https://shiftflow.example")
+    url = api.scanner_pairing_url("A" * 40)
+    assert url.startswith("https://shiftflow.example?scanner=")
+
+    monkeypatch.setenv("APP_BASE_URL", "http://shiftflow.example")
+    with pytest.raises(ValueError, match="HTTPS"):
+        api.scanner_pairing_url("A" * 40)
