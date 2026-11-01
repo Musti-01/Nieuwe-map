@@ -1008,6 +1008,9 @@ class Service:
             select(Branch.id).where(or_(Branch.reviewed_by == target.id, Branch.archived_by == target.id)),
             select(ShiftReview.id).where(ShiftReview.reviewer_id == target.id),
             select(AccountToken.token_hash).where(or_(AccountToken.user_id == target.id, AccountToken.created_by == target.id, AccountToken.email == target.email)),
+            select(Availability.id).where(Availability.user_id == target.id),
+            select(ScannerDevice.id).where(ScannerDevice.created_by == target.id),
+            select(QRScanUse.token_hash).where(QRScanUse.user_id == target.id),
         ]
         delete_reason = blocked
         if not delete_reason and (owner or target.platform_admin):
@@ -1100,7 +1103,12 @@ class Service:
             q = select(Availability, User.name).join(User, User.id == Availability.user_id).where(
                 Availability.branch_id == branch_id
             )
-            if not team:
+            if team:
+                q = q.join(
+                    Membership,
+                    (Membership.branch_id == Availability.branch_id) & (Membership.user_id == Availability.user_id),
+                ).where(Membership.role != "revoked", User.is_active.is_(True))
+            else:
                 q = q.where(Availability.user_id == actor.id)
             return [
                 {
@@ -1238,7 +1246,12 @@ class Service:
             q = select(Availability, User.name).join(User, User.id == Availability.user_id).where(
                 Availability.branch_id == branch_id
             )
-            if not team:
+            if team:
+                q = q.join(
+                    Membership,
+                    (Membership.branch_id == Availability.branch_id) & (Membership.user_id == Availability.user_id),
+                ).where(Membership.role != "revoked", User.is_active.is_(True))
+            else:
                 q = q.where(Availability.user_id == actor.id)
             result = []
             for rule, name in s.execute(q.order_by(User.name, Availability.starts_at)):
