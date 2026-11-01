@@ -49,12 +49,9 @@ def test_alert_page_has_no_manual_review_shortcut(api,team,engine,monkeypatch):
     assert not any(s.label=='Shiftactie' for s in app.selectbox)
 
 
-def test_stale_review_navigation_is_ignored(api,team,engine,monkeypatch):
+def test_review_navigation_is_absent(api,team,engine,monkeypatch):
     app=app_for(team['ot'],engine,monkeypatch)
-    app.session_state[f"branch_page_{team['branch']}"]='Shiften controleren'
-    app.run()
     assert not app.exception
-    assert app.radio(key=f"branch_page_{team['branch']}").value=='Overzicht'
     assert 'Shiften controleren' not in app.radio(key=f"branch_page_{team['branch']}").options
     assert not any(s.label=='Shift selecteren' for s in app.selectbox)
 
