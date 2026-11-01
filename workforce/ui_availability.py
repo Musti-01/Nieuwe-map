@@ -56,7 +56,8 @@ def show_my_availability(api, token, branch_id, tz, run):
             end_time = st.time_input(tr("Tot"), value=base_end.time().replace(tzinfo=None), step=900)
         weekly = st.checkbox(tr("Elke week herhalen"), value=bool(old and old["weekly"]))
         repeat_default = old["recurrence_until"] if old and old["weekly"] else day + timedelta(weeks=8)
-        repeat_until = st.date_input(tr("Herhalen tot"), value=repeat_default, disabled=not weekly)
+        repeat_until = st.date_input(tr("Herhalen tot"), value=repeat_default)
+        st.caption(tr("Deze einddatum wordt alleen gebruikt wanneer 'Elke week herhalen' is aangevinkt."))
         if st.form_submit_button(tr("Beschikbaarheid opslaan"), type="primary"):
             start_at = datetime.combine(day, start_time, tzinfo=tz)
             end_at = datetime.combine(day, end_time, tzinfo=tz)
